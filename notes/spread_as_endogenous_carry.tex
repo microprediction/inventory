@@ -1,0 +1,225 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\small\itshape Internal only --- not for distribution}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{claim}{Claim}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{remark}{Remark}
+
+\title{The Bid--Offer as Endogenous Cost of Carry:\\
+Explosive Inventory in Low-Carry Goods}
+\author{Peter Cotton\thanks{Working note for the \texttt{inventory} project. Comments from optimal-control friends actively wanted --- the point of writing this down is to be attacked. The dealer model in \S\ref{sec:dealer} is joint work with Andrew Papanicolaou (\emph{Trading Illiquid Goods}, unpublished working paper, 2019).}}
+\date{\today\ --- draft, internal only}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Storage economics stabilizes inventory with a stick: it costs money to hold stock. For some goods the stick is missing --- carrying cost is a rounding error --- and optimal inventory can, in principle, run away. We argue the market improvises a replacement stick, and that the replacement is the bid--offer. This gives the Cotton--Papanicolaou market-making model a new reading: the quadratic holding cost it introduced as a convenience turns out to be the load-bearing stabilizer, and in the zero-carry limit the constant-width linear-skew policy of Avellaneda--Stoikov becomes exact --- which makes linear skew the fingerprint of a market capable of explosive inventory. An exact equivalence shows one-sided enquiry flow multiplies effective carry all by itself. Closing the loop through the storage relation, effective carry scales with the price variance that the instability generates, so the damping grows with the amplitude: the low-carry market leans toward a quadratic oscillator, and its stiffness and dissipation are quoted by dealers.
+\end{abstract}
+
+\section{The problem: nothing stops you}
+
+A storable good is held in check from below and from above. Below, you cannot hold negative stock: at stockout the convenience yield goes vertical and the price spikes. Above, warehouses send invoices: carrying stock costs interest, insurance, and rent, so somebody has to expect appreciation to hold it, and that expectation had better come true on average.
+
+Now delete the invoice. For high-value, non-degrading goods the all-in physical carry can be of order 20 basis points a year. At that price the classical argument for well-behaved inventory --- Weymar discarded the explosive root of his inventory dynamics on the ground that nobody carries losing stock forever --- has almost nothing to push against. Twenty basis points buys a great deal of ``forever.''
+
+So what, in practice, stops a hoard? Not the warehouse. The honest answer is the trading desk: the cost that actually bites is price risk while you hold, funding against the position, and --- above all --- the terms on which you can get out. Every one of those is a property of the \emph{dealer market}, and the dealer market summarizes them in two numbers it quotes every day: width and skew. The thesis of this note, in one line:
+
+\begin{equation}
+\textit{The bid--offer is the cost of carry the physical world forgot to charge.}
+\label{eq:slogan}
+\end{equation}
+
+\section{Storage in one page}\label{sec:storage}
+
+Coverage is stock over consumption rate, $Y_t = I_t/q_t$ --- always time units, never tonnes. Weymar's storage relation says the expected log-price curve $\pi(t,h) = \mathbb{E}_t[\ln P_{t+h}]$ has slope
+\begin{equation}
+\partial_h \pi(t,h) = f\big(Y(t,h)\big),
+\label{eq:storage}
+\end{equation}
+where $Y(t,h)$ is coverage expected at horizon $h$ and $f$ is increasing, concave, and flat where stocks are comfortable. Slopes are not levels; integrating against the long-run anchor $A_t$ (the price the market believes in once coverage normalizes) gives
+\begin{equation}
+\ln P_t = \ln A_t - \int_0^\infty f\big(Y(t,s)\big)\,ds .
+\label{eq:price}
+\end{equation}
+In English: the spot price is the anchor, discounted by every bit of expected tightness along the whole expected coverage path, weighted by where it lands on the curve. Scarcity expected in the steep region counts enormously; the same tonnage in the flat region counts for nothing.
+
+Two more facts we will need. The coverage path's \emph{shape} is essentially public --- published deficit forecasts $D(t,h)$ pin its slope, $\partial_h Y \approx -D/q$ --- while its \emph{level} is latent. And It\^o applied to \eqref{eq:price} ties price variance to the path:
+\begin{equation}
+\sigma_P^2 \;=\; \sigma_A^2 \;+\; \big\|f'\big(Y(t,\cdot)\big)\big\|^2_{\Sigma_M} + \text{cross terms}.
+\label{eq:vol}
+\end{equation}
+In English: volatility is anchor noise plus forecast-revision noise amplified by the slope of the storage curve. Thin coverage, steep slope, big variance. Comfortable coverage, flat slope, and volatility floors at whatever the anchor is doing.
+
+Finally, what does it cost to hold $x$ units between trading opportunities?
+\begin{equation}
+c(x) \;=\; \underbrace{k\,P\,|x|}_{\text{warehouse}} \;+\; \underbrace{\tfrac{\gamma_r}{2}\,\sigma_P^2\,P^2 x^2}_{\text{risk and capital}} \;+\; \text{funding},
+\qquad k \approx 20\ \text{bps/yr}.
+\label{eq:cost}
+\end{equation}
+With $k$ negligible the potential is a parabola whose curvature is set by risk, not rent. Keep an eye on that: the physical world contributes a linear term too small to matter, and everything that matters is quadratic. This is the first sense in which low carry ``leans quadratic,'' and via \eqref{eq:vol} the curvature is set by the state of the system itself. The market grades its own homework.
+
+\section{The dealer already solved this}\label{sec:dealer}
+
+Recall the sealed-bid dealer model. Enquiries arrive Poisson with mean gap $\tau$; each is a sell with probability $p$, a buy with probability $1-p$; the best competing response beyond fair value is exponential with mean $w$ (the \emph{market width}; hazard $h = 1/w$); winning a trade costs $\epsilon$ of adverse selection; size is $s$. The whole policy is characterized by an inventory indifference cost $\nu(x)$, through its discrete slope and convexity
+\[
+S(x) = \frac{\nu(x+s)-\nu(x-s)}{2s}, \qquad
+C(x) = \frac{\nu(x+s)-2\nu(x)+\nu(x-s)}{2s}.
+\]
+The optimal quotes are then
+\begin{equation}
+\text{half-width}(x) = \Delta + C(x), \qquad
+\text{mid} = p^{\text{market}} - S(x), \qquad \Delta = \tfrac1h + \epsilon .
+\label{eq:quotes}
+\end{equation}
+The old slogans still hold: \emph{slope of inventory cost = skew; convexity of inventory cost = (discretionary) width}; markup = market width + adverse selection + marginal inventory cost. And consistency --- the Bellman equation --- says, for all $x, x'$,
+\begin{equation}
+G_\delta(x) - G_\delta(x') = \Omega\,\big(c(x) - c(x')\big),
+\qquad
+G_\delta(x) = e^{-hC(x)}\cosh\!\big(hS_\delta(x)\big),
+\qquad
+\Omega = \tfrac{\tau h}{s}\, e^{\,1 + h\epsilon + h\gamma},
+\label{eq:bellman}
+\end{equation}
+with $S_\delta = S - \delta$ and $(\delta,\gamma)$ absorbing imbalance as follows.
+
+\begin{proposition}[Imbalance is a carry multiplier]\label{prop:multiplier}
+Let
+\[
+\delta = \frac{\log(1-p) - \log p}{2h}, \qquad
+\gamma = \frac{\log\tfrac12 - \tfrac12\big(\log p + \log(1-p)\big)}{h} \;\ge 0 .
+\]
+The problem with enquiry imbalance $p \neq \tfrac12$ is the balanced problem with skew shifted by $\delta$, non-discretionary width widened by $\gamma$, and carrying cost multiplied by
+\begin{equation}
+M(p) \;=\; e^{h\gamma} \;=\; \frac{1}{2\sqrt{p\,(1-p)}} \;\ge\; 1 .
+\label{eq:multiplier}
+\end{equation}
+\end{proposition}
+
+The proof is the two-line substitution in the original paper, using $e^{h\delta+h\gamma} = \tfrac{1}{2p}$ and $e^{h\gamma-h\delta} = \tfrac{1}{2(1-p)}$. What is new here is not the algebra but the reading:
+
+\begin{quote}
+\emph{A one-way market taxes inventory all by itself.} Accumulation ($p < \tfrac12$) and distribution ($p > \tfrac12$) both push $M(p)$ up --- without limit as flow becomes fully one-sided. Even at $k = 0$ and $\sigma_P = 0$, a hoard cannot build or unwind without manufacturing its own carrying cost.
+\end{quote}
+
+Storage economics has no such term. It lives in the dealer layer, and you will not find it by staring at warehouses.
+
+\section{Low carry makes CWLS exact --- and that's the tell}\label{sec:cwls}
+
+Take convexity constant, $C(x) \equiv C_0$, with $c(0)=0$ and $S_\delta(0)=0$. Then \eqref{eq:bellman} inverts:
+\begin{equation}
+S_\delta(x) = \frac1h \cosh^{-1}\!\Big(1 + e^{hC_0}\,\Omega\, c(x)\Big)
+\;\approx\; \frac{\sqrt{2\,e^{hC_0}\,\Omega}}{h}\,\sqrt{c(x)} .
+\label{eq:skewroot}
+\end{equation}
+In English: \emph{skew is the square root of the carrying cost.} Now read \eqref{eq:cost} into it.
+
+\begin{itemize}[leftmargin=1.5em]
+\item Pure quadratic cost (the $k \to 0$ limit): $\sqrt{c(x)} \propto |x|$. Linear skew, constant width. The Avellaneda--Stoikov policy --- which in general is an approximation that requires throwing terms overboard --- becomes exact to leading order \emph{precisely when the warehouse stops charging}.
+\item Material physical carry: $c(x) = kP|x| + O(x^2)$, so $\sqrt{c(x)} \propto \sqrt{|x|}$ near the origin. The skew has a square-root kink at zero inventory.
+\end{itemize}
+
+\begin{claim}[The fingerprint]\label{claim:fingerprint}
+The shape of the skew at zero inventory measures physical carry. A kink means the physical stabilizer binds. Smooth linear skew --- the CWLS regime --- means the only stabilizers left are endogenous ones: risk, imbalance, funding. Markets whose quote surfaces look like Avellaneda--Stoikov are exactly the markets in which inventory can run away.
+\end{claim}
+
+\begin{remark}[Why FX dealers don't hoard]
+Zero physical carry is necessary, not sufficient. An FX dealer also pays essentially nothing to hold, yet runs her book flat in minutes (Lyons 1995) --- because she has an interdealer market to trade out through, and overnight capital charges that amount to high effective carry. Where an exit market exists, dealers manage inventory by trading rather than quoting, and the skew signal goes quiet. The explosive-capable regime is therefore a conjunction: negligible physical carry, quiet volatility, soft funding, and \emph{no interdealer exit} --- which is precisely the configuration of dealer markets in the low-carry goods of interest.
+\end{remark}
+
+Which is the promised reinterpretation. In the original paper the quadratic term of $c(x)$ was introduced with a shrug --- it is ``what allows us to remove explicit dynamics from the price model and focus on inventory management.'' A device. But zoom out from one dealer to the market and the device is the physics: for a low-carry good the quadratic risk charge \emph{is} the curvature of the supply-of-storage curve, the quoted width \emph{is} the second derivative of the market's storage value function, and $\nu(x)$ \emph{is} the shadow price of the storage cost the physical world failed to supply. The paper solved for the missing stabilizer without knowing that was the question.
+
+\section{The oscillator}\label{sec:oscillator}
+
+Now close the loop. Linearize: let $y$ be the coverage gap, let consumption respond to the price gap with elasticity $\varepsilon_d$ and lag $T$, and notice that the dealer layer puts the skew --- which responds to \emph{flow} through dealer books --- into the transacted price:
+\begin{equation}
+p - a \;=\; -\,\varphi\, y \;-\; \psi\, \dot y ,
+\qquad \varphi \propto f'(Y^*),
+\qquad \psi \propto \nu'' \propto \gamma_r\, \sigma_P^2 .
+\label{eq:pricegap}
+\end{equation}
+Read it as mechanics. The storage curve contributes the spring, $\varphi$. The dealer layer contributes the \emph{dashpot}, $\psi$: a velocity-dependent, dissipative term. Substitute into the consumption dynamics and you get
+\begin{equation}
+T\,\ddot y \;+\; \big(1 + \varepsilon_d\, \psi\big)\,\dot y \;+\; \varepsilon_d\, \varphi\, y \;=\; \text{forcing},
+\label{eq:oscillator}
+\end{equation}
+while an extrapolative anchor, $\dot a = \beta \times (\text{trend of } p)$ --- Weymar's one positive feedback loop --- enters as \emph{negative} damping. Three things follow.
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{Low carry leans toward the quadratic oscillator.} As $k \to 0$ the potential in \eqref{eq:cost} is a parabola, and over the flat region of the storage curve the spring constant $\varphi$ goes soft: the oscillator degenerates toward a free particle held together by its damping alone --- and the damping is entirely endogenous. Control theorists have a name for deleting the coercive term: this is a \emph{cheap-control} singular limit (Kwakernaak--Sivan; Francis), and ``explosive optimal inventory'' is precisely loss of the turnpike (Tr\'elat--Zuazua).
+\item \textbf{The damping grows with the amplitude --- Van der Pol.} By \eqref{eq:vol}, $\sigma_P^2$, and hence $\psi$, is small when the system is quiet and large when it is disturbed, while $\beta$ subtracts damping uniformly. Negative damping at small amplitude, positive at large:
+\begin{equation}
+T\,\ddot y + \big[\mu(\text{amplitude}) - \tilde\beta\,\big]\,\dot y + \varepsilon_d \varphi\, y = \text{noise},
+\qquad \mu \ \text{increasing}.
+\label{eq:vdp}
+\end{equation}
+That configuration neither converges nor explodes; it orbits a \emph{limit cycle}. Weymar found a nine-year endogenous cycle in cocoa by simulation and never quite said why; read this way, it is a limit cycle, and for low-carry goods the dissipation that shapes it is quoted by dealers rather than billed by warehouses.
+\item \textbf{The system parks itself at the edge.} Too quiet: volatility falls, effective carry falls, hoarding is free, instability returns. Too hot: the multiplier \eqref{eq:multiplier} and the risk charge kick in and damp it. The spread is the thermostat and the operating point is marginal stability --- long near-random-walk drifts at tight, inventory-insensitive spreads, punctuated by spikes and hoard collapses. That is not a bug in the data; it is the attractor. (A 2015 exchange-financed hoard equal to roughly four years of world production, eventually cleared about 15\% below spot, is a single-observation measurement of $\nu$ at spectacular $x$. A 2022 exchange suspension is the width channel binding in extremis --- the market improvised infinite width.)
+\end{enumerate}
+
+\begin{conjecture}[Stability boundary]\label{conj:boundary}
+In the coupled system \eqref{eq:storage}--\eqref{eq:oscillator} there is a critical surface in $(k, \beta, \varepsilon_d, g, \kappa)$ --- physical carry, extrapolation gain, demand elasticity, forecast quality, dealer risk capital --- separating stationary from explosive inventory, and $k \approx 20$\,bps sits on the unstable side \emph{absent} the endogenous channels above. With them, the generic attractor is a limit cycle whose amplitude grows with dealer capacity $\kappa$.
+\end{conjecture}
+
+\section{What exactly is being claimed}\label{sec:hypotheses}
+
+The argument bundles a dozen claims that deserve separate fates. Unbundled --- each stated so that it can be false:
+
+\begin{description}[leftmargin=3.7em, style=nextline]
+\item[H1 (No spring.)] In quiet regimes, low-carry prices have no mean reversion: variance ratios at multi-year horizons sit at or above~1, where high-carry commodities sit well below.
+\item[H2 (Hoard spikes.)] Large moves are asymmetrically to the upside, and the asymmetry is ordered by carry class: low $>$ mid $>$ high.
+\item[H3 (Tails.)] Low-carry return tails are fatter than mid-carry exchange-traded commodities'. (Note what this does \emph{not} claim: grains can be just as fat --- they spike through the stockout boundary. The distinctive low-carry signature is the \emph{conjunction} of fat tails with H1's absent reversion.)
+\item[H4 (Hoards happen.)] Inventory equal to \emph{years} of production actually accumulates in low-carry goods, without a price-mediated correction along the way.
+\item[H5 (Boring spreads.)] In quiet regimes, low-carry dealer spreads are tight and approximately insensitive to inventory.
+\item[H6 (The kink.)] Dealer skew at zero inventory is square-root-kinked where warehouses charge and smooth/linear where they don't, Eq.~\eqref{eq:skewroot}. No free parameters.
+\item[H7 (The multiplier.)] Persistent one-sided flow widens quotes by $M(p)$ of Eq.~\eqref{eq:multiplier}, with skew $\delta$ flipping sign between accumulation and distribution while the widening does not. No free parameters beyond $h$.
+\item[H8 (Width leads.)] Quoted width leads realized volatility, and width/skew lead the price break around episodes --- quotes are forward-looking measurements of the same latent state.
+\item[H9 (Financing ends it.)] Hoard episodes terminate as financing or width events (credit withdrawn, quotes blown out, markets suspended) --- never because carrying cost bit.
+\item[H10 (Tails deter.)] Fat width tails deter hoards ex ante.
+\item[H11 (Degenerate limit.)] At effectively infinite coverage (the canonical store-of-value good), the storage term vanishes entirely and price is pure anchor dynamics.
+\item[H12 (The conjunction.)] Zero physical carry alone is not sufficient for explosive capability; it also requires quiet volatility, soft funding, and no interdealer exit market.
+\end{description}
+
+\section{Scoreboard}\label{sec:scoreboard}
+
+Verdicts as of August 2026, from the literature maps in this repository and companion empirical files maintained separately:
+
+\begin{center}
+\small
+\begin{tabular}{@{}l l p{8.2cm}@{}}
+\hline
+ & \textbf{Verdict} & \textbf{Key evidence} \\
+\hline
+H1 & \textbf{True} & 5-yr variance ratio $\approx 1.06$ (low) vs $0.58$ (high); half-lives 67/48/38 months \\
+H2 & \textbf{True} & Asymmetry $1.26/1.21/1.17$ monthly, $1.35/1.14/1.07$ annual; the archetype low-carry good the extreme of 17 commodities at $1.87$ \\
+H3 & \textbf{Half-true} & Kurtosis $8.0$ (low) vs $3.0$ (mid-carry) --- but wheat $8.1$; only the joint signature (H1+H3) separates \\
+H4 & \textbf{True} & A 2015 exchange-financed hoard of $\approx$ 4 years of world production; a physical trust accumulating since 2021; the diamond cartel's buffer; the 1985 international buffer stock \\
+H5 & \textbf{Provisional} & Dealer-market literature pattern-matches (weak inventory effects where theory predicts flatness); untested on assessed dealer ranges \\
+H6 & \textbf{Untested} & No dataset located anywhere; genuinely open \\
+H7 & \textbf{Untested} & Quantitative test never run; episode evidence qualitative only \\
+H8 & \textbf{Mixed} & Forward-lookingness established in adjacent markets; strict lead regression never run on assessed ranges. Episode record: width arrives as a \emph{jump} (bid withdrawal, suspension) at the break, not as documented gradual widening \\
+H9 & \textbf{True so far} & A 2008 financing event in an assessment-priced good; the 2015 hoard (credit/legal); the 1985 buffer stock (credit exhausted, market suspended); a 1996 hidden-inventory episode (disclosure); a 2022 exchange suspension (width) \\
+H10 & \textbf{False as stated} & Wine 2011, watches 2022: 10--25\% round-trips did not prevent hoards --- they selected them into the lowest-width corner and became the crash mechanism. Revised: within-market selection + ex-post rationing \\
+H11 & \textbf{True} & No mean reversion in the canonical store-of-value good (Schwartz 1997; Casassus--Collin-Dufresne 2005); VR $> 1$ \\
+H12 & \textbf{True} & FX: zero carry but $\sim$10-minute inventory half-lives --- interdealer exit and overnight capital charges silence the channel \\
+\hline
+\end{tabular}
+\end{center}
+
+Honest reading of the table: the price-series and episode hypotheses (H1, H2, H4, H9, H11) are supported; one hypothesis died and was rebuilt (H10); the quote-surface hypotheses that are \emph{distinctively ours} (H6, H7, and the sharp half of H8) are untested --- not for want of trying, but because nobody has ever assembled a bid--offer width history for an assessed market. That is the dataset to build.
+
+\section{Where this sits}
+
+The storage half is Weymar (1965, 1968): price as a functional of the expected coverage path, anchored by an extrapolative long-run expectation. Every stationarity theorem in the competitive-storage line (Gustafson; Scheinkman--Schechtman; Deaton--Laroque) leans on the carry term this note deletes; Bobenrieth--Bobenrieth--Wright (2013) get explosive price runs inside rational storage with carry intact, and the quantity-side question at $k \approx 0$ appears open. The dealer half is Ho--Stoll through Avellaneda--Stoikov and Gu\'eant, with Cotton--Papanicolaou as the sealed-bid variant carrying an explicit cost of carry --- the term doing all the work here. Duffie--Dworczak--Zhu (2017) showed a benchmark's \emph{level} reveals dealer information in OTC search markets; the present claim is that the benchmark's width and asymmetry do the revealing, because they are the second and first derivatives of the market's storage value function. The singular limit is cheap control; the explosion diagnostic is turnpike loss; the cycle is Van der Pol's, with the dissipation quoted twice a week.
+
+\end{document}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>inventory — control theory applied to inventory and pricing</title>
+<style>
+  :root { color-scheme: light; }
+  body { max-width: 46rem; margin: 2.5rem auto; padding: 0 1.2rem; font-family: Georgia, 'Times New Roman', serif; line-height: 1.55; color: #1a1a1a; background: #f9f9f7; }
+  h1 { font-size: 1.7rem; margin-bottom: .2rem; }
+  .sub { color: #555; margin-top: 0; }
+  h2 { font-size: 1.15rem; margin-top: 2rem; border-bottom: 1px solid #ddd; padding-bottom: .25rem; }
+  a { color: #1a4d8f; }
+  li { margin: .35rem 0; }
+  nav { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: .85rem; margin-bottom: 1.5rem; color: #898781; }
+  nav a { margin-right: .9rem; }
+  code, pre { font-family: Menlo, monospace; font-size: .92em; background: #f4f4f4; border-radius: 3px; }
+  code { padding: .05em .3em; }
+  pre { padding: .7em .9em; overflow-x: auto; }
+  .result { background: #fcfcfb; border: 1px solid rgba(11,11,11,.10); border-radius: 8px; padding: .9rem 1.1rem; margin: 1.2rem 0; }
+  @media (prefers-color-scheme: dark) {
+    :root { color-scheme: dark; }
+    body { background: #0d0d0d; color: #ddd; }
+    .sub { color: #999; } a { color: #7aa7dd; }
+    h2 { border-color: #333; } code, pre { background: #222; }
+    .result { background: #1a1a19; border-color: rgba(255,255,255,.10); }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <strong>inventory</strong>
+  <a href="papers.html">papers</a>
+  <a href="symmetry.html">symmetry demo</a>
+  <a href="simulation.html">simulation</a>
+  <a href="bibliography.html">bibliography</a>
+  <a href="map.html">literature map</a>
+  <a href="https://github.com/microprediction/inventory">GitHub</a>
+</nav>
+
+<h1>inventory</h1>
+<p class="sub">Control theory applied to inventory and pricing. A research site — papers, interactive demonstrations, and literature maps — extending Cotton &amp; Papanicolaou, <em>Trading Illiquid Goods</em>, toward a theory of storable goods with very low carrying costs.</p>
+
+<h2>Papers</h2>
+<p>The flagship result, from <strong><a href="skew_width_imbalance.pdf">On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading</a></strong> (Cotton; work completed around 2015). A market maker trades only by responding to sealed-bid enquiries, and her customers arrive with imbalanced intent: sellers with probability <em>q</em>, buyers with probability 1&minus;<em>q</em>.</p>
+
+<div class="result">
+The imbalanced problem is the balanced one in disguise. Order imbalance is absorbed, exactly, by three adjustments tied to the observable market width <em>w</em>: the skew translates by &delta; = (<em>w</em>/2)&thinsp;log(<em>q</em>/(1&minus;<em>q</em>)), the quotes widen by &gamma;, and the cost of carry multiplies by <em>M</em>(<em>q</em>) = 1/(2&radic;(<em>q</em>(1&minus;<em>q</em>))). Consequences: a dealer with a flat book should still skew; skew responds to imbalance at first order while width responds at second; and one-sided flow taxes inventory exactly like a carrying cost.
+</div>
+
+<p>The paper locates the constant-width linear-skew benchmark of Avellaneda&ndash;Stoikov as a corner case and supplies its missing column: what to do about flow. The exponential assumption on the best competing quote is needed only locally, at the quotes actually made (<a href="https://github.com/microprediction/inventory/blob/main/papers/skew_width_imbalance/verify_local_exponentiality.py">numerical certificate</a>). The companion Cotton&ndash;Papanicolaou paper and the program's working notes are on the <a href="papers.html">papers page</a>.</p>
+
+<h2>Interactive demonstrations</h2>
+<ul>
+<li><a href="symmetry.html">The imbalance symmetry</a> — both problems solved numerically and independently in your browser; the corrected balanced solution lands on the imbalanced one to within 10<sup>&minus;13</sup>. The dots on the line are the theorem.</li>
+<li><a href="simulation.html">Optimal and sub-optimal market makers</a> — three dealers face the same enquiry stream and the same competing quotes: the optimal policy, constant-width linear-skew with no flow term, and no skew at all. The flow term is worth a few percent; no skew at all is ruinous.</li>
+</ul>
+
+<h2>Literature</h2>
+<ul>
+<li><a href="map.html">Literature map</a> — the paper and its neighbours; dashed edges are gaps it fills or predictions not yet tested.</li>
+<li><a href="bibliography.html">Annotated bibliography</a> — organized by the role each work plays.</li>
+</ul>
+
+<h2>The wider program</h2>
+<p>Storage economics stabilizes inventory from below by the stockout constraint and from above by the cost of carry. For value-dense, non-degrading goods the cost of carry can be a few tens of basis points a year — effectively absent. What, then, keeps optimal inventory bounded? The working hypothesis of this repository: nothing physical does. The stabilizer is microstructural — the dealer market's bid&ndash;offer is the endogenous replacement for the missing carrying cost.</p>
+<ul>
+<li><a href="https://github.com/microprediction/inventory/blob/main/notes/formulation.md">Toward a mathematical formulation</a> — storage relation as a term-structure constraint, transport of the coverage-forecast curve, the explosiveness boundary, filtering.</li>
+<li><a href="https://github.com/microprediction/inventory/blob/main/notes/spread_as_endogenous_carry.tex">The bid&ndash;offer as endogenous cost of carry</a> — explosive inventory in low-carry goods; the oscillator; hypotheses and scoreboard.</li>
+<li><a href="https://github.com/microprediction/inventory/blob/main/literature/weymar1965.md">Weymar (1965)</a> — distillation of the grounding thesis; program-level maps: <a href="https://github.com/microprediction/inventory/blob/main/literature/map_theory.md">storage theory</a> &middot; <a href="https://github.com/microprediction/inventory/blob/main/literature/map_control.md">control &amp; OR</a> &middot; <a href="https://github.com/microprediction/inventory/blob/main/literature/map_instability_theory.md">instability</a>.</li>
+</ul>
+
+<h2>Cite</h2>
+<pre>@unpublished{cotton2026skew,
+  author = {Cotton, Peter},
+  title  = {On a Simple Relationship Between Order Imbalance,
+            Skew and Width in Over-The-Counter Trading},
+  note   = {Working paper; work completed around 2015,
+            first written up 2022},
+  year   = {2026},
+  url    = {https://github.com/microprediction/inventory}
+}</pre>
+
+<p>Comments — especially from optimal-control readers — are welcome; the notes are written to be attacked. <a href="https://github.com/microprediction/inventory">Repository on GitHub</a>.</p>
+</body>
+</html>

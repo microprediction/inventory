@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Optimal and sub-optimal market makers — simulation</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --ink-primary: #0b0b0b; --ink-secondary: #52514e; --ink-muted: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --ink-primary: #ffffff; --ink-secondary: #c3c2b7; --ink-muted: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --ink-primary: #ffffff; --ink-secondary: #c3c2b7; --ink-muted: #898781;
+    --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+  }
+  body { max-width: 52rem; margin: 3rem auto; padding: 0 1.2rem;
+         font-family: Georgia, 'Times New Roman', serif; line-height: 1.55;
+         color: var(--ink-primary); background: var(--page); }
+  h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+  .sub { color: var(--ink-secondary); margin-top: 0; }
+  a { color: #1a4d8f; } @media (prefers-color-scheme: dark) { a { color: #7aa7dd; } }
+  .controls, .tiles, .legend, .chart-title, button { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .controls { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center;
+              padding: .7rem 1rem; background: var(--surface-1);
+              border: 1px solid var(--border); border-radius: 8px; margin: 1.2rem 0; }
+  .controls label { font-size: .85rem; color: var(--ink-secondary); display: flex; align-items: center; gap: .55rem; }
+  .controls output { font-variant-numeric: tabular-nums; color: var(--ink-primary); min-width: 3em; }
+  button { font-size: .85rem; padding: .35rem .9rem; border-radius: 6px;
+           border: 1px solid var(--border); background: var(--surface-1);
+           color: var(--ink-primary); cursor: pointer; }
+  button:hover { border-color: var(--ink-muted); }
+  .tiles { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1rem 0; }
+  .tile { flex: 1 1 8.5rem; background: var(--surface-1); border: 1px solid var(--border);
+          border-radius: 8px; padding: .7rem .9rem; }
+  .tile .lbl { font-size: .78rem; color: var(--ink-secondary); display: flex; align-items: center; gap: .45rem; }
+  .tile .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .tile .val { font-size: 1.5rem; font-weight: 600; margin-top: .15rem; font-variant-numeric: normal; }
+  .tile .note { font-size: .74rem; color: var(--ink-muted); margin-top: .1rem; }
+  .chart-card { background: var(--surface-1); border: 1px solid var(--border);
+                border-radius: 8px; padding: .9rem 1rem .6rem; margin: 1.2rem 0; position: relative; }
+  .chart-title { font-size: .95rem; font-weight: 600; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: .8rem; color: var(--ink-secondary); margin: .3rem 0 .2rem; }
+  .legend .key { display: inline-flex; align-items: center; gap: .4rem; }
+  .legend .sw { width: 16px; height: 2px; display: inline-block; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface-1);
+             border: 1px solid var(--border); border-radius: 6px; padding: .4rem .6rem;
+             font-size: .78rem; font-family: system-ui, sans-serif; color: var(--ink-primary);
+             box-shadow: 0 2px 8px rgba(0,0,0,.12); display: none; white-space: nowrap; }
+  .tooltip .row { display: flex; align-items: center; gap: .4rem; }
+  .tooltip .sw { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  svg text { fill: var(--ink-muted); font-family: system-ui, sans-serif; font-size: 11px;
+             font-variant-numeric: tabular-nums; }
+  svg .axis-label { fill: var(--ink-secondary); }
+</style>
+</head>
+<body>
+<nav style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: .85rem; margin-bottom: 1.5rem; color: var(--ink-muted);">
+  <a href="index.html" style="margin-right:.9rem">inventory</a>
+  <a href="papers.html" style="margin-right:.9rem">papers</a>
+  <a href="symmetry.html" style="margin-right:.9rem">symmetry demo</a>
+  <strong style="margin-right:.9rem">simulation</strong>
+  <a href="bibliography.html" style="margin-right:.9rem">bibliography</a>
+  <a href="map.html" style="margin-right:.9rem">literature map</a>
+  <a href="https://github.com/microprediction/inventory">GitHub</a>
+</nav>
+
+<h1>Optimal and sub-optimal market makers</h1>
+<p class="sub">Companion demo to <em>On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading</em> (Cotton; work completed around 2015).</p>
+
+<p>Three dealers respond to the same stream of sealed-bid enquiries against the same competing quotes, so every difference in outcome is policy. Customers are sellers with probability <em>q</em>; the best competing quote is exponential with mean <em>w</em> = 1; inventory costs c(x) = c&#8322;x&sup2; per period. The <strong>optimal</strong> dealer quotes from the solved indifference cost and knows the flow. The <strong>CWLS</strong> dealer keeps a constant width and skews linearly in inventory, calibrated to the balanced problem, with no flow term: the benchmark policy of the literature. The <strong>no-skew</strong> dealer quotes a constant width around fair value.</p>
+
+<div class="controls">
+  <label>imbalance q
+    <input type="range" id="q" min="0.50" max="0.85" step="0.01" value="0.65">
+    <output id="qv">0.65</output>
+  </label>
+  <label>carry c&#8322;
+    <input type="range" id="c2" min="-2.7" max="-1.3" step="0.1" value="-2">
+    <output id="c2v">0.010</output>
+  </label>
+  <button id="runBtn">Run</button>
+  <button id="resetBtn">Reset</button>
+  <label>speed
+    <select id="speed">
+      <option value="50">50 / frame</option>
+      <option value="200" selected>200 / frame</option>
+      <option value="1000">1,000 / frame</option>
+    </select>
+  </label>
+</div>
+
+<div class="tiles">
+  <div class="tile"><div class="lbl">Enquiries</div><div class="val" id="tN">0</div><div class="note">common to all dealers</div></div>
+  <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-1)"></span>Optimal P&amp;L/enq.</div><div class="val" id="tOpt">–</div><div class="note" id="nOpt"></div></div>
+  <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-2)"></span>CWLS P&amp;L/enq.</div><div class="val" id="tCwls">–</div><div class="note" id="nCwls"></div></div>
+  <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>No-skew P&amp;L/enq.</div><div class="val" id="tNos">–</div><div class="note" id="nNos"></div></div>
+</div>
+
+<div class="chart-card">
+  <div class="chart-title">Cumulative profit and loss, net of carrying cost</div>
+  <div class="legend">
+    <span class="key"><span class="sw" style="background:var(--series-1)"></span> optimal</span>
+    <span class="key"><span class="sw" style="background:var(--series-2)"></span> CWLS, no flow term</span>
+    <span class="key"><span class="sw" style="background:var(--series-3)"></span> no skew</span>
+  </div>
+  <div id="chartPnl"></div>
+  <div class="tooltip" id="tipPnl"></div>
+</div>
+
+<div class="chart-card">
+  <div class="chart-title">Inventory paths</div>
+  <div class="legend">
+    <span class="key"><span class="sw" style="background:var(--series-1)"></span> optimal</span>
+    <span class="key"><span class="sw" style="background:var(--series-2)"></span> CWLS, no flow term</span>
+    <span class="key"><span class="sw" style="background:var(--series-3)"></span> no skew</span>
+  </div>
+  <div id="chartInv"></div>
+  <div class="tooltip" id="tipInv"></div>
+</div>
+
+<p>Two of the paper's claims are visible here. The optimal dealer's edge over CWLS is the flow term: a shift of the quote midpoint by &delta; = (w/2)&thinsp;log(q/(1&minus;q)) plus a slightly wider quote, worth a few percent of profit at moderate imbalance. The no-skew dealer illustrates the corollary that imbalance acts as a carrying cost: her inventory drifts to the position limit and the carry bleeds her, even though she wins plenty of trades.</p>
+
+<p style="color: var(--ink-secondary); font-size:.9em">All dealers face the same random draws (common random numbers). Position limit &plusmn;14. Solver: <a href="mm_core.js">mm_core.js</a>. Source: <a href="https://github.com/microprediction/inventory">github.com/microprediction/inventory</a>.</p>
+
+<script src="mm_core.js"></script>
+<script>
+const W = 1.0, N = 14, I0 = N;
+const DEALERS = [
+  { key: 'optimal', name: 'optimal', slot: '--series-1' },
+  { key: 'cwls', name: 'CWLS, no flow term', slot: '--series-2' },
+  { key: 'noskew', name: 'no skew', slot: '--series-3' },
+];
+
+let sim = null, running = false, raf = null;
+
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function buildSim() {
+  const q = +document.getElementById('q').value;
+  const c2 = Math.pow(10, +document.getElementById('c2').value);
+  const cost = x => c2 * x * x;
+  const imb = MM.solve({ q, w: W, N, cost });
+  const bal = MM.solve({ q: 0.5, w: W, N, cost });
+  const C0 = MM.convexity(bal.nu, I0);
+  const beta = (MM.slope(bal.nu, I0 + 1) - MM.slope(bal.nu, I0 - 1)) / 2;
+
+  const quote = {
+    optimal: x => {
+      const i = x + I0, S = MM.slope(imb.nu, i), C = MM.convexity(imb.nu, i);
+      return [Math.max(W + C + S, 0), Math.max(W + C - S, 0)];
+    },
+    cwls: x => [Math.max(W + C0 + beta * x, 0), Math.max(W + C0 - beta * x, 0)],
+    noskew: () => [W + C0, W + C0],
+  };
+
+  let seed = (Math.random() * 2 ** 31) >>> 0;
+  const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+
+  const st = {};
+  for (const d of DEALERS) st[d.key] = { x: 0, pnl: 0, wins: 0 };
+  const hist = { t: [0] };
+  for (const d of DEALERS) { hist[d.key + '_pnl'] = [0]; hist[d.key + '_x'] = [0]; }
+
+  return {
+    q, c2, cost, quote, st, hist, t: 0, stride: 1, sinceSample: 0,
+    step() {
+      const isSeller = rnd() < q;
+      const Z = -W * Math.log(1 - rnd());
+      for (const d of DEALERS) {
+        const s = this.st[d.key];
+        s.pnl -= this.cost(s.x);
+        const [mDown, mUp] = this.quote[d.key](s.x);
+        if (isSeller) { if (s.x < N && mDown < Z) { s.x++; s.pnl += mDown; s.wins++; } }
+        else { if (s.x > -N && mUp < Z) { s.x--; s.pnl += mUp; s.wins++; } }
+      }
+      this.t++;
+      if (++this.sinceSample >= this.stride) {
+        this.sinceSample = 0;
+        this.hist.t.push(this.t);
+        for (const d of DEALERS) {
+          this.hist[d.key + '_pnl'].push(this.st[d.key].pnl);
+          this.hist[d.key + '_x'].push(this.st[d.key].x);
+        }
+        if (this.hist.t.length > 1200) {
+          for (const k in this.hist) this.hist[k] = this.hist[k].filter((_, i) => i % 2 === 0);
+          this.stride *= 2;
+        }
+      }
+    },
+  };
+}
+
+/* --- charting (same conventions as symmetry.html) --- */
+function el(name, attrs, parent) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e); return e;
+}
+function niceTicks(lo, hi, n = 5) {
+  const span = hi - lo || 1, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n + 1) || mag * 10;
+  const t = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-12; v += step) t.push(+v.toFixed(10));
+  return t;
+}
+function drawLines(containerId, tipId, ts, seriesList, opts) {
+  const container = document.getElementById(containerId);
+  const width = container.clientWidth || 720, height = 280;
+  const m = { l: 64, r: 16, t: 10, b: 38 };
+  let svg = container.querySelector('svg');
+  container.replaceChildren();
+  svg = el('svg', { width, height }, container);
+  const xhi = Math.max(1, ts[ts.length - 1]);
+  let ylo = 0, yhi = 1;
+  for (const s of seriesList) for (const v of s.values) { ylo = Math.min(ylo, v); yhi = Math.max(yhi, v); }
+  const pad = (yhi - ylo) * 0.06 || 1; ylo -= pad; yhi += pad;
+  const X = x => m.l + x / xhi * (width - m.l - m.r);
+  const Y = y => height - m.b - (y - ylo) / (yhi - ylo) * (height - m.t - m.b);
+  for (const t of niceTicks(ylo, yhi)) {
+    el('line', { x1: m.l, x2: width - m.r, y1: Y(t), y2: Y(t), stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    el('text', { x: m.l - 8, y: Y(t) + 3.5, 'text-anchor': 'end' }, svg).textContent =
+      Math.abs(t) >= 1000 ? (t / 1000) + 'k' : +t.toFixed(2);
+  }
+  for (const t of niceTicks(0, xhi, 7)) {
+    el('text', { x: X(t), y: height - m.b + 16, 'text-anchor': 'middle' }, svg).textContent =
+      t >= 1000 ? (t / 1000) + 'k' : t;
+  }
+  el('line', { x1: m.l, x2: width - m.r, y1: Y(0), y2: Y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+  el('text', { x: (m.l + width - m.r) / 2, y: height - 4, 'text-anchor': 'middle', class: 'axis-label' }, svg)
+    .textContent = 'enquiries';
+  el('text', { x: 14, y: (m.t + height - m.b) / 2, 'text-anchor': 'middle', class: 'axis-label',
+               transform: `rotate(-90 14 ${(m.t + height - m.b) / 2})` }, svg).textContent = opts.ylabel;
+  if (opts.hlines) for (const h of opts.hlines)
+    el('line', { x1: m.l, x2: width - m.r, y1: Y(h), y2: Y(h), stroke: 'var(--baseline)',
+                 'stroke-width': 1, 'stroke-dasharray': 'none', opacity: .6 }, svg);
+  for (const s of seriesList) {
+    const d = s.values.map((v, i) => (i ? 'L' : 'M') + X(ts[i]) + ' ' + Y(v)).join(' ');
+    el('path', { d, fill: 'none', stroke: s.color, 'stroke-width': 2,
+                 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  }
+  const tip = document.getElementById(tipId);
+  const cross = el('line', { y1: m.t, y2: height - m.b, stroke: 'var(--baseline)',
+                             'stroke-width': 1, visibility: 'hidden' }, svg);
+  svg.addEventListener('mousemove', ev => {
+    const box = svg.getBoundingClientRect();
+    const px = ev.clientX - box.left;
+    if (px < m.l || px > width - m.r || ts.length < 2) { cross.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; return; }
+    const xv = (px - m.l) / (width - m.l - m.r) * xhi;
+    let bi = 0;
+    for (let i = 0; i < ts.length; i++) if (Math.abs(ts[i] - xv) < Math.abs(ts[bi] - xv)) bi = i;
+    cross.setAttribute('x1', X(ts[bi])); cross.setAttribute('x2', X(ts[bi]));
+    cross.setAttribute('visibility', 'visible');
+    tip.innerHTML = `<div><strong>enquiry ${ts[bi].toLocaleString()}</strong></div>` +
+      seriesList.map(s => `<div class="row"><span class="sw" style="background:${s.color}"></span>${s.name}: ${(+s.values[bi].toFixed(2)).toLocaleString()}</div>`).join('');
+    tip.style.display = 'block';
+    const card = container.closest('.chart-card').getBoundingClientRect();
+    tip.style.left = Math.min(ev.clientX - card.left + 14, card.width - tip.offsetWidth - 8) + 'px';
+    tip.style.top = (ev.clientY - card.top + 14) + 'px';
+  });
+  svg.addEventListener('mouseleave', () => { cross.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; });
+}
+
+function redraw() {
+  if (!sim) return;
+  const h = sim.hist;
+  drawLines('chartPnl', 'tipPnl', h.t,
+    DEALERS.map(d => ({ name: d.name, color: cssVar(d.slot), values: h[d.key + '_pnl'] })),
+    { ylabel: 'cumulative P&L' });
+  drawLines('chartInv', 'tipInv', h.t,
+    DEALERS.map(d => ({ name: d.name, color: cssVar(d.slot), values: h[d.key + '_x'] })),
+    { ylabel: 'inventory x', hlines: [N, -N] });
+  document.getElementById('tN').textContent = sim.t.toLocaleString();
+  const ids = { optimal: ['tOpt', 'nOpt'], cwls: ['tCwls', 'nCwls'], noskew: ['tNos', 'nNos'] };
+  for (const d of DEALERS) {
+    const s = sim.st[d.key];
+    document.getElementById(ids[d.key][0]).textContent = sim.t ? (s.pnl / sim.t).toFixed(3) : '–';
+    document.getElementById(ids[d.key][1]).textContent = sim.t ?
+      `win rate ${(s.wins / sim.t * 100).toFixed(0)}%, inventory ${s.x}` : '';
+  }
+}
+
+function frame() {
+  if (!running) return;
+  const batch = +document.getElementById('speed').value;
+  for (let i = 0; i < batch; i++) sim.step();
+  redraw();
+  raf = requestAnimationFrame(frame);
+}
+
+function reset() {
+  running = false; if (raf) cancelAnimationFrame(raf);
+  document.getElementById('runBtn').textContent = 'Run';
+  sim = buildSim(); redraw();
+}
+
+document.getElementById('runBtn').addEventListener('click', () => {
+  running = !running;
+  document.getElementById('runBtn').textContent = running ? 'Pause' : 'Run';
+  if (running) frame();
+});
+document.getElementById('resetBtn').addEventListener('click', reset);
+for (const id of ['q', 'c2']) document.getElementById(id).addEventListener('input', () => {
+  document.getElementById('qv').value = (+document.getElementById('q').value).toFixed(2);
+  document.getElementById('c2v').value = Math.pow(10, +document.getElementById('c2').value).toFixed(3);
+  reset();
+});
+window.addEventListener('resize', redraw);
+reset();
+running = true; document.getElementById('runBtn').textContent = 'Pause'; frame();
+</script>
+</body>
+</html>

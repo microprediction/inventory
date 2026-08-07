@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Literature map — inventory</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --ink-primary: #0b0b0b; --ink-secondary: #52514e; --ink-muted: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+    --open: #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --ink-primary: #ffffff; --ink-secondary: #c3c2b7; --ink-muted: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+      --open: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --ink-primary: #ffffff; --ink-secondary: #c3c2b7; --ink-muted: #898781;
+    --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    --open: #e66767;
+  }
+  body { max-width: 60rem; margin: 2.5rem auto; padding: 0 1.2rem;
+         font-family: Georgia, 'Times New Roman', serif; line-height: 1.55;
+         color: var(--ink-primary); background: var(--page); }
+  h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+  .sub { color: var(--ink-secondary); margin-top: 0; }
+  a { color: #1a4d8f; } @media (prefers-color-scheme: dark) { a { color: #7aa7dd; } }
+  nav { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: .85rem;
+        margin-bottom: 1.5rem; color: var(--ink-muted); }
+  nav a { margin-right: .9rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: .8rem; color: var(--ink-secondary);
+            font-family: system-ui, sans-serif; margin: .6rem 0; }
+  .legend .key { display: inline-flex; align-items: center; gap: .4rem; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .legend .ln { width: 20px; height: 0; border-top: 2px solid var(--baseline); display: inline-block; }
+  .legend .lnr { width: 20px; height: 0; border-top: 2px dashed var(--open); display: inline-block; }
+  .map-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+              padding: .4rem; margin: .8rem 0; position: relative; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface-1);
+             border: 1px solid var(--border); border-radius: 6px; padding: .45rem .65rem;
+             font-size: .78rem; font-family: system-ui, sans-serif; color: var(--ink-primary);
+             box-shadow: 0 2px 8px rgba(0,0,0,.15); display: none; max-width: 22rem; z-index: 5; }
+  .tooltip .t { font-weight: 600; }
+  .tooltip .d { color: var(--ink-secondary); margin-top: .1rem; }
+  .tooltip .e { color: var(--ink-muted); margin-top: .15rem; font-style: italic; }
+  svg { display: block; width: 100%; cursor: grab; }
+  svg text { font-family: system-ui, sans-serif; fill: var(--ink-primary); pointer-events: none; }
+  .grp-label { fill: var(--ink-muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html">inventory</a>
+  <a href="papers.html">papers</a>
+  <a href="symmetry.html">symmetry demo</a>
+  <a href="simulation.html">simulation</a>
+  <a href="bibliography.html">bibliography</a>
+  <strong>literature map</strong>
+  <a href="https://github.com/microprediction/inventory">GitHub</a>
+</nav>
+
+<h1>Literature map</h1>
+<p class="sub">The imbalance equivalence paper and its neighbours. Drag nodes to rearrange; hover for a one-line summary; click to open the source. Dashed red edges are connections that do not yet exist: gaps the paper fills or predictions not yet tested.</p>
+
+<div class="legend">
+  <span class="key"><span class="sw" style="background:var(--series-1)"></span> dealer-inventory classics</span>
+  <span class="key"><span class="sw" style="background:var(--series-2)"></span> optimal market making</span>
+  <span class="key"><span class="sw" style="background:var(--series-3)"></span> RFQ &amp; empirics</span>
+  <span class="key"><span class="sw" style="background:var(--ink-muted)"></span> probability</span>
+  <span class="key"><span class="ln"></span> established relation</span>
+  <span class="key"><span class="lnr"></span> missing / untested</span>
+</div>
+
+<div class="map-card">
+  <div id="map"></div>
+  <div class="tooltip" id="tip"></div>
+</div>
+
+<p style="color: var(--ink-secondary); font-size:.9em">Annotated entries for every node are on the <a href="bibliography.html">bibliography</a> page. The storage-economics side of the research program (Weymar, competitive storage, instability) has its own maps in <a href="https://github.com/microprediction/inventory/tree/main/literature">literature/</a>.</p>
+
+<script>
+const GH = 'https://github.com/microprediction/inventory';
+const NODES = [
+  // key, label, group (1 classics, 2 optimal MM, 3 RFQ/empirics, 4 probability, 0 core), x, y, url, summary
+  { k:'paper', l:'THIS PAPER\nimbalance equivalence', g:0, x:.46, y:.50, url:'skew_width_imbalance.pdf',
+    s:'Imbalance q compresses onto the balanced problem: skew shifts by δ, quotes widen by γ, carry multiplies by 1/(2√(q(1−q))).' },
+  { k:'cp', l:'Cotton–Papanicolaou\nTrading Illiquid Goods', g:0, x:.68, y:.62, url: GH + '/blob/main/literature/trading_illiquid.pdf',
+    s:'Companion paper: extends the model to clustered arrivals and stochastically varying imbalance.' },
+
+  { k:'garman', l:'Garman 1976', g:1, x:.08, y:.16, url:'https://doi.org/10.1016/0304-405X(76)90006-4',
+    s:'Asymmetric Poisson buy/sell rates, the oldest imbalanced-flow model; static prices, the content is ruin not policy.' },
+  { k:'am', l:'Amihud–Mendelson 1980', g:1, x:.26, y:.10, url:'https://doi.org/10.1016/0304-405X(80)90020-3',
+    s:'Imbalanced arrivals move a preferred inventory position and monotone quotes; structural, not closed form.' },
+  { k:'hostoll', l:'Ho–Stoll 1981', g:1, x:.44, y:.15, url:'https://doi.org/10.1016/0304-405X(81)90020-9',
+    s:'Quotes from value-function differences: the slope half of the slope-and-convexity characterization.' },
+
+  { k:'as', l:'Avellaneda–Stoikov 2008', g:2, x:.62, y:.12, url:'https://doi.org/10.1080/14697680701381228',
+    s:'The anchor. Constant width, linear skew — reached by dropping exactly the terms that could say anything about width.' },
+  { k:'glft', l:'Guéant–Lehalle–\nFernandez-Tapia 2012', g:2, x:.82, y:.18, url:'https://doi.org/10.1007/s11579-012-0087-0',
+    s:'Exact treatment of the A&S problem; arrival intensities symmetric, directional asymmetry only via mid-price drift.' },
+  { k:'gueant', l:'Guéant 2016, 2017', g:2, x:.93, y:.34, url:'https://doi.org/10.1080/1350486X.2017.1342552',
+    s:'General asymmetric intensities — handled numerically; no equivalence statement, no log-odds shift, no cost multiplier.' },
+  { k:'bergault', l:'Bergault et al.\n2021', g:2, x:.93, y:.52, url:'https://doi.org/10.1111/mafi.12286',
+    s:'Size- and multi-asset generalizations, dimensionality reduction; asymmetric intensities remain numerical.' },
+  { k:'cartea', l:'Cartea–Jaimungal\net al. 2014–16', g:2, x:.80, y:.36, url:'https://doi.org/10.1137/130911196',
+    s:'Order-flow imbalance as a predictive signal — a different object from stationary structural imbalance.' },
+  { k:'bg23', l:'Bergault–Guéant 2023', g:2, x:.72, y:.44, url:'https://arxiv.org/abs/2309.04216',
+    s:'Numerical observation that flow-aware market makers skew at zero inventory; Corollary 1 is its closed form.' },
+
+  { k:'fgp', l:'Fermanian–Guéant–\nPu 2017', g:3, x:.18, y:.62, url:'https://doi.org/10.1142/S2382626617500042',
+    s:'Econometrics of dealer win curves on multi-dealer platforms; supports the win-curve assumption.' },
+  { k:'hm', l:'Hendershott–\nMadhavan 2015', g:3, x:.08, y:.46, url:'https://doi.org/10.1111/jofi.12194',
+    s:'Click or call: documents the sealed-bid auction mechanism in OTC markets.' },
+  { k:'bo', l:'Butz–Oomen 2019', g:3, x:.28, y:.50, url:'https://doi.org/10.1080/14697688.2018.1467063',
+    s:'Electronic FX dealers skew on flow at flat inventory — the practice Corollary 1 derives rather than assumes.' },
+  { k:'gm', l:'Guéant–Manziuk 2019', g:3, x:.30, y:.78, url:'https://doi.org/10.1080/1350486X.2020.1714455',
+    s:'Reinforcement learning for corporate-bond market making; the curse of dimensionality the symmetry can shrink.' },
+  { k:'barzykin', l:'Barzykin et al. 2023', g:3, x:.14, y:.78, url:'https://doi.org/10.1111/mafi.12367',
+    s:'Dealer market making with hedging and market impact; the modern RFQ control line.' },
+
+  { k:'bd', l:'Ledermann–Reuter 1954\nKarlin–McGregor 1957', g:4, x:.52, y:.86, url:'https://doi.org/10.1090/S0002-9947-1957-0091566-1',
+    s:'Spectral theory of birth–death processes: the geometric-mean-of-rates symmetrization, discovered here independently.' },
+  { k:'bailey', l:'Bailey 1954', g:4, x:.68, y:.88, url:'https://doi.org/10.1111/j.2517-6161.1954.tb00174.x',
+    s:'Transient analysis of the simple queue via the same substitution.' },
+];
+
+const EDGES = [
+  // [from, to, label, open?]
+  ['garman','am','descends'], ['am','hostoll','descends'], ['hostoll','as','descends'],
+  ['as','glft','made exact'], ['glft','gueant','generalized'], ['gueant','bergault','generalized'],
+  ['as','cartea','signal branch'],
+  ['hostoll','paper','slope half; convexity half is new here'],
+  ['as','paper','CWLS located as a corner case'],
+  ['bg23','paper','numerical observation → closed form'],
+  ['fgp','paper','supports win-curve assumption'],
+  ['hm','paper','documents the mechanism modelled'],
+  ['bo','paper','documents the practice Corollary 1 derives'],
+  ['bd','paper','same symmetrization, noticed after the fact'],
+  ['bailey','bd','same substitution'],
+  ['paper','cp','extended by'],
+  ['gueant','paper','no equivalence statement in that line — the gap this paper fills', true],
+  ['paper','gm','symmetry as invariance for RL: proposed §6, untested', true],
+  ['paper','fgp','δ, γ predictions vs RFQ archives: untested', true],
+  ['bd','glft','symmetrization never applied to LOB linear systems', true],
+];
+
+const GROUP_COLOR = { 0:'ink', 1:'--series-1', 2:'--series-2', 3:'--series-3', 4:'--ink-muted' };
+
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+const container = document.getElementById('map');
+const W = Math.max(container.clientWidth || 900, 640), H = 560;
+const svgNS = 'http://www.w3.org/2000/svg';
+const svg = document.createElementNS(svgNS, 'svg');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+container.appendChild(svg);
+
+const pos = {};
+NODES.forEach(n => pos[n.k] = { x: n.x * W, y: n.y * H });
+
+// light relaxation: push overlapping nodes apart, keep in bounds
+for (let it = 0; it < 60; it++) {
+  for (const a of NODES) for (const b of NODES) {
+    if (a.k >= b.k) continue;
+    const dx = pos[b.k].x - pos[a.k].x, dy = pos[b.k].y - pos[a.k].y;
+    const d = Math.hypot(dx, dy) || 1, min = 92;
+    if (d < min) {
+      const push = (min - d) / 2, ux = dx / d, uy = dy / d;
+      pos[a.k].x -= ux * push; pos[a.k].y -= uy * push;
+      pos[b.k].x += ux * push; pos[b.k].y += uy * push;
+    }
+  }
+  for (const n of NODES) {
+    pos[n.k].x = Math.max(70, Math.min(W - 70, pos[n.k].x));
+    pos[n.k].y = Math.max(30, Math.min(H - 30, pos[n.k].y));
+  }
+}
+
+const edgeEls = [], nodeEls = {};
+const edgeLayer = document.createElementNS(svgNS, 'g');
+const nodeLayer = document.createElementNS(svgNS, 'g');
+svg.appendChild(edgeLayer); svg.appendChild(nodeLayer);
+
+for (const [f, t, label, open] of EDGES) {
+  const line = document.createElementNS(svgNS, 'line');
+  line.setAttribute('stroke', open ? cssVar('--open') : cssVar('--baseline'));
+  line.setAttribute('stroke-width', open ? 1.6 : 1.4);
+  if (open) line.setAttribute('stroke-dasharray', '5 4');
+  edgeLayer.appendChild(line);
+  edgeEls.push({ f, t, label, open, line });
+}
+
+const tip = document.getElementById('tip');
+for (const n of NODES) {
+  const g = document.createElementNS(svgNS, 'g');
+  g.style.cursor = 'pointer';
+  const isCore = n.g === 0 && n.k === 'paper';
+  const r = isCore ? 13 : 8;
+  const c = document.createElementNS(svgNS, 'circle');
+  c.setAttribute('r', r);
+  c.setAttribute('fill', n.g === 0 ? cssVar('--ink-primary') : cssVar(GROUP_COLOR[n.g]));
+  c.setAttribute('stroke', cssVar('--surface-1'));
+  c.setAttribute('stroke-width', 2);
+  g.appendChild(c);
+  const lines = n.l.split('\n');
+  lines.forEach((ln, i) => {
+    const t2 = document.createElementNS(svgNS, 'text');
+    t2.setAttribute('y', r + 12 + i * 12);
+    t2.setAttribute('text-anchor', 'middle');
+    t2.setAttribute('font-size', isCore ? 12 : 11);
+    if (isCore) t2.setAttribute('font-weight', '600');
+    t2.textContent = ln;
+    g.appendChild(t2);
+  });
+  nodeLayer.appendChild(g);
+  nodeEls[n.k] = g;
+
+  g.addEventListener('mouseenter', ev => {
+    tip.innerHTML = `<div class="t">${n.l.replace('\n', ' — ')}</div><div class="d">${n.s}</div>` +
+      edgeEls.filter(e => e.f === n.k || e.t === n.k)
+        .map(e => `<div class="e">${e.open ? '⚠ ' : ''}${e.label}</div>`).join('');
+    tip.style.display = 'block';
+  });
+  g.addEventListener('mousemove', ev => {
+    const card = container.closest('.map-card').getBoundingClientRect();
+    tip.style.left = Math.min(ev.clientX - card.left + 14, card.width - tip.offsetWidth - 10) + 'px';
+    tip.style.top = (ev.clientY - card.top + 14) + 'px';
+  });
+  g.addEventListener('mouseleave', () => tip.style.display = 'none');
+
+  // drag & click
+  let drag = null, moved = false;
+  g.addEventListener('mousedown', ev => {
+    drag = { sx: ev.clientX, sy: ev.clientY, ox: pos[n.k].x, oy: pos[n.k].y };
+    moved = false; ev.preventDefault();
+  });
+  window.addEventListener('mousemove', ev => {
+    if (!drag) return;
+    const scale = W / svg.getBoundingClientRect().width;
+    const dx = (ev.clientX - drag.sx) * scale, dy = (ev.clientY - drag.sy) * scale;
+    if (Math.hypot(dx, dy) > 3) moved = true;
+    pos[n.k].x = Math.max(40, Math.min(W - 40, drag.ox + dx));
+    pos[n.k].y = Math.max(20, Math.min(H - 30, drag.oy + dy));
+    layout();
+  });
+  window.addEventListener('mouseup', () => {
+    if (drag && !moved && n.url) window.open(n.url, '_blank');
+    drag = null;
+  });
+}
+
+function layout() {
+  for (const n of NODES) nodeEls[n.k].setAttribute('transform', `translate(${pos[n.k].x} ${pos[n.k].y})`);
+  for (const e of edgeEls) {
+    e.line.setAttribute('x1', pos[e.f].x); e.line.setAttribute('y1', pos[e.f].y);
+    e.line.setAttribute('x2', pos[e.t].x); e.line.setAttribute('y2', pos[e.t].y);
+  }
+}
+layout();
+</script>
+</body>
+</html>

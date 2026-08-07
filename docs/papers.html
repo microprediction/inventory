@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Papers — inventory</title>
+<style>
+  :root { color-scheme: light; }
+  body { max-width: 46rem; margin: 2.5rem auto; padding: 0 1.2rem; font-family: Georgia, 'Times New Roman', serif; line-height: 1.55; color: #1a1a1a; background: #f9f9f7; }
+  h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+  .sub { color: #555; margin-top: 0; }
+  h2 { font-size: 1.12rem; margin-top: 2rem; border-bottom: 1px solid #ddd; padding-bottom: .25rem; }
+  a { color: #1a4d8f; }
+  nav { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: .85rem; margin-bottom: 1.5rem; color: #898781; }
+  nav a { margin-right: .9rem; }
+  .paper { background: #fcfcfb; border: 1px solid rgba(11,11,11,.10); border-radius: 8px; padding: .9rem 1.1rem; margin: 1rem 0; }
+  .paper .t { font-weight: bold; }
+  .paper .meta { color: #52514e; font-size: .9em; margin: .25rem 0; font-family: system-ui, sans-serif; }
+  .paper p { margin: .5rem 0 0; }
+  pre { font-family: Menlo, monospace; font-size: .92em; background: #f4f4f4; border-radius: 3px; padding: .7em .9em; overflow-x: auto; }
+  @media (prefers-color-scheme: dark) {
+    :root { color-scheme: dark; }
+    body { background: #0d0d0d; color: #ddd; }
+    .sub, .paper .meta { color: #c3c2b7; } a { color: #7aa7dd; }
+    h2 { border-color: #333; } pre { background: #222; }
+    .paper { background: #1a1a19; border-color: rgba(255,255,255,.10); }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html">inventory</a>
+  <strong>papers</strong>
+  <a href="symmetry.html">symmetry demo</a>
+  <a href="simulation.html">simulation</a>
+  <a href="bibliography.html">bibliography</a>
+  <a href="map.html">literature map</a>
+  <a href="https://github.com/microprediction/inventory">GitHub</a>
+</nav>
+
+<h1>Papers</h1>
+<p class="sub">Papers and working notes of the program, most recent first.</p>
+
+<div class="paper">
+  <div class="t"><a href="skew_width_imbalance.pdf">On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading</a></div>
+  <div class="meta">Cotton. Working paper; work completed around 2015, first written up 2022. <a href="skew_width_imbalance.pdf">PDF</a> &middot; <a href="https://github.com/microprediction/inventory/blob/main/papers/skew_width_imbalance/skew_width_imbalance.tex">tex</a> &middot; <a href="https://github.com/microprediction/inventory/blob/main/papers/skew_width_imbalance/verify_local_exponentiality.py">numerical certificate</a> &middot; demos: <a href="symmetry.html">symmetry</a>, <a href="simulation.html">simulation</a></div>
+  <p>A market maker trades only by responding to sealed-bid enquiries arriving with imbalanced intent. The imbalanced problem compresses exactly onto the balanced one: skew translates by &delta; = (w/2)&thinsp;log(q/(1&minus;q)), quotes widen by &gamma;, and the cost of carry multiplies by 1/(2&radic;(q(1&minus;q))). A flat book still skews; skew is first order in imbalance while width is second; the constant-width linear-skew benchmark is a corner case.</p>
+</div>
+
+<div class="paper">
+  <div class="t"><a href="https://github.com/microprediction/inventory/blob/main/literature/trading_illiquid.pdf">Trading Illiquid Goods: Market Making as a Sequence of Sealed-Bid Auctions, with Analytic Results</a></div>
+  <div class="meta">Cotton &amp; Papanicolaou. Working paper, under revision as the extension of the paper above. <a href="https://github.com/microprediction/inventory/blob/main/literature/trading_illiquid.pdf">deck</a></div>
+  <p>Extends the model to clustered arrivals and stochastically varying imbalance, and develops the analytic structure of the indifference cost &nu;(x) whose slope is the quoted skew and whose convexity is the discretionary width.</p>
+</div>
+
+<h2>Working notes</h2>
+
+<div class="paper">
+  <div class="t"><a href="https://github.com/microprediction/inventory/blob/main/notes/spread_as_endogenous_carry.tex">The bid&ndash;offer as endogenous cost of carry</a></div>
+  <div class="meta">Working note. <a href="https://github.com/microprediction/inventory/blob/main/notes/spread_as_endogenous_carry.tex">tex</a></div>
+  <p>For goods whose physical carry is tens of basis points, what keeps optimal inventory bounded? The dealer market's bid&ndash;offer as the endogenous replacement for the missing carrying cost; the imbalance multiplier; the oscillator reading of the commodity cycle; hypotheses and a scoreboard.</p>
+</div>
+
+<div class="paper">
+  <div class="t"><a href="https://github.com/microprediction/inventory/blob/main/notes/formulation.md">Toward a mathematical formulation</a></div>
+  <div class="meta">Working note (markdown).</div>
+  <p>The storage relation as a term-structure constraint, transport of the coverage-forecast curve, volatility and width constraints, an MFG aggregation conjecture, the explosiveness boundary, and the filtering problem when flows are observed but the stock is latent.</p>
+</div>
+
+<h2>Cite</h2>
+<pre>@unpublished{cotton2026skew,
+  author = {Cotton, Peter},
+  title  = {On a Simple Relationship Between Order Imbalance,
+            Skew and Width in Over-The-Counter Trading},
+  note   = {Working paper; work completed around 2015,
+            first written up 2022},
+  year   = {2026},
+  url    = {https://github.com/microprediction/inventory}
+}</pre>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The imbalance symmetry — interactive</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --ink-primary: #0b0b0b; --ink-secondary: #52514e; --ink-muted: #898781;
+    --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --ink-primary: #ffffff; --ink-secondary: #c3c2b7; --ink-muted: #898781;
+      --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --ink-primary: #ffffff; --ink-secondary: #c3c2b7; --ink-muted: #898781;
+    --grid: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+  }
+  body { max-width: 52rem; margin: 3rem auto; padding: 0 1.2rem;
+         font-family: Georgia, 'Times New Roman', serif; line-height: 1.55;
+         color: var(--ink-primary); background: var(--page); }
+  h1 { font-size: 1.6rem; margin-bottom: .2rem; }
+  .sub { color: var(--ink-secondary); margin-top: 0; }
+  a { color: #1a4d8f; } @media (prefers-color-scheme: dark) { a { color: #7aa7dd; } }
+  .viz-root, .controls, .tiles { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .controls { display: flex; flex-wrap: wrap; gap: 1.4rem; align-items: center;
+              padding: .7rem 1rem; background: var(--surface-1);
+              border: 1px solid var(--border); border-radius: 8px; margin: 1.2rem 0; }
+  .controls label { font-size: .85rem; color: var(--ink-secondary); display: flex; align-items: center; gap: .55rem; }
+  .controls output { font-variant-numeric: tabular-nums; color: var(--ink-primary); min-width: 3.2em; }
+  .tiles { display: flex; flex-wrap: wrap; gap: .8rem; margin: 1rem 0; }
+  .tile { flex: 1 1 10rem; background: var(--surface-1); border: 1px solid var(--border);
+          border-radius: 8px; padding: .7rem .9rem; }
+  .tile .lbl { font-size: .78rem; color: var(--ink-secondary); }
+  .tile .val { font-size: 1.5rem; font-weight: 600; margin-top: .15rem; }
+  .tile .note { font-size: .74rem; color: var(--ink-muted); margin-top: .1rem; }
+  .chart-card { background: var(--surface-1); border: 1px solid var(--border);
+                border-radius: 8px; padding: .9rem 1rem 0.6rem; margin: 1.2rem 0; position: relative; }
+  .chart-title { font-size: .95rem; font-weight: 600; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .legend { display: flex; gap: 1.2rem; font-size: .8rem; color: var(--ink-secondary);
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif; margin: .3rem 0 .2rem; }
+  .legend .key { display: inline-flex; align-items: center; gap: .4rem; }
+  .swatch-line { width: 16px; height: 2px; background: var(--series-1); display: inline-block; }
+  .swatch-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--series-2);
+                display: inline-block; box-shadow: 0 0 0 2px var(--surface-1); }
+  .tooltip { position: absolute; pointer-events: none; background: var(--surface-1);
+             border: 1px solid var(--border); border-radius: 6px; padding: .4rem .6rem;
+             font-size: .78rem; font-family: system-ui, sans-serif; color: var(--ink-primary);
+             box-shadow: 0 2px 8px rgba(0,0,0,.12); display: none; white-space: nowrap; }
+  .tooltip .row { display: flex; align-items: center; gap: .4rem; }
+  .tooltip .sw { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  svg text { fill: var(--ink-muted); font-family: system-ui, sans-serif; font-size: 11px;
+             font-variant-numeric: tabular-nums; }
+  svg .axis-label { fill: var(--ink-secondary); }
+</style>
+</head>
+<body>
+<nav style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: .85rem; margin-bottom: 1.5rem; color: var(--ink-muted);">
+  <a href="index.html" style="margin-right:.9rem">inventory</a>
+  <a href="papers.html" style="margin-right:.9rem">papers</a>
+  <strong style="margin-right:.9rem">symmetry demo</strong>
+  <a href="simulation.html" style="margin-right:.9rem">simulation</a>
+  <a href="bibliography.html" style="margin-right:.9rem">bibliography</a>
+  <a href="map.html" style="margin-right:.9rem">literature map</a>
+  <a href="https://github.com/microprediction/inventory">GitHub</a>
+</nav>
+
+<h1>The imbalance symmetry</h1>
+<p class="sub">Companion demo to <em>On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading</em> (Cotton; work completed around 2015).</p>
+
+<p>A dealer faces sealed-bid enquiries that are sellers with probability <em>q</em> and buyers with probability 1&minus;<em>q</em>. The theorem states that the imbalanced problem is the balanced one in disguise: solve the balanced problem with carrying cost multiplied by <em>M</em>(<em>q</em>) = 1/(2&radic;(<em>q</em>(1&minus;<em>q</em>))), tilt the indifference cost by &delta; = (<em>w</em>/2)&thinsp;log(<em>q</em>/(1&minus;<em>q</em>)) per unit, and widen the non-discretionary width by &gamma;. Below, both problems are solved numerically and independently. The dots land on the line; that coincidence is the theorem.</p>
+
+<div class="controls">
+  <label>imbalance q
+    <input type="range" id="q" min="0.50" max="0.90" step="0.01" value="0.65">
+    <output id="qv">0.65</output>
+  </label>
+  <label>carry cost c(x) = c&#8322;x&sup2;, c&#8322;
+    <input type="range" id="c2" min="-2.7" max="-1.3" step="0.05" value="-2">
+    <output id="c2v">0.010</output>
+  </label>
+</div>
+
+<div class="tiles">
+  <div class="tile"><div class="lbl">Skew shift &delta;</div><div class="val" id="tDelta">–</div><div class="note">first order in q &minus; &frac12;</div></div>
+  <div class="tile"><div class="lbl">Widening &gamma;</div><div class="val" id="tGamma">–</div><div class="note">second order in q &minus; &frac12;</div></div>
+  <div class="tile"><div class="lbl">Carry multiplier M(q)</div><div class="val" id="tM">–</div><div class="note">imbalance taxes inventory</div></div>
+  <div class="tile"><div class="lbl">Max deviation, dots vs line</div><div class="val" id="tDev">–</div><div class="note">numerical solver agreement</div></div>
+</div>
+
+<div class="chart-card">
+  <div class="chart-title">Skew S(x) against inventory</div>
+  <div class="legend">
+    <span class="key"><span class="swatch-line"></span> imbalanced problem, solved directly</span>
+    <span class="key"><span class="swatch-dot"></span> balanced solve at cost M(q)&thinsp;c, shifted by &delta;</span>
+  </div>
+  <div id="chartA"></div>
+  <div class="tooltip" id="tipA"></div>
+</div>
+
+<p>The skew no longer vanishes at zero inventory: S(0) = &delta;. A dealer with a flat book still shades her quotes toward the flow. Inventory dependence, the slope of the curve, is inherited entirely from the balanced problem at the multiplied carrying cost.</p>
+
+<div class="chart-card">
+  <div class="chart-title">Skew responds at first order, width at second (per unit of market width)</div>
+  <div class="legend">
+    <span class="key"><span class="swatch-line"></span> &delta;/w, the skew shift</span>
+    <span class="key"><span class="swatch-line" style="background: var(--series-2)"></span> &gamma;/w, the widening</span>
+  </div>
+  <div id="chartB"></div>
+  <div class="tooltip" id="tipB"></div>
+</div>
+
+<p>Near balance the skew shift is linear in the imbalance while the widening is quadratic, which is why practitioners skew before they widen. The vertical hairline marks the current slider value of <em>q</em>.</p>
+
+<p style="color: var(--ink-secondary); font-size:.9em">Model and solver: exponential best-competitor with width w = 1, grid x = &minus;10&hellip;10, Levenberg&ndash;Marquardt on the steady-state consistency equation (<a href="mm_core.js">mm_core.js</a>). Source: <a href="https://github.com/microprediction/inventory">github.com/microprediction/inventory</a>.</p>
+
+<script src="mm_core.js"></script>
+<script>
+const W = 1.0, N = 10, I0 = N;
+
+function fmt(v, d = 3) { return (v >= 0 ? '+' : '') + v.toFixed(d); }
+
+function makeSVG(container, width, height) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', width); svg.setAttribute('height', height);
+  container.replaceChildren(svg);
+  return svg;
+}
+
+function el(name, attrs, parent) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e); return e;
+}
+
+function niceTicks(lo, hi, n = 5) {
+  const span = hi - lo, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n + 1) || mag * 10;
+  const t = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-12; v += step) t.push(+v.toFixed(10));
+  return t;
+}
+
+/* Generic line chart. series: [{color, points:[[x,y]], mode:'line'|'dots'}] */
+function drawChart(containerId, tipId, series, opts) {
+  const container = document.getElementById(containerId);
+  const width = container.clientWidth || 720, height = 300;
+  const m = { l: 52, r: 16, t: 10, b: 38 };
+  const svg = makeSVG(container, width, height);
+  const all = series.flatMap(s => s.points);
+  const xlo = Math.min(...all.map(p => p[0])), xhi = Math.max(...all.map(p => p[0]));
+  let ylo = Math.min(0, ...all.map(p => p[1])), yhi = Math.max(0, ...all.map(p => p[1]));
+  const pad = (yhi - ylo) * 0.06 || 1; ylo -= pad; yhi += pad;
+  const X = x => m.l + (x - xlo) / (xhi - xlo) * (width - m.l - m.r);
+  const Y = y => height - m.b - (y - ylo) / (yhi - ylo) * (height - m.t - m.b);
+
+  for (const t of niceTicks(ylo, yhi)) {
+    el('line', { x1: m.l, x2: width - m.r, y1: Y(t), y2: Y(t), stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    el('text', { x: m.l - 8, y: Y(t) + 3.5, 'text-anchor': 'end' }, svg).textContent = t;
+  }
+  for (const t of niceTicks(xlo, xhi, 8)) {
+    el('text', { x: X(t), y: height - m.b + 16, 'text-anchor': 'middle' }, svg).textContent = t;
+  }
+  el('line', { x1: m.l, x2: width - m.r, y1: Y(0), y2: Y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+  el('text', { x: (m.l + width - m.r) / 2, y: height - 4, 'text-anchor': 'middle', class: 'axis-label' }, svg)
+    .textContent = opts.xlabel;
+  el('text', { x: 12, y: (m.t + height - m.b) / 2, 'text-anchor': 'middle', class: 'axis-label',
+               transform: `rotate(-90 12 ${(m.t + height - m.b) / 2})` }, svg).textContent = opts.ylabel;
+
+  if (opts.vline !== undefined) {
+    el('line', { x1: X(opts.vline), x2: X(opts.vline), y1: m.t, y2: height - m.b,
+                 stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+  }
+  for (const s of series) {
+    if (s.mode === 'dots') {
+      for (const [x, y] of s.points)
+        el('circle', { cx: X(x), cy: Y(y), r: 4.5, fill: s.color,
+                       stroke: 'var(--surface-1)', 'stroke-width': 2 }, svg);
+    } else {
+      const d = s.points.map((p, i) => (i ? 'L' : 'M') + X(p[0]) + ' ' + Y(p[1])).join(' ');
+      el('path', { d, fill: 'none', stroke: s.color, 'stroke-width': 2,
+                   'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    }
+  }
+
+  // hover crosshair + tooltip (nearest x on first series)
+  const tip = document.getElementById(tipId);
+  const cross = el('line', { y1: m.t, y2: height - m.b, stroke: 'var(--baseline)',
+                             'stroke-width': 1, visibility: 'hidden' }, svg);
+  svg.addEventListener('mousemove', ev => {
+    const box = svg.getBoundingClientRect();
+    const px = ev.clientX - box.left;
+    if (px < m.l || px > width - m.r) { cross.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; return; }
+    const xv = xlo + (px - m.l) / (width - m.l - m.r) * (xhi - xlo);
+    let best = series[0].points[0];
+    for (const p of series[0].points) if (Math.abs(p[0] - xv) < Math.abs(best[0] - xv)) best = p;
+    cross.setAttribute('x1', X(best[0])); cross.setAttribute('x2', X(best[0]));
+    cross.setAttribute('visibility', 'visible');
+    tip.innerHTML = `<div><strong>${opts.xlabel} = ${(+best[0].toFixed(3))}</strong></div>` +
+      series.map(s => {
+        const p = s.points.find(p2 => Math.abs(p2[0] - best[0]) < 1e-9);
+        return p ? `<div class="row"><span class="sw" style="background:${s.color}"></span>${s.name}: ${fmt(p[1])}</div>` : '';
+      }).join('');
+    tip.style.display = 'block';
+    const card = container.closest('.chart-card').getBoundingClientRect();
+    tip.style.left = Math.min(ev.clientX - card.left + 14, card.width - tip.offsetWidth - 8) + 'px';
+    tip.style.top = (ev.clientY - card.top + 14) + 'px';
+  });
+  svg.addEventListener('mouseleave', () => { cross.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; });
+}
+
+function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+function render() {
+  const q = +document.getElementById('q').value;
+  const c2 = Math.pow(10, +document.getElementById('c2').value);
+  document.getElementById('qv').value = q.toFixed(2);
+  document.getElementById('c2v').value = c2.toFixed(3);
+
+  const cost = x => c2 * x * x;
+  const { delta, gamma, M } = MM.constants(q, W);
+  const imb = MM.solve({ q, w: W, N, cost });
+  const bal = MM.solve({ q: 0.5, w: W, N, cost: x => M * cost(x) });
+
+  const line = [], dots = [];
+  let dev = 0;
+  for (let i = 1; i < 2 * N; i++) {
+    const x = imb.xs[i];
+    const sImb = MM.slope(imb.nu, i), sBal = MM.slope(bal.nu, i) + delta;
+    line.push([x, sImb]); dots.push([x, sBal]);
+    dev = Math.max(dev, Math.abs(sImb - sBal));
+  }
+  document.getElementById('tDelta').textContent = fmt(delta);
+  document.getElementById('tGamma').textContent = fmt(gamma);
+  document.getElementById('tM').textContent = '×' + M.toFixed(3);
+  document.getElementById('tDev').textContent = dev.toExponential(1);
+
+  drawChart('chartA', 'tipA', [
+    { name: 'imbalanced, direct', color: cssVar('--series-1'), points: line, mode: 'line' },
+    { name: 'balanced, corrected', color: cssVar('--series-2'), points: dots, mode: 'dots' },
+  ], { xlabel: 'inventory x', ylabel: 'skew S(x)' });
+
+  const dPts = [], gPts = [];
+  for (let qq = 0.5; qq <= 0.951; qq += 0.005) {
+    const c = MM.constants(Math.min(qq, 0.9999), W);
+    dPts.push([qq, c.delta / W]); gPts.push([qq, c.gamma / W]);
+  }
+  drawChart('chartB', 'tipB', [
+    { name: 'δ/w', color: cssVar('--series-1'), points: dPts, mode: 'line' },
+    { name: 'γ/w', color: cssVar('--series-2'), points: gPts, mode: 'line' },
+  ], { xlabel: 'q', ylabel: 'per unit of width', vline: q });
+}
+
+document.getElementById('q').addEventListener('input', render);
+document.getElementById('c2').addEventListener('input', render);
+window.addEventListener('resize', render);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
