@@ -1,4 +1,4 @@
-# inventory (view as [web page](https://microprediction.github.io/inventory/))
+# inventory (view as [web page](https://inventory.microprediction.org/))
 
 Control theory applied to inventory and pricing. A research repository — working notes, preprints and literature maps — extending Cotton & Papanicolaou, *Trading Illiquid Goods*, toward a theory of storable goods with **very low carrying costs**.
 
@@ -54,7 +54,7 @@ flowchart LR
 - `papers/skew_width_imbalance/skew_width_imbalance.tex` — *On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading* (work completed around 2015): the sealed-bid dealer model, the imbalance equivalence theorem (skew translated, width widened, carry multiplied by 1/(2√(p(1−p)))), zero-inventory skew, and CWLS as a corner case
   - `papers/skew_width_imbalance/verify_local_exponentiality.py` — numerical certificate for the theorem on the grid, and the check that the result survives, with local width, when the win curve is only locally exponential
   - `papers/skew_width_imbalance/novelty_imbalance.md` — verified prior-art review and positioning; `papers/skew_width_imbalance/data_scout_imbalance.md` — public datasets for the empirical section
-- `docs/` — the [web site](https://microprediction.github.io/inventory/): paper PDF, interactive demos ([symmetry](https://microprediction.github.io/inventory/symmetry.html), [simulation](https://microprediction.github.io/inventory/simulation.html); solver in `docs/mm_core.js`), an interactive [literature map](https://microprediction.github.io/inventory/map.html), and an [annotated bibliography](https://microprediction.github.io/inventory/bibliography.html)
+- `docs/` — the [web site](https://inventory.microprediction.org/): paper PDF, interactive demos ([symmetry](https://inventory.microprediction.org/symmetry.html), [simulation](https://inventory.microprediction.org/simulation.html); solver in `docs/mm_core.js`), an interactive [literature map](https://inventory.microprediction.org/map.html), and an [annotated bibliography](https://inventory.microprediction.org/bibliography.html)
 - `papers/skew_width_imbalance/sifin_cover_letter.tex` — cover letter for the SIAM J. Financial Mathematics short-communication submission
 - `notes/formulation.md` — the mathematical formulation: storage relation as a term-structure constraint, transport of the coverage-forecast curve, volatility and width constraints, an MFG aggregation conjecture, the explosiveness boundary, filtering
 - `notes/spread_as_endogenous_carry.tex` (+ PDF) — working note: the bid–offer as endogenous cost of carry; the imbalance multiplier; constant-width linear-skew as the fingerprint of the explosive-capable regime; the oscillator; hypotheses and scoreboard
