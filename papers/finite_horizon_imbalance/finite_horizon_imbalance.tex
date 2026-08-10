@@ -18,7 +18,7 @@
 \maketitle
 
 \begin{abstract}
-In the exponential-intensity market making model of \citet{glft2012}, the balanced problem is solvable in closed form and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, has been handled numerically. We observe that within this model the imbalance costs one line of algebra. The linear system of \citet{glft2012} with asymmetric scales is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is recovered as the long-horizon limit. A more general lemma follows from the same calculation: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The exponential intensity curve is the load-bearing assumption, and we are explicit about that boundary.
+In the exponential-intensity market making model of \citet{glft2012}, the balanced problem is solvable in closed form and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, has been handled numerically. We observe that within this model the imbalance costs one line of algebra. The linear system of \citet{glft2012} with asymmetric scales is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is recovered as the long-horizon limit. A more general lemma follows from the same calculation: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The exponential intensity curve is essential to the reduction, and we state that boundary explicitly.
 \end{abstract}
 
 \medskip
@@ -30,9 +30,9 @@ In the exponential-intensity market making model of \citet{glft2012}, the balanc
 
 \citet{avellaneda2008} posed the modern market making problem, and \citet{glft2012} solved it: with exponential fill intensities $\lambda(\delta) = A e^{-k\delta}$ and symmetric buy and sell scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory. The symmetry of the scales is load-bearing in that solution. When customers are more often sellers than buyers the scales differ, and the treatments of the asymmetric case are numerical \citep{gueant2017,bergaultgueant2021}.
 
-This note makes a single observation and develops its consequence. Within the exponential-intensity model, the imbalanced linear system is conjugate to the balanced one: a diagonal transform absorbs the asymmetry into a geometric-mean intensity and a tilted terminal condition, and the tilt has a plain meaning. The optimal mid shifts by the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ at every time and every inventory, and the spread does not respond to the imbalance at all. The companion paper \citep{cotton2026skew} proved this compression for the steady state of a sealed-bid model; here it holds at every horizon.
+This note makes a single observation and develops its consequence. Within the exponential-intensity model, the imbalanced linear system is conjugate to the balanced one: a diagonal transform absorbs the asymmetry into a geometric-mean intensity and a tilted terminal condition. The optimal mid shifts by the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ at every time and every inventory, and the spread does not respond to the imbalance at all. The companion paper \citep{cotton2026skew} proved this compression for the steady state of a sealed-bid model; here it holds at every horizon.
 
-We are explicit about the boundary of the claim. The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place; general intensity curves have no such reduction, and for them the numerical treatments of \citet{gueant2017} remain the state of the art. The scope is therefore exactly the model in which the balanced problem is celebrated for its closed form. Within that scope the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script.
+We are explicit about the boundary of the claim. The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place; general intensity curves have no such reduction, and for them the numerical treatments of \citet{gueant2017} remain the state of the art. Within the model the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script.
 
 \section{The reduced system with imbalanced flow}\label{sec:model}
 
@@ -79,7 +79,7 @@ and the quotes of the imbalanced problem are those of the balanced problem displ
 \qquad
 \delta = \frac{1}{2k}\log\frac{A^b}{A^a} .
 \end{equation}
-The tilted terminal condition has a plain reading: since multiplying $v_q$ by $e^{cq}$ is, through the ansatz, a shift of the reference price by $c/k$, the condition $w_q(T) = r^q$ says the balanced dealer marks her terminal inventory at the price $S - \delta$. In words: the imbalanced dealer is a balanced dealer in a slower market, $\bar\eta \le \tfrac{1}{2}(\eta^a + \eta^b)$, who marks her book at fair value shifted by $\delta$.
+Multiplying $v_q$ by $e^{cq}$ is, through the ansatz, a shift of the reference price by $c/k$, so the condition $w_q(T) = r^q$ says the balanced dealer marks her terminal inventory at the price $S - \delta$. In words: the imbalanced dealer is a balanced dealer in a slower market, $\bar\eta \le \tfrac{1}{2}(\eta^a + \eta^b)$, who marks her book at fair value shifted by $\delta$.
 \end{theorem}
 
 \begin{proof}
@@ -113,7 +113,7 @@ As $T - t \to \infty$, $e^{-\Lambda(T-t)}$ is dominated by the smallest eigenval
 \end{corollary}
 
 \begin{remark}[The algebra, again]
-The conjugation is the same birth--death symmetrization used in the companion paper, whose provenance runs through the spectral theory of birth and death processes \citep{karlinmcgregor1957} and, in random-walk form, through the tilt factors of first-passage theory \citep{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. The destination is what is new: the market making treatments of asymmetric intensities have been numerical \citep{gueant2017,bergaultgueant2021}, and the tilted terminal condition turns out to carry the entire economics of the imbalance.
+The conjugation is the same birth--death symmetrization used in the companion paper, whose provenance runs through the spectral theory of birth and death processes \citep{karlinmcgregor1957} and, in random-walk form, through the tilt factors of first-passage theory \citep{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. The application is new: asymmetric intensities in market making have been treated numerically \citep{gueant2017,bergaultgueant2021}. The tilted terminal condition carries the entire economics of the imbalance.
 \end{remark}
 
 \begin{remark}[What is not claimed]
@@ -122,7 +122,7 @@ The equivalence is exact for the reduced system \eqref{eq:system} and hence exac
 
 \section{Numerical certificate}\label{sec:certificate}
 
-The claims are linear algebra, and linear algebra can be checked by machine. The script \texttt{verify\_finite\_horizon.py} accompanying this paper constructs the asymmetric system \eqref{eq:system} for representative parameters, verifies the conjugation of Lemma~\ref{lem:general} to $10^{-16}$, integrates both systems by fourth-order Runge--Kutta, and confirms $v_q(t) = r^{-q} w_q(t)$ and the quote displacement \eqref{eq:shift} to $10^{-14}$ at every grid time and inventory, boundary states included. The general lemma is verified separately with randomized inventory-dependent intensities.
+The claims are linear algebra and can be checked by machine. The script \texttt{verify\_finite\_horizon.py} accompanying this paper constructs the asymmetric system \eqref{eq:system} for representative parameters, verifies the conjugation of Lemma~\ref{lem:general} to $10^{-16}$, integrates both systems by fourth-order Runge--Kutta, and confirms $v_q(t) = r^{-q} w_q(t)$ and the quote displacement \eqref{eq:shift} to $10^{-14}$ at every grid time and inventory, boundary states included. The general lemma is verified separately with randomized inventory-dependent intensities.
 
 \section{Use}\label{sec:use}
 
