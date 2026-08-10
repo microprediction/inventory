@@ -120,7 +120,14 @@ carrying cost" is dam theory's drift penalty in microstructure clothing; citing 
 makes the repo's larger claim — the bid–offer as endogenous carry — a two-way bridge
 rather than an analogy.
 
-## 4. Process
+## 4. Style retrofits for the revision (author rulings post-submission)
+
+- The remark title "[What this says, and does not say]" is a retired construction
+  (author ruling 2026-08-10: meta-commentary scope framing is an AI tell). Rename to a
+  descriptive mathematical title and state the scope as plain fact.
+- Sweep the frozen text for "We are explicit about..." openers and the same treatment.
+
+## 4b. Process
 
 - Revisions to the tex branch from `submitted-2026-08-07`; keep the submitted PDF
   reproducible from the tag.

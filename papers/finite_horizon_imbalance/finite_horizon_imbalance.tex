@@ -18,7 +18,7 @@
 \maketitle
 
 \begin{abstract}
-In the exponential-intensity market making model of \citet{glft2012}, the balanced problem is solvable in closed form and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, has been handled numerically. We observe that within this model the imbalance costs one line of algebra. The linear system of \citet{glft2012} with asymmetric scales is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is recovered as the long-horizon limit. A more general lemma follows from the same calculation: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The exponential intensity curve is essential to the reduction, and we state that boundary explicitly.
+In the exponential-intensity market making model of \citet{glft2012}, the balanced problem is solvable in closed form and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, has been handled numerically. We observe that within this model the imbalance costs one line of algebra. The linear system of \citet{glft2012} with asymmetric scales is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is recovered as the long-horizon limit. A more general lemma follows from the same calculation: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The reduction, and hence the result, requires the exponential intensity curve.
 \end{abstract}
 
 \medskip
@@ -32,7 +32,7 @@ In the exponential-intensity market making model of \citet{glft2012}, the balanc
 
 This note makes a single observation and develops its consequence. Within the exponential-intensity model, the imbalanced linear system is conjugate to the balanced one: a diagonal transform absorbs the asymmetry into a geometric-mean intensity and a tilted terminal condition. The optimal mid shifts by the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ at every time and every inventory, and the spread does not respond to the imbalance at all. The companion paper \citep{cotton2026skew} proved this compression for the steady state of a sealed-bid model; here it holds at every horizon.
 
-We are explicit about the boundary of the claim. The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place; general intensity curves have no such reduction, and for them the numerical treatments of \citet{gueant2017} remain the state of the art. Within the model the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script.
+The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place. General intensity curves have no such reduction, and for them the numerical treatments of \citet{gueant2017} remain the state of the art. Within the model the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script.
 
 \section{The reduced system with imbalanced flow}\label{sec:model}
 
@@ -53,7 +53,7 @@ In matrix form $\dot v = Mv$ where $M$ is tridiagonal with diagonal $\alpha q^2$
 
 \section{The symmetrization}\label{sec:theorem}
 
-The general fact requires no more work than the special case, so we state it first.
+We state the general fact first.
 
 \begin{lemma}[Any imbalance profile symmetrizes]\label{lem:general}
 Let $M$ be tridiagonal with arbitrary diagonal and off-diagonal entries $-\eta^b_q$ (coupling $q$ to $q+1$) and $-\eta^a_q$ (coupling $q$ to $q-1$), all $\eta$ positive and possibly inventory-dependent. Define $d_{q+1}/d_q = \sqrt{\eta^b_q/\eta^a_{q+1}}$ and $D = \mathrm{diag}(d_q)$. Then $DMD^{-1}$ is symmetric, with both off-diagonals between levels $q$ and $q+1$ equal to $-\sqrt{\eta^b_q\, \eta^a_{q+1}}$. In particular the spectrum of $M$ is real, and the system \eqref{eq:system} with any inventory-dependent imbalance is solved by one symmetric eigendecomposition.
@@ -116,7 +116,7 @@ As $T - t \to \infty$, $e^{-\Lambda(T-t)}$ is dominated by the smallest eigenval
 The conjugation is the same birth--death symmetrization used in the companion paper, whose provenance runs through the spectral theory of birth and death processes \citep{karlinmcgregor1957} and, in random-walk form, through the tilt factors of first-passage theory \citep{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. The application is new: asymmetric intensities in market making have been treated numerically \citep{gueant2017,bergaultgueant2021}. The tilted terminal condition carries the entire economics of the imbalance.
 \end{remark}
 
-\begin{remark}[What is not claimed]
+\begin{remark}[The exponential assumption]
 The equivalence is exact for the reduced system \eqref{eq:system} and hence exactly within its assumptions. The exponential intensity curve is essential: it is what produces a linear system, and the constant shift in \eqref{eq:shift} additionally uses a common decay $k$ across sides. Side-dependent decays $k^b \neq k^a$ break the constant shift, though Lemma~\ref{lem:general} still symmetrizes the system. Time-dependent scales in constant ratio preserve the theorem verbatim; a time-varying ratio makes $\delta$ time-varying, the case treated as a stochastic modulation in the companion program. For the steady-state model, the companion paper shows the analogous exponential assumption is needed only locally, with quantified error; we expect, but do not prove here, a finite-horizon analogue.
 \end{remark}
 
