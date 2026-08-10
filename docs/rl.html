@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Learning faster with the symmetry &mdash; demo</title>
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="./demos.css" />
+<style>
+  :root {
+    --surface-1: #ffffff;
+    --grid: #ececec; --baseline: #cfcfcf;
+    --ink-muted: #9a9a9a; --ink-secondary: #5a5a5a;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #6b6b6b;
+  }
+  .tiles { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+  .tile { flex: 1 1 150px; background: var(--panel); border: 1px solid var(--border);
+          border-radius: 8px; padding: 10px 14px; }
+  .tile .lbl { font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .tile .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .tile .val { font-size: 1.35rem; font-weight: 600; margin-top: 2px; }
+  .tile .note { font-size: 0.74rem; color: var(--faint); margin-top: 1px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--muted); margin: 4px 0 8px; }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 16px; height: 2px; display: inline-block; }
+  .widget { position: relative; }
+  .widget-title { font-weight: 600; font-size: 0.98rem; margin-bottom: 2px; }
+  svg.chart text { fill: var(--ink-muted); font: 11px -apple-system, "Segoe UI", sans-serif;
+                   font-variant-numeric: tabular-nums; }
+  svg.chart .axis-label { fill: var(--ink-secondary); }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-inner">
+    <a class="brand" href="./index.html">inventory</a>
+    <nav>
+      <a href="./papers.html">Papers</a>
+      <a href="./demos.html">Demos</a>
+      <a href="./index.html#bibliography">Bibliography</a>
+      <a href="./map.html">Literature map</a>
+      <a href="https://github.com/microprediction/inventory">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <p class="pagenav"><a href="./demos.html">&larr; Demos</a></p>
+  <h1>Learning faster with the symmetry</h1>
+  <p class="subtitle">Reinforcement learning and its inverse, with and without the imbalance
+  equivalence. Companion to
+  <a href="./skew_width_imbalance.pdf"><em>On a Simple Relationship Between Order Imbalance,
+  Skew and Width in Over-The-Counter Trading</em></a>, &sect;6.</p>
+
+  <p>
+    The flow regime cycles through four imbalances (q = 0.40, 0.50, 0.60, 0.70, switching every
+    400 enquiries). Two identical tabular Q-learners quote into this market. The
+    <strong>baseline</strong> learns a separate policy per regime &mdash; each table sees a
+    quarter of the data. The <strong>symmetry learner</strong> keeps one policy in the balanced
+    frame and maps it through the skew shift &delta;(q) = (w/2)&thinsp;log(q/(1&minus;q)):
+    every regime&rsquo;s experience trains the same table. The correction is exact to first
+    order in q&nbsp;&minus;&nbsp;&frac12;; the residual &gamma; and M(q) effects are second
+    order, and show up only as a small asymptotic gap. The <strong>oracle</strong> quotes the
+    exact optimal policy.
+  </p>
+  <p class="lookfor">Look for: the symmetry learner reaching in ten thousand enquiries a level
+  the baseline has not reached in eighty thousand. Same algorithm, same stream &mdash; the
+  invariance is the only difference.</p>
+
+  <div class="widget">
+    <div class="controls">
+      <button id="runBtn">Run</button>
+      <button id="resetBtn">Reset</button>
+      <label>speed</label>
+      <select id="speed">
+        <option value="200">200 / frame</option>
+        <option value="1000" selected>1,000 / frame</option>
+        <option value="4000">4,000 / frame</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><div class="lbl">Enquiries</div><div class="val" id="tN">0</div><div class="note">regimes cycle every 400</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-1)"></span>Symmetry learner</div><div class="val" id="tSym">&ndash;</div><div class="note">rolling P&amp;L per enquiry</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-2)"></span>Per-regime baseline</div><div class="val" id="tBase">&ndash;</div><div class="note">rolling P&amp;L per enquiry</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">exact optimal policy</div></div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-title">Learning curves: rolling average P&amp;L per enquiry (window 4,000)</div>
+    <div class="legend">
+      <span class="key"><span class="sw" style="background:var(--series-1)"></span> symmetry learner (one table, all regimes)</span>
+      <span class="key"><span class="sw" style="background:var(--series-2)"></span> baseline (one table per regime)</span>
+      <span class="key"><span class="sw" style="background:var(--series-3)"></span> oracle</span>
+    </div>
+    <div id="chartLearn"></div>
+    <div class="readout">Identical Q-learning throughout: &epsilon;-greedy exploration, the
+    same action grid, the same random draws. The symmetry learner&rsquo;s small asymptotic gap
+    to the oracle is the second-order (&gamma;, M) residue plus exploration and
+    discretization.</div>
+  </div>
+
+  <h2>The inverse problem: reading a dealer&rsquo;s cost from her quotes</h2>
+  <p>
+    Now watch instead of act. A dealer quotes optimally across the same four regimes, and an
+    observer sees noisy quotes only. The observer wants her skew curve S(x) &mdash; by the
+    paper&rsquo;s identities, the slope of her inventory cost. The <strong>per-regime</strong>
+    estimator uses only observations from the target regime. The <strong>pooled</strong>
+    estimator de-tilts every observation by &delta;(q) into the balanced frame, so all four
+    regimes&rsquo; quotes estimate one curve.
+  </p>
+  <p class="lookfor">Look for: pooling cutting the estimation error severalfold at realistic
+  sample sizes &mdash; and, at very large samples, the pooled error hitting a floor. That floor
+  is the second-order bias of the first-order-exact symmetry: the approximate symmetry, made
+  visible.</p>
+
+  <div class="widget">
+    <div class="widget-title">Inverse estimation error against observation count</div>
+    <div class="legend">
+      <span class="key"><span class="sw" style="background:var(--series-1)"></span> pooled, de-tilted (all regimes)</span>
+      <span class="key"><span class="sw" style="background:var(--series-2)"></span> per-regime (target regime only)</span>
+    </div>
+    <div id="chartIrl"></div>
+    <div class="readout" id="irlReadout">Computing&hellip;</div>
+  </div>
+
+  <p class="muted" style="font-size:0.9rem">Environment and solver:
+  <a href="./mm_core.js">mm_core.js</a>, <a href="./rl_core.js">rl_core.js</a>. Roadmap
+  entries P7 and P9 in
+  <a href="https://github.com/microprediction/inventory/blob/main/papers/ROADMAP.md">papers/ROADMAP.md</a>.</p>
+</main>
+
+<footer>
+  <a href="https://github.com/microprediction/inventory">Source</a> &middot;
+  Maintained by <a href="https://github.com/microprediction">Peter Cotton</a>.
+</footer>
+
+<script src="./mm_core.js"></script>
+<script src="./rl_core.js"></script>
+<script>
+function el(name, attrs, parent) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e); return e;
+}
+function niceTicks(lo, hi, n = 5) {
+  const span = hi - lo || 1, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => span / s <= n + 1) || mag * 10;
+  const t = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-12; v += step) t.push(+v.toFixed(10));
+  return t;
+}
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+function drawSeries(containerId, seriesList, opts) {
+  const container = document.getElementById(containerId);
+  const width = container.clientWidth || 720, height = 290;
+  const m = { l: 60, r: 16, t: 10, b: 40 };
+  container.replaceChildren();
+  const svg = el('svg', { width, height, class: 'chart' }, container);
+  const allX = seriesList.flatMap(s => s.points.map(p => p[0]));
+  const allY = seriesList.flatMap(s => s.points.map(p => p[1]));
+  if (!allX.length) return;
+  const xlo = opts.logx ? Math.min(...allX) : 0, xhi = Math.max(...allX, 1);
+  let ylo = Math.min(0, ...allY), yhi = Math.max(...allY);
+  const pad = (yhi - ylo) * 0.08 || 0.1; ylo -= pad; yhi += pad;
+  const TX = x => opts.logx
+    ? m.l + (Math.log(x) - Math.log(xlo)) / (Math.log(xhi) - Math.log(xlo)) * (width - m.l - m.r)
+    : m.l + (x - xlo) / (xhi - xlo) * (width - m.l - m.r);
+  const TY = y => height - m.b - (y - ylo) / (yhi - ylo) * (height - m.t - m.b);
+  for (const t of niceTicks(ylo, yhi)) {
+    el('line', { x1: m.l, x2: width - m.r, y1: TY(t), y2: TY(t), stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+    el('text', { x: m.l - 8, y: TY(t) + 3.5, 'text-anchor': 'end' }, svg).textContent = +t.toFixed(3);
+  }
+  const xticks = opts.logx ? allX.filter((v, i, a) => a.indexOf(v) === i) : niceTicks(0, xhi, 7);
+  for (const t of xticks) {
+    el('text', { x: TX(t), y: height - m.b + 16, 'text-anchor': 'middle' }, svg).textContent =
+      t >= 1000 ? (t / 1000) + 'k' : t;
+  }
+  el('line', { x1: m.l, x2: width - m.r, y1: TY(Math.max(0, ylo)), y2: TY(Math.max(0, ylo)), stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+  el('text', { x: (m.l + width - m.r) / 2, y: height - 4, 'text-anchor': 'middle', class: 'axis-label' }, svg)
+    .textContent = opts.xlabel;
+  el('text', { x: 13, y: (m.t + height - m.b) / 2, 'text-anchor': 'middle', class: 'axis-label',
+               transform: `rotate(-90 13 ${(m.t + height - m.b) / 2})` }, svg).textContent = opts.ylabel;
+  for (const s of seriesList) {
+    const d = s.points.map((p, i) => (i ? 'L' : 'M') + TX(p[0]) + ' ' + TY(p[1])).join(' ');
+    el('path', { d, fill: 'none', stroke: s.color, 'stroke-width': 2,
+                 'stroke-dasharray': s.dash || 'none',
+                 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    if (s.dots) for (const [x, y] of s.points)
+      el('circle', { cx: TX(x), cy: TY(y), r: 4, fill: s.color, stroke: 'var(--surface-1)', 'stroke-width': 2 }, svg);
+  }
+}
+
+/* ---- forward learning, animated ---- */
+const STRIDE = 200, WINDOW_SAMPLES = 20; // rolling window = 4000 enquiries
+let env, agents, samples, running = false, raf = null;
+
+function resetForward() {
+  running = false; if (raf) cancelAnimationFrame(raf);
+  document.getElementById('runBtn').textContent = 'Run';
+  document.getElementById('runBtn').classList.remove('on');
+  env = RL.makeEnv({ seed: (Math.random() * 2 ** 31) >>> 0 });
+  const actions = RL.makeActions();
+  agents = {
+    sym: RL.makeLearner({ env, symmetry: true, actions }),
+    base: RL.makeLearner({ env, symmetry: false, actions }),
+    ora: RL.makeOracle({ env, MM }),
+  };
+  samples = { t: [0], sym: [0], base: [0], ora: [0] };
+  redrawForward();
+}
+
+function rolling(cum, ts) {
+  const pts = [];
+  for (let j = WINDOW_SAMPLES; j < cum.length; j++) {
+    pts.push([ts[j], (cum[j] - cum[j - WINDOW_SAMPLES]) / (ts[j] - ts[j - WINDOW_SAMPLES])]);
+  }
+  return pts;
+}
+
+function redrawForward() {
+  const pSym = rolling(samples.sym, samples.t);
+  const pBase = rolling(samples.base, samples.t);
+  const pOra = rolling(samples.ora, samples.t);
+  drawSeries('chartLearn', [
+    { color: cssVar('--series-3'), points: pOra, dash: '5 4' },
+    { color: cssVar('--series-2'), points: pBase },
+    { color: cssVar('--series-1'), points: pSym },
+  ], { xlabel: 'enquiries', ylabel: 'rolling P&L / enquiry' });
+  document.getElementById('tN').textContent = env.t.toLocaleString();
+  const last = a => a.length ? a[a.length - 1][1].toFixed(3) : '–';
+  document.getElementById('tSym').textContent = last(pSym);
+  document.getElementById('tBase').textContent = last(pBase);
+  document.getElementById('tOra').textContent = last(pOra);
+}
+
+function frame() {
+  if (!running) return;
+  const batch = +document.getElementById('speed').value;
+  for (let i = 0; i < batch; i++) {
+    const e = env.enquiry();
+    agents.sym.learn(e); agents.base.learn(e); agents.ora.learn(e);
+    if (env.t % STRIDE === 0) {
+      samples.t.push(env.t);
+      samples.sym.push(agents.sym.pnl);
+      samples.base.push(agents.base.pnl);
+      samples.ora.push(agents.ora.pnl);
+    }
+  }
+  redrawForward();
+  raf = requestAnimationFrame(frame);
+}
+
+document.getElementById('runBtn').addEventListener('click', () => {
+  running = !running;
+  document.getElementById('runBtn').textContent = running ? 'Pause' : 'Run';
+  document.getElementById('runBtn').classList.toggle('on', running);
+  if (running) frame();
+});
+document.getElementById('resetBtn').addEventListener('click', resetForward);
+window.addEventListener('resize', () => { redrawForward(); });
+
+/* ---- inverse problem, computed once on load ---- */
+function runIrl() {
+  const ns = [500, 1000, 2000, 4000, 8000, 16000, 32000, 64000];
+  const pooled = [], per = [];
+  let ratioAt4k = null;
+  for (const n of ns) {
+    const envI = RL.makeEnv({ seed: 42 });
+    const r = RL.irlRun({ env: envI, MM, nObs: n, noise: 0.4, targetQ: 0.6 });
+    if (isFinite(r.pooledRMSE)) pooled.push([n, r.pooledRMSE]);
+    if (isFinite(r.perRegimeRMSE)) per.push([n, r.perRegimeRMSE]);
+    if (n === 4000) ratioAt4k = r.perRegimeRMSE / r.pooledRMSE;
+  }
+  drawSeries('chartIrl', [
+    { color: cssVar('--series-2'), points: per, dots: true },
+    { color: cssVar('--series-1'), points: pooled, dots: true },
+  ], { xlabel: 'observations (log scale)', ylabel: 'skew-curve RMSE', logx: true });
+  document.getElementById('irlReadout').innerHTML =
+    `At 4,000 observations the pooled estimator's error is <b>${ratioAt4k.toFixed(1)}&times; smaller</b>. ` +
+    `The pooled curve flattens at large samples: the second-order bias floor of a first-order-exact symmetry.`;
+}
+
+resetForward();
+running = true; document.getElementById('runBtn').textContent = 'Pause';
+document.getElementById('runBtn').classList.add('on'); frame();
+setTimeout(runIrl, 60);
+</script>
+</body>
+</html>

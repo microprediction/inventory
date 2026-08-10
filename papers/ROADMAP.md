@@ -104,6 +104,21 @@ reduction of the policy space).
 Guéant–Manziuk line.
 **Venue.** Applied Mathematical Finance, or an ML-for-finance workshop for speed.
 
+### P9. Efficient inverse reinforcement learning: reading ν from quotes across regimes
+**Claim.** Inferring a dealer's objective from behavior — inverse RL — is generically
+ill-posed and data-hungry; here it is neither. The identities make inversion direct
+(skew = slope, discretionary width = convexity of ν), and the symmetry makes it
+efficient: quotes observed under ANY flow regime q, de-tilted by δ(q), all estimate the
+same balanced-frame ν, so K regimes cut estimation error by √K and the sample complexity
+of identifying a dealer's inventory cost is independent of which regimes you happened to
+observe her in. Deviations from the pooled fit isolate what the symmetry cannot explain:
+private information.
+**Attack.** Estimator: per-quote de-tilting then pooled regression for S(x), C(x);
+compare to per-regime estimation at equal observation budget. Theory is elementary
+(averaging); the content is the framing plus the identifiability corollary.
+**Risk.** Low. Companion demo on the site (see `docs/` RL demo).
+**Venue.** Pairs with P7 in one paper, or standalone short communication.
+
 ### P8. Skew, width and the log-odds of flow: an identification test
 **Claim.** Structural flow skew and informational widening are separable by parity: δ is
 odd in (q−½) with coefficient PINNED at w/2; informational effects are even. A
@@ -120,7 +135,7 @@ log-linear), q from direction counts, test the pinned coefficient.
 P1 (finite horizon) ──┬─▶ P4 (spectral, = C–P revision) ──▶ P6 (endogenous carry)
 P3 folds into P1      │
 P2 (LOB note) ────────┘         P5 (filtering bridge) ─────▶ P6
-P7 (RL) and P8 (empirics) run parallel, opportunistic
+P7 (RL) + P9 (inverse RL) share a demo and likely a paper; P8 (empirics) opportunistic
 ```
 
 Start with P1 + P2 concurrently: P1 is the natural sequel the referees of the submitted
