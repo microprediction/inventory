@@ -144,6 +144,47 @@ P2 (LOB note) ────────┘         P5 (filtering bridge) ──�
 P7 (RL) + P9 (inverse RL) share a demo and likely a paper; P8 (empirics) opportunistic
 ```
 
+## Tier 5 — symmetry, more broadly (added 2026-08-10)
+
+### P10. Which market making effects are gauge?
+**Claim.** A classification of perturbations of the Avellaneda–Stoikov family into pure
+gauge (absorbable into quote translations and clock changes: drift, imbalance, price
+level, reference-price choice) and physical (spread-changing: risk aversion, decay k,
+adverse selection). GLFT's drift result and our two imbalance papers are the first
+entries of the table; the paper completes it.
+**Risk.** Low-medium; the work is finding the right group action and checking each
+generator. **Venue.** SIFIN or MAFE.
+
+### P11. Exchangeable books: de Finetti meets market making
+**Claim.** For an RFQ book of exchangeable instruments, the multi-asset indifference
+cost reduces exactly by de Finetti / permutation symmetry to a radial component plus
+identical relative components, for any n — the exact counterpart of the numerical
+factor reductions of Bergault–Guéant. Builds directly on PETER'S OWN 2006
+exchangeability/de Finetti work (citation to be supplied — predates and grounds this;
+possibly also the signed-de Finetti thread in the conformalprediction repo). Two
+twenty-year-old threads of the same author meeting: cross-sectional symmetry (2006) ×
+buy/sell symmetry (2013–15).
+**Risk.** Medium. **Venue.** Mathematical Finance if it lands exact.
+
+### P12. Explicit spectrum for the balanced GLFT oscillator
+**Claim.** The symmetrized balanced GLFT matrix (quadratic diagonal, constant
+off-diagonal) is a discrete harmonic oscillator; Karlin–McGregor orthogonal-polynomial
+machinery may give its spectrum in closed or semi-closed form, upgrading P1's
+Corollary 2 to fully explicit eigenvalues. **Risk.** A week's exploration; either it
+closes or it doesn't. **Venue.** Addendum to P1 or standalone note.
+
+### P13. Adverse selection as broken time reversal (speculative)
+**Claim.** Under detailed balance a dealer's expected P&L behaves like entropy
+production; informed flow is statistically irreversible, and fluctuation-theorem
+machinery gives model-free inequalities relating P&L asymmetry to flow irreversibility,
+measurable as a KL divergence between the forward and reversed tape. A model-free
+toxicity metric with a physics pedigree — or a costume. Time-boxed exploration first.
+**Risk.** High. **Venue.** Decide after the exploration.
+
+```
+P10 gauge classification: our two papers are two-thirds of its work — likely next after P2
+```
+
 Start with P1 + P2 concurrently: P1 is the natural sequel the referees of the submitted
 paper will themselves suggest; P2 is small, sharp, and stakes the probability-side claim
 before someone else notices the dashed red edge on our own public map.
