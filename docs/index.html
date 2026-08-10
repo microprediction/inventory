@@ -1,86 +1,478 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>inventory — control theory applied to inventory and pricing</title>
-<style>
-  :root { color-scheme: light; }
-  body { max-width: 46rem; margin: 2.5rem auto; padding: 0 1.2rem; font-family: Georgia, 'Times New Roman', serif; line-height: 1.55; color: #1a1a1a; background: #f9f9f7; }
-  h1 { font-size: 1.7rem; margin-bottom: .2rem; }
-  .sub { color: #555; margin-top: 0; }
-  h2 { font-size: 1.15rem; margin-top: 2rem; border-bottom: 1px solid #ddd; padding-bottom: .25rem; }
-  a { color: #1a4d8f; }
-  li { margin: .35rem 0; }
-  nav { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: .85rem; margin-bottom: 1.5rem; color: #898781; }
-  nav a { margin-right: .9rem; }
-  code, pre { font-family: Menlo, monospace; font-size: .92em; background: #f4f4f4; border-radius: 3px; }
-  code { padding: .05em .3em; }
-  pre { padding: .7em .9em; overflow-x: auto; }
-  .result { background: #fcfcfb; border: 1px solid rgba(11,11,11,.10); border-radius: 8px; padding: .9rem 1.1rem; margin: 1.2rem 0; }
-  @media (prefers-color-scheme: dark) {
-    :root { color-scheme: dark; }
-    body { background: #0d0d0d; color: #ddd; }
-    .sub { color: #999; } a { color: #7aa7dd; }
-    h2 { border-color: #333; } code, pre { background: #222; }
-    .result { background: #1a1a19; border-color: rgba(255,255,255,.10); }
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Inventory &mdash; Order Imbalance, Skew and Width</title>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
 </head>
 <body>
-<nav>
-  <strong>inventory</strong>
-  <a href="papers.html">papers</a>
-  <a href="symmetry.html">symmetry demo</a>
-  <a href="simulation.html">simulation</a>
-  <a href="bibliography.html">bibliography</a>
-  <a href="map.html">literature map</a>
-  <a href="https://github.com/microprediction/inventory">GitHub</a>
-</nav>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="brand" href="./index.html">inventory</a>
+      <nav>
+        <a href="./papers.html">Papers</a>
+        <a href="./demos.html">Demos</a>
+        <a href="./index.html#bibliography">Bibliography</a>
+        <a href="./map.html">Literature map</a>
+        <a href="https://github.com/microprediction/inventory">GitHub</a>
+      </nav>
+    </div>
+  </header>
 
-<h1>inventory</h1>
-<p class="sub">Control theory applied to inventory and pricing. A research site — papers, interactive demonstrations, and literature maps — extending Cotton &amp; Papanicolaou, <em>Trading Illiquid Goods</em>, toward a theory of storable goods with very low carrying costs.</p>
+  <main>
+    <h1>Order Imbalance, Skew and Width</h1>
+    <p class="subtitle">Control theory applied to inventory and pricing in over-the-counter markets.</p>
 
-<h2>Papers</h2>
-<p>The flagship result, from <strong><a href="skew_width_imbalance.pdf">On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading</a></strong> (Cotton; work completed around 2015). A market maker trades only by responding to sealed-bid enquiries, and her customers arrive with imbalanced intent: sellers with probability <em>q</em>, buyers with probability 1&minus;<em>q</em>.</p>
+    <p class="lead">
+      A dealer in an over-the-counter market trades one way: customers request quotes, several
+      dealers respond, the best price wins. When the customers are <strong>imbalanced</strong>
+      &mdash; sellers more often than buyers, or the reverse &mdash; every dealer knows to shade
+      her quotes with the flow. The optimal market making literature, built on symmetric arrivals,
+      has never said by how much.
+    </p>
 
-<div class="result">
-The imbalanced problem is the balanced one in disguise. Order imbalance is absorbed, exactly, by three adjustments tied to the observable market width <em>w</em>: the skew translates by &delta; = (<em>w</em>/2)&thinsp;log(<em>q</em>/(1&minus;<em>q</em>)), the quotes widen by &gamma;, and the cost of carry multiplies by <em>M</em>(<em>q</em>) = 1/(2&radic;(<em>q</em>(1&minus;<em>q</em>))). Consequences: a dealer with a flat book should still skew; skew responds to imbalance at first order while width responds at second; and one-sided flow taxes inventory exactly like a carrying cost.
-</div>
+    <p>
+      It turns out the answer is a <strong>symmetry</strong>. In the steady state, the market
+      making problem with arrival imbalance $q$ compresses exactly onto the perfectly balanced
+      problem: the imbalance is absorbed by a translation of the skew, a widening of the quotes,
+      and a multiplication of the effective cost of carry &mdash; three constants involving
+      nothing but the imbalance and the observable market width $w$.
+    </p>
 
-<p>The paper locates the constant-width linear-skew benchmark of Avellaneda&ndash;Stoikov as a corner case and supplies its missing column: what to do about flow. The exponential assumption on the best competing quote is needed only locally, at the quotes actually made (<a href="https://github.com/microprediction/inventory/blob/main/papers/skew_width_imbalance/verify_local_exponentiality.py">numerical certificate</a>). The companion Cotton&ndash;Papanicolaou paper and the program's working notes are on the <a href="papers.html">papers page</a>.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 760 216" role="img"
+           aria-label="The imbalance symmetry: the imbalanced market making problem maps onto the balanced one via three explicit corrections">
+        <defs>
+          <marker id="arrow" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
+            <path d="M0,0 L6.5,3 L0,6 Z" fill="#4a3aff"/>
+          </marker>
+        </defs>
 
-<h2>Interactive demonstrations</h2>
-<ul>
-<li><a href="symmetry.html">The imbalance symmetry</a> — both problems solved numerically and independently in your browser; the corrected balanced solution lands on the imbalanced one to within 10<sup>&minus;13</sup>. The dots on the line are the theorem.</li>
-<li><a href="simulation.html">Optimal and sub-optimal market makers</a> — three dealers face the same enquiry stream and the same competing quotes: the optimal policy, constant-width linear-skew with no flow term, and no skew at all. The flow term is worth a few percent; no skew at all is ruinous.</li>
-</ul>
+        <!-- left world -->
+        <rect x="8" y="24" width="224" height="96" rx="12" fill="#ffffff" stroke="#e2e2e2"/>
+        <text x="120" y="56" text-anchor="middle" font-size="15" font-weight="600" fill="#1f1d3d">Imbalanced flow</text>
+        <text x="120" y="79" text-anchor="middle" font-size="12.5" fill="#5a5a5a">sellers with probability q</text>
+        <text x="120" y="98" text-anchor="middle" font-size="11" fill="#9a9a9a">the problem you face</text>
 
-<h2>Literature</h2>
-<ul>
-<li><a href="map.html">Literature map</a> — the paper and its neighbours; dashed edges are gaps it fills or predictions not yet tested.</li>
-<li><a href="bibliography.html">Annotated bibliography</a> — organized by the role each work plays.</li>
-</ul>
+        <!-- right world -->
+        <rect x="528" y="24" width="224" height="96" rx="12" fill="#ffffff" stroke="#e2e2e2"/>
+        <text x="640" y="56" text-anchor="middle" font-size="15" font-weight="600" fill="#1f1d3d">Balanced flow</text>
+        <text x="640" y="79" text-anchor="middle" font-size="12.5" fill="#5a5a5a">q = &frac12;, carry &times; M(q)</text>
+        <text x="640" y="98" text-anchor="middle" font-size="11" fill="#9a9a9a">the problem you solve</text>
 
-<h2>The wider program</h2>
-<p>Storage economics stabilizes inventory from below by the stockout constraint and from above by the cost of carry. For value-dense, non-degrading goods the cost of carry can be a few tens of basis points a year — effectively absent. What, then, keeps optimal inventory bounded? The working hypothesis of this repository: nothing physical does. The stabilizer is microstructural — the dealer market's bid&ndash;offer is the endogenous replacement for the missing carrying cost.</p>
-<ul>
-<li><a href="https://github.com/microprediction/inventory/blob/main/notes/formulation.md">Toward a mathematical formulation</a> — storage relation as a term-structure constraint, transport of the coverage-forecast curve, the explosiveness boundary, filtering.</li>
-<li><a href="https://github.com/microprediction/inventory/blob/main/notes/spread_as_endogenous_carry.tex">The bid&ndash;offer as endogenous cost of carry</a> — explosive inventory in low-carry goods; the oscillator; hypotheses and scoreboard.</li>
-<li><a href="https://github.com/microprediction/inventory/blob/main/literature/weymar1965.md">Weymar (1965)</a> — distillation of the grounding thesis; program-level maps: <a href="https://github.com/microprediction/inventory/blob/main/literature/map_theory.md">storage theory</a> &middot; <a href="https://github.com/microprediction/inventory/blob/main/literature/map_control.md">control &amp; OR</a> &middot; <a href="https://github.com/microprediction/inventory/blob/main/literature/map_instability_theory.md">instability</a>.</li>
-</ul>
+        <!-- bridge connectors -->
+        <line x1="300" y1="72" x2="236" y2="72" stroke="#4a3aff" stroke-width="2" marker-end="url(#arrow)"/>
+        <line x1="460" y1="72" x2="524" y2="72" stroke="#4a3aff" stroke-width="2" marker-end="url(#arrow)"/>
 
-<h2>Cite</h2>
-<pre>@unpublished{cotton2026skew,
+        <!-- bridge -->
+        <rect x="300" y="49" width="160" height="46" rx="23" fill="#4a3aff"/>
+        <text x="380" y="71" text-anchor="middle" font-size="14" font-weight="600" fill="#ffffff">the symmetry</text>
+        <text x="380" y="87" text-anchor="middle" font-size="10.5" fill="#cfcaff">one balanced solve, every q</text>
+
+        <!-- corrections axis -->
+        <line x1="120" y1="158" x2="640" y2="158" stroke="#e2e2e2" stroke-width="2"/>
+        <circle cx="180" cy="158" r="5" fill="#4a3aff"/>
+        <circle cx="380" cy="158" r="5" fill="#4a3aff"/>
+        <circle cx="580" cy="158" r="5" fill="#4a3aff"/>
+        <text x="180" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">skew shifts by &delta;</text>
+        <text x="180" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">first order in q &minus; &frac12;</text>
+        <text x="380" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">quotes widen by &gamma;</text>
+        <text x="380" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">second order</text>
+        <text x="580" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">carry &times; M(q)</text>
+        <text x="580" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">flow taxes inventory</text>
+      </svg>
+      <p class="caption">
+        Three explicit corrections: $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$, a widening
+        $\gamma$, and the carry multiplier $M(q) = 1/(2\sqrt{q(1-q)})$.
+      </p>
+    </div>
+
+    <p>
+      Three consequences follow. A dealer with a <em>flat book</em> should still skew, by
+      $\delta$ exactly. Skew responds to imbalance at first order while width responds only at
+      second &mdash; which is why practitioners skew before they widen. And the constant-width,
+      linear-skew benchmark of Avellaneda&ndash;Stoikov reappears as a corner case, with the
+      symmetry supplying its missing column: what to do about flow. For the derivation see
+      the <a href="./skew_width_imbalance.pdf">paper</a>; the theorem is verified numerically
+      to machine precision by an
+      <a href="https://github.com/microprediction/inventory/blob/main/papers/skew_width_imbalance/verify_local_exponentiality.py">accompanying script</a>.
+    </p>
+
+    <h2>Demos</h2>
+    <p>
+      Both claims run live in your browser: the <a href="./symmetry.html">symmetry demo</a>
+      solves the imbalanced and balanced problems independently and lands one on the other to
+      within $10^{-13}$, and the <a href="./simulation.html">market making simulation</a> races
+      the optimal dealer against flow-blind benchmarks on a common enquiry stream. The
+      <a href="./demos.html">demos page</a> lists them.
+    </p>
+
+    <h2>The wider program</h2>
+    <p>
+      Storage economics stabilizes inventory from below by the stockout constraint and from
+      above by the cost of carry. For value-dense, non-degrading goods the carry can be tens of
+      basis points a year &mdash; effectively absent. What then keeps optimal inventory bounded?
+      The working hypothesis of this repository: nothing physical does. The stabilizer is
+      microstructural &mdash; the dealer market&rsquo;s bid&ndash;offer is the endogenous
+      replacement for the missing carrying cost. The
+      <a href="./papers.html">working notes</a> develop the formulation.
+    </p>
+
+    <h2>Cite</h2>
+    <blockquote>
+      Cotton, P. (2026). &ldquo;On a Simple Relationship Between Order Imbalance, Skew and
+      Width in Over-The-Counter Trading.&rdquo; Working paper; work completed around 2015,
+      first written up 2022.
+    </blockquote>
+    <pre style="background:#f3f3f7;padding:12px 14px;border-radius:6px;overflow-x:auto;font-size:0.85em;font-family:'SFMono-Regular',Menlo,Consolas,monospace;">@unpublished{cotton2026skew,
   author = {Cotton, Peter},
   title  = {On a Simple Relationship Between Order Imbalance,
             Skew and Width in Over-The-Counter Trading},
   note   = {Working paper; work completed around 2015,
             first written up 2022},
   year   = {2026},
-  url    = {https://github.com/microprediction/inventory}
+  url    = {https://inventory.microprediction.org}
 }</pre>
 
-<p>Comments — especially from optimal-control readers — are welcome; the notes are written to be attacked. <a href="https://github.com/microprediction/inventory">Repository on GitHub</a>.</p>
+    <div class="bib">
+      <h2 id="bibliography">Bibliography</h2>
+      <p>Organized by the role each work plays relative to the imbalance equivalence paper.
+      Every entry also appears on the <a href="./map.html">literature map</a>.</p>
+
+      <h3>The core</h3>
+      <ul>
+        <li>
+          Cotton, P. (2026). <a href="./skew_width_imbalance.pdf"><em>On a Simple Relationship
+          Between Order Imbalance, Skew and Width in Over-The-Counter Trading</em></a>.
+          Working paper. <em>The imbalance equivalence: skew shift &delta;, widening &gamma;,
+          carry multiplier $1/(2\sqrt{q(1-q)})$. A flat book still skews.</em>
+        </li>
+        <li>
+          Cotton, P., and Papanicolaou, A. <em>Trading Illiquid Goods: Market Making as a
+          Sequence of Sealed-Bid Auctions, with Analytic Results</em>.
+          <a href="https://github.com/microprediction/inventory/blob/main/literature/trading_illiquid.pdf">Working
+          paper</a>. <em>The companion: clustered arrivals and stochastically varying
+          imbalance.</em>
+        </li>
+      </ul>
+
+      <h3>Dealer-inventory classics</h3>
+      <ul>
+        <li>
+          Garman, M. B. (1976). &ldquo;Market microstructure.&rdquo; <em>Journal of Financial
+          Economics</em> 3(3), 257&ndash;275.
+          <a href="https://doi.org/10.1016/0304-405X(76)90006-4">doi</a>. <em>The oldest
+          imbalanced-flow dealer model: asymmetric Poisson rates, one static price pair; the
+          content is ruin, not policy.</em>
+        </li>
+        <li>
+          Stoll, H. R. (1978). &ldquo;The supply of dealer services in securities markets.&rdquo;
+          <em>Journal of Finance</em> 33(4), 1133&ndash;1151.
+          <a href="https://doi.org/10.1111/j.1540-6261.1978.tb02053.x">doi</a>. <em>The spread as
+          compensation for deviating from an optimal portfolio: the canonical statement that
+          quotes price an inventory holding cost &mdash; the object whose slope and convexity the
+          core paper&rsquo;s identities isolate.</em>
+        </li>
+        <li>
+          Amihud, Y., and Mendelson, H. (1980). &ldquo;Dealership market: market-making with
+          inventory.&rdquo; <em>Journal of Financial Economics</em> 8(1), 31&ndash;53.
+          <a href="https://doi.org/10.1016/0304-405X(80)90020-3">doi</a>. <em>The closest
+          classical antecedent in spirit: imbalanced arrivals move a preferred inventory position
+          and monotone quotes. Structural, no closed form.</em>
+        </li>
+        <li>
+          Ho, T., and Stoll, H. R. (1981). &ldquo;Optimal dealer pricing under transactions and
+          return uncertainty.&rdquo; <em>Journal of Financial Economics</em> 9(1), 47&ndash;73.
+          <a href="https://doi.org/10.1016/0304-405X(81)90020-9">doi</a>; and (1983) &ldquo;The
+          dynamics of dealer markets under competition.&rdquo; <em>Journal of Finance</em> 38(4),
+          1053&ndash;1074. <a href="https://doi.org/10.1111/j.1540-6261.1983.tb02282.x">doi</a>.
+          <em>Quotes from value-function differences, then competing dealers with reservation
+          prices as inventory indifference differences: the slope half of the slope-and-convexity
+          characterization. The convexity half &mdash; discretionary width reveals the second
+          difference of the inventory cost &mdash; appears to be new in the core paper.</em>
+        </li>
+        <li>
+          Mildenstein, E., and Schleef, H. (1983). &ldquo;The optimal pricing policy of a
+          monopolistic marketmaker in the equity market.&rdquo; <em>Journal of Finance</em>
+          38(1), 218&ndash;231.
+          <a href="https://doi.org/10.1111/j.1540-6261.1983.tb03637.x">doi</a>. <em>An early
+          intensity-controlled dealer with endogenous, possibly imbalanced flow &mdash; and a
+          useful contrast: they find spread unrelated to inventory, where the core paper ties
+          width to the inventory cost&rsquo;s convexity.</em>
+        </li>
+        <li>
+          Glosten, L. R., and Milgrom, P. R. (1985). &ldquo;Bid, ask and transaction prices in a
+          specialist market with heterogeneously informed traders.&rdquo; <em>Journal of
+          Financial Economics</em> 14(1), 71&ndash;100.
+          <a href="https://doi.org/10.1016/0304-405X(85)90044-3">doi</a>. <em>The canonical
+          alternative mechanism: adverse selection moves quotes at zero inventory for
+          informational reasons. Citing it isolates the core paper&rsquo;s pure flow-imbalance
+          channel.</em>
+        </li>
+        <li>
+          O&rsquo;Hara, M., and Oldfield, G. S. (1986). &ldquo;The microeconomics of market
+          making.&rdquo; <em>Journal of Financial and Quantitative Analysis</em> 21(4),
+          361&ndash;376. <a href="https://doi.org/10.2307/2330686">doi</a>. <em>Inventory affects
+          both the placement and the size of the spread, with expected order-flow asymmetry
+          handled explicitly &mdash; the closest classical antecedent to the twin identities,
+          though the derivative structure is never stated.</em>
+        </li>
+      </ul>
+
+      <h3>The economics of OTC immediacy</h3>
+      <ul>
+        <li>
+          Grossman, S. J., and Miller, M. H. (1988). &ldquo;Liquidity and market
+          structure.&rdquo; <em>Journal of Finance</em> 43(3), 617&ndash;633.
+          <a href="https://doi.org/10.1111/j.1540-6261.1988.tb04594.x">doi</a>. <em>Market makers
+          bridge asynchronous buyer and seller arrivals: the economics of exactly the
+          arrival-imbalance friction the core paper prices.</em>
+        </li>
+        <li>
+          Duffie, D., G&acirc;rleanu, N., and Pedersen, L. H. (2005). &ldquo;Over-the-counter
+          markets.&rdquo; <em>Econometrica</em> 73(6), 1815&ndash;1847.
+          <a href="https://doi.org/10.1111/j.1468-0262.2005.00639.x">doi</a>. <em>The canonical
+          search-and-bargaining model of OTC dealing; grounds the institutional setting.</em>
+        </li>
+        <li>
+          Weill, P.-O. (2007). &ldquo;Leaning against the wind.&rdquo; <em>Review of Economic
+          Studies</em> 74(4), 1329&ndash;1354.
+          <a href="https://doi.org/10.1111/j.1467-937X.2007.00451.x">doi</a>. <em>Optimal
+          liquidity provision against large one-sided selling pressure: the macro-theory twin of
+          the core paper&rsquo;s setup.</em>
+        </li>
+      </ul>
+
+      <h3>The optimal market making line</h3>
+      <ul>
+        <li>
+          Avellaneda, M., and Stoikov, S. (2008). &ldquo;High-frequency trading in a limit order
+          book.&rdquo; <em>Quantitative Finance</em> 8(3), 217&ndash;224.
+          <a href="https://doi.org/10.1080/14697680701381228">doi</a>. <em>The anchor. Constant
+          width, linear skew is reached by dropping terms &mdash; precisely the terms needed to
+          establish any rule regarding width.</em>
+        </li>
+        <li>
+          Gu&eacute;ant, O., Lehalle, C.-A., and Fernandez-Tapia, J. (2012). &ldquo;Dealing with
+          the inventory risk: a solution to the market making problem.&rdquo; <em>Mathematics and
+          Financial Economics</em> 7(4), 477&ndash;507.
+          <a href="https://doi.org/10.1007/s11579-012-0087-0">doi</a>. <em>The exact treatment;
+          arrival intensities symmetric, directional asymmetry only as mid-price drift.</em>
+        </li>
+        <li>
+          Gu&eacute;ant, O. (2016). <em>The Financial Mathematics of Market Liquidity</em>.
+          Chapman &amp; Hall/CRC; and (2017) &ldquo;Optimal market making.&rdquo; <em>Applied
+          Mathematical Finance</em> 24(2), 112&ndash;154.
+          <a href="https://doi.org/10.1080/1350486X.2017.1342552">doi</a>. <em>Asymmetric
+          intensities in generality, handled numerically. No equivalence statement, no log-odds
+          shift, no cost multiplier.</em>
+        </li>
+        <li>
+          Bergault, P., and Gu&eacute;ant, O. (2021). &ldquo;Size matters for OTC market
+          makers.&rdquo; <em>Mathematical Finance</em> 31(1), 279&ndash;322.
+          <a href="https://doi.org/10.1111/mafi.12286">doi</a>; and Bergault, P., Evangelista,
+          D., Gu&eacute;ant, O., and Vieira, D. (2021). &ldquo;Closed-form approximations in
+          multi-asset market making.&rdquo; <em>Applied Mathematical Finance</em> 28(2),
+          101&ndash;142. <em>The modern generalizations; imbalance remains numerical
+          throughout.</em>
+        </li>
+        <li>
+          Cartea, &Aacute;., Jaimungal, S., and Ricci, J. (2014). &ldquo;Buy low, sell
+          high.&rdquo; <em>SIAM Journal on Financial Mathematics</em> 5(1), 415&ndash;444.
+          <a href="https://doi.org/10.1137/130911196">doi</a>; Cartea, &Aacute;., and Jaimungal,
+          S. (2016). <em>Mathematics and Financial Economics</em> 10(3), 339&ndash;364; and
+          Cartea, &Aacute;., Jaimungal, S., and Penalva, J. (2015). <em>Algorithmic and
+          High-Frequency Trading</em>. CUP. <em>Order-flow imbalance as a predictive signal
+          &mdash; a different object from the stationary structural imbalance of the core
+          paper.</em>
+        </li>
+        <li>
+          Zabaljauregui, D., and Campi, L. (2020). &ldquo;Optimal market making under partial
+          information with general intensities.&rdquo; <em>Applied Mathematical Finance</em>;
+          <a href="https://arxiv.org/abs/1902.01157">arXiv:1902.01157</a>. <em>One of the few
+          analytical treatments of general, possibly asymmetric arrival intensities &mdash; the
+          setting the core paper&rsquo;s theorem collapses.</em>
+        </li>
+        <li>
+          Bergault, P., and Gu&eacute;ant, O. (2023). <em>Liquidity Dynamics in RFQ Markets and
+          Impact on Pricing</em>. <a href="https://arxiv.org/abs/2309.04216">arXiv:2309.04216</a>.
+          <em>Observes numerically that flow-aware market makers skew at zero inventory;
+          Corollary 1 of the core paper is the closed form.</em>
+        </li>
+        <li>
+          Barzykin, A., Bergault, P., and Gu&eacute;ant, O. (2021&ndash;2024). The FX dealer
+          series: &ldquo;Market making by an FX dealer&rdquo;
+          (<a href="https://arxiv.org/abs/2112.02269">arXiv:2112.02269</a>),
+          &ldquo;Dealing with multi-currency inventory risk in FX cash markets&rdquo;
+          (<a href="https://arxiv.org/abs/2207.04100">arXiv:2207.04100</a>), and &ldquo;Market
+          Making in Spot Precious Metals&rdquo;
+          (<a href="https://arxiv.org/abs/2404.15478">arXiv:2404.15478</a>). <em>Dealers skew
+          prices to attract or divert flow, numerically optimized; the imbalance is managed but
+          never compressed away.</em>
+        </li>
+        <li>
+          Barzykin, A., Bergault, P., Gu&eacute;ant, O., and Lemmel, M. (2025). <em>Optimal
+          Quoting under Adverse Selection and Price Reading</em>.
+          <a href="https://arxiv.org/abs/2508.20225">arXiv:2508.20225</a>. <em>Spreads widen at
+          zero inventory for informational reasons &mdash; the informational counterpart of the
+          core paper&rsquo;s flow-imbalance corollary, to be cited and distinguished.</em>
+        </li>
+      </ul>
+
+      <h3>RFQ markets and empirics</h3>
+      <ul>
+        <li>
+          Ho, T., and Macris, R. G. (1984). &ldquo;Dealer bid-ask quotes and transaction
+          prices.&rdquo; <em>Journal of Finance</em> 39(1), 23&ndash;45.
+          <a href="https://doi.org/10.1111/j.1540-6261.1984.tb03858.x">doi</a>. <em>A single
+          options dealer&rsquo;s actual book: the earliest direct evidence of inventory-driven
+          quote shading.</em>
+        </li>
+        <li>
+          Madhavan, A., and Smidt, S. (1993). &ldquo;An analysis of changes in specialist
+          inventories and quotations.&rdquo; <em>Journal of Finance</em> 48(5),
+          1595&ndash;1628. <a href="https://doi.org/10.1111/j.1540-6261.1993.tb05122.x">doi</a>.
+          <em>Quote revisions respond to inventory and to order imbalance; the behavior the core
+          paper rationalizes.</em>
+        </li>
+        <li>
+          Lyons, R. K. (1995). &ldquo;Tests of microstructural hypotheses in the foreign exchange
+          market.&rdquo; <em>Journal of Financial Economics</em> 39(2&ndash;3), 321&ndash;351.
+          <a href="https://doi.org/10.1016/0304-405X(95)00832-Y">doi</a>; and Bj&oslash;nnes,
+          G. H., and Rime, D. (2005). <em>Journal of Financial Economics</em> 75(3),
+          571&ndash;605. <a href="https://doi.org/10.1016/j.jfineco.2004.08.001">doi</a>.
+          <em>FX dealers&rsquo; complete transaction records: strong inventory control in the
+          dealer&rsquo;s own quotes (1995), migrating to interdealer trading as markets
+          electronify (2005).</em>
+        </li>
+        <li>
+          Hendershott, T., and Madhavan, A. (2015). &ldquo;Click or call? Auction versus search
+          in the over-the-counter market.&rdquo; <em>Journal of Finance</em> 70(1),
+          419&ndash;447. <a href="https://doi.org/10.1111/jofi.12194">doi</a>. <em>Documents the
+          sealed-bid enquiry mechanism the model takes as primitive.</em>
+        </li>
+        <li>
+          Fermanian, J.-D., Gu&eacute;ant, O., and Pu, J. (2017). &ldquo;The behavior of dealers
+          and clients on the European corporate bond market.&rdquo; <em>Market Microstructure and
+          Liquidity</em> 2(3&ndash;4), 1750004.
+          <a href="https://doi.org/10.1142/S2382626617500042">doi</a>. <em>Econometrics of dealer
+          win curves; empirical support for the win-curve assumption.</em>
+        </li>
+        <li>
+          Butz, M., and Oomen, R. (2019). &ldquo;Internalisation by electronic FX spot
+          dealers.&rdquo; <em>Quantitative Finance</em> 19(1), 35&ndash;56.
+          <a href="https://doi.org/10.1080/14697688.2018.1467063">doi</a>. <em>Documents dealers
+          skewing on flow at flat inventory: the practice Corollary 1 derives rather than
+          assumes.</em>
+        </li>
+        <li>
+          Gu&eacute;ant, O., and Manziuk, I. (2019). &ldquo;Deep reinforcement learning for
+          market making in corporate bonds.&rdquo; <em>Applied Mathematical Finance</em> 26(5),
+          387&ndash;452. <a href="https://doi.org/10.1080/1350486X.2020.1714455">doi</a>.
+          <em>RL against the curse of dimensionality; the symmetry, read as an approximate
+          invariance, lets a learner pool episodes across flow regimes.</em>
+        </li>
+        <li>
+          Barzykin, A., Bergault, P., and Gu&eacute;ant, O. (2023). &ldquo;Algorithmic market
+          making in dealer markets with hedging and market impact.&rdquo; <em>Mathematical
+          Finance</em> 33(1), 41&ndash;79. <a href="https://doi.org/10.1111/mafi.12367">doi</a>.
+          <em>The current state of the RFQ control line.</em>
+        </li>
+        <li>
+          Schrimpf, A., and Sushko, V. (2019). &ldquo;FX trade execution: complex and highly
+          fragmented.&rdquo; <em>BIS Quarterly Review</em>, December.
+          <a href="https://www.bis.org/publ/qtrpdf/r_qt1912g.htm">bis.org</a>.
+          <em>Institutional evidence that dealers manage imbalanced flow by skewing rather than
+          hedging.</em>
+        </li>
+      </ul>
+
+      <h3>The probability side</h3>
+      <ul>
+        <li>
+          Feller, W. (1968). <em>An Introduction to Probability Theory and Its Applications</em>,
+          Vol. I, 3rd ed., Ch. XIV. Wiley. <em>The discrete original: every first-passage formula
+          for the $p$&ndash;$q$ walk carries the tilt $(q/p)^{z/2}$ times powers of
+          $2\sqrt{pq}$ &mdash; the core identity in random-walk form.</em>
+        </li>
+        <li>
+          Ledermann, W., and Reuter, G. E. H. (1954). &ldquo;Spectral theory for the differential
+          equations of simple birth and death processes.&rdquo; <em>Philosophical Transactions of
+          the Royal Society A</em> 246(914), 321&ndash;369; and Karlin, S., and McGregor, J.
+          (1957). <em>Transactions of the AMS</em> 85(2), 489&ndash;546.
+          <a href="https://doi.org/10.1090/S0002-9947-1957-0091566-1">doi</a>. <em>The
+          birth&ndash;death symmetrization and its geometric mean of rates. The core
+          paper&rsquo;s substitution was found independently; the provenance noticed after the
+          fact.</em>
+        </li>
+        <li>
+          Bailey, N. T. J. (1954). &ldquo;A continuous time treatment of a simple queue using
+          generating functions.&rdquo; <em>JRSS B</em> 16(2), 288&ndash;291.
+          <a href="https://doi.org/10.1111/j.2517-6161.1954.tb00174.x">doi</a>; and Abate, J.,
+          and Whitt, W. (1988). &ldquo;Simple spectral representations for the M/M/1
+          queue.&rdquo; <em>Queueing Systems</em> 3, 321&ndash;346.
+          <a href="https://doi.org/10.1007/BF01157854">doi</a>. <em>The same substitution in the
+          transient analysis of the simple queue, classical and modern.</em>
+        </li>
+        <li>
+          Asmussen, S. (2003). <em>Applied Probability and Queues</em>, 2nd ed. Springer.
+          <a href="https://doi.org/10.1007/b97236">doi</a>. <em>The exponential
+          change-of-measure reading: tilting removes the drift and the geometric-mean rate is
+          what remains under the tilted measure.</em>
+        </li>
+        <li>
+          Cont, R., Stoikov, S., and Talreja, R. (2010). &ldquo;A stochastic model for order book
+          dynamics.&rdquo; <em>Operations Research</em> 58(3), 549&ndash;563.
+          <a href="https://doi.org/10.1287/opre.1090.0780">doi</a>. <em>The near miss: limit
+          order book queues as birth&ndash;death processes with asymmetric intensities, handled
+          by numerical Laplace inversion. The symmetrization is never used &mdash; the gap the
+          core paper&rsquo;s remark points at.</em>
+        </li>
+      </ul>
+
+      <h3>The storage program</h3>
+      <ul>
+        <li>
+          Moran, P. A. P. (1959). <em>The Theory of Storage</em>. Methuen.
+          <em>Dam and storage models: reflected random walks whose drift sets the effective
+          long-run cost &mdash; the inventory-theory antecedent of &ldquo;imbalance acts as a
+          carrying cost.&rdquo;</em>
+        </li>
+        <li>
+          Weymar, F. H. (1965). <em>The Dynamics of the World Cocoa Market</em>. MIT PhD thesis.
+          Distilled in
+          <a href="https://github.com/microprediction/inventory/blob/main/literature/weymar1965.md">literature/weymar1965.md</a>.
+          <em>Price of a storable good as a boundary-value problem; the grounding document for
+          the wider program.</em>
+        </li>
+        <li>
+          Program-level literature maps:
+          <a href="https://github.com/microprediction/inventory/blob/main/literature/map_theory.md">storage
+          theory</a> &middot;
+          <a href="https://github.com/microprediction/inventory/blob/main/literature/map_control.md">control
+          &amp; OR</a> &middot;
+          <a href="https://github.com/microprediction/inventory/blob/main/literature/map_instability_theory.md">instability
+          &amp; limit cycles</a>. <em>What keeps optimal inventory bounded when carrying costs
+          are tens of basis points.</em>
+        </li>
+      </ul>
+
+      <p class="muted" style="font-size:0.9rem; margin-top:16px;">
+        Working on a related paper? Open an issue on
+        <a href="https://github.com/microprediction/inventory">the inventory repo</a> and
+        we&apos;ll add it.
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    <a href="https://github.com/microprediction/inventory">Source</a> &middot;
+    Maintained by <a href="https://github.com/microprediction">Peter Cotton</a>.
+  </footer>
 </body>
 </html>
