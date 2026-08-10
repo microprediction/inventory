@@ -155,16 +155,31 @@ entries of the table; the paper completes it.
 **Risk.** Low-medium; the work is finding the right group action and checking each
 generator. **Venue.** SIFIN or MAFE.
 
-### P11. Exchangeable books: de Finetti meets market making
-**Claim.** For an RFQ book of exchangeable instruments, the multi-asset indifference
-cost reduces exactly by de Finetti / permutation symmetry to a radial component plus
-identical relative components, for any n — the exact counterpart of the numerical
-factor reductions of Bergault–Guéant. Builds directly on PETER'S OWN 2006
-exchangeability/de Finetti work (citation to be supplied — predates and grounds this;
-possibly also the signed-de Finetti thread in the conformalprediction repo). Two
-twenty-year-old threads of the same author meeting: cross-sectional symmetry (2006) ×
-buy/sell symmetry (2013–15).
-**Risk.** Medium. **Venue.** Mathematical Finance if it lands exact.
+### P11. The de Finetti projection program (upgraded 2026-08-10: a program, not a paper)
+**Vision (Peter).** A whole industry of projection onto de Finetti-style bases for
+re-pricing and re-evaluating symmetric payoffs. Exchangeability is the model-free part;
+the latent mixing measure is the only unknown. Calibrate the mixing measure from liquid
+symmetric instruments, then re-price ANY symmetric payoff by projection.
+**Provenance.** Peter's own 2006 work, never written up properly. Extant sources: the
+GFC/CDO essay (allocation repo, `docs/essays/gfc/longform.html`, 14 de Finetti
+references), the implied-correlation article (`article/implied-correlation/`), earlier
+Medium articles referenced therein, and the signed-de Finetti thread
+(conformalprediction repo, `paper/definetti-feynman/`).
+**Legs, in write-up order.**
+(a) *Foundations, overdue*: "Projection onto de Finetti bases: re-pricing symmetric
+payoffs" — the 2006 program stated properly. CDO tranches, nth-to-default, baskets,
+index-versus-constituents as projections of one calibrated mixing measure. The
+implied-copula literature (Hull–White) is the nearest neighbour to distinguish.
+(b) *Market making*: exchangeable RFQ books — the multi-asset indifference cost reduces
+by permutation symmetry to radial + identical relative components; the exact counterpart
+of Bergault–Guéant's numerical factor reductions, composed with the imbalance gauge.
+(c) *Portfolio theory*: allocation among exchangeable assets — within-cluster
+exchangeability is the unstated reason parity-style weights work inside blocks, so the
+de Finetti mixing measure is what the Schur/HRP cluster factor has been all along.
+Connects this program to the schur repo's bridge.
+**Risk.** (a) low, it exists and needs writing; (b) medium; (c) medium, high payoff.
+**Venue.** (a) could aim wide (JPM-adjacent practitioner or Mathematical Finance);
+(b), (c) follow.
 
 ### P12. Explicit spectrum for the balanced GLFT oscillator
 **Claim.** The symmetrized balanced GLFT matrix (quadratic diagonal, constant
