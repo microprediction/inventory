@@ -155,7 +155,12 @@ entries of the table; the paper completes it.
 **Risk.** Low-medium; the work is finding the right group action and checking each
 generator. **Venue.** SIFIN or MAFE.
 
-### P11. The de Finetti projection program (upgraded 2026-08-10: a program, not a paper)
+### P11. The de Finetti projection program — MOVED to the private reynolds repo (2026-08-10)
+The program (symmetric payoffs, portfolio theory, fast repricing demos) now lives in
+github.com/microprediction/reynolds. Only leg (b), exchangeable RFQ books, remains an
+inventory paper, composing with the imbalance gauge.
+
+### P11-archive. Original entry (superseded)
 **Vision (Peter).** A whole industry of projection onto de Finetti-style bases for
 re-pricing and re-evaluating symmetric payoffs. Exchangeability is the model-free part;
 the latent mixing measure is the only unknown. Calibrate the mixing measure from liquid
