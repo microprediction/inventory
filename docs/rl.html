@@ -11,14 +11,14 @@
     --surface-1: #ffffff;
     --grid: #ececec; --baseline: #cfcfcf;
     --ink-muted: #9a9a9a; --ink-secondary: #5a5a5a;
-    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #6b6b6b;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #6b6b6b; --series-4: #7d3c98;
   }
   .tiles { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
-  .tile { flex: 1 1 150px; background: var(--panel); border: 1px solid var(--border);
+  .tile { flex: 1 1 130px; background: var(--panel); border: 1px solid var(--border);
           border-radius: 8px; padding: 10px 14px; }
   .tile .lbl { font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
   .tile .sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
-  .tile .val { font-size: 1.35rem; font-weight: 600; margin-top: 2px; }
+  .tile .val { font-size: 1.3rem; font-weight: 600; margin-top: 2px; }
   .tile .note { font-size: 0.74rem; color: var(--faint); margin-top: 1px; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--muted); margin: 4px 0 8px; }
   .legend .key { display: inline-flex; align-items: center; gap: 6px; }
@@ -28,6 +28,7 @@
   svg.chart text { fill: var(--ink-muted); font: 11px -apple-system, "Segoe UI", sans-serif;
                    font-variant-numeric: tabular-nums; }
   svg.chart .axis-label { fill: var(--ink-secondary); }
+  select { font: inherit; font-size: 0.92rem; }
 </style>
 </head>
 <body>
@@ -48,27 +49,43 @@
   <p class="pagenav"><a href="./demos.html">&larr; Demos</a></p>
   <h1>Learning faster with the symmetry</h1>
   <p class="subtitle">Reinforcement learning and its inverse, with and without the imbalance
-  equivalence. Companion to
+  equivalence &mdash; and what happens when the symmetry is only approximately true.
+  Companion to
   <a href="./skew_width_imbalance.pdf"><em>On a Simple Relationship Between Order Imbalance,
   Skew and Width in Over-The-Counter Trading</em></a>, &sect;6.</p>
 
   <p>
     The flow regime cycles through four imbalances (q = 0.40, 0.50, 0.60, 0.70, switching every
-    400 enquiries). Two identical tabular Q-learners quote into this market. The
-    <strong>baseline</strong> learns a separate policy per regime &mdash; each table sees a
-    quarter of the data. The <strong>symmetry learner</strong> keeps one policy in the balanced
-    frame and maps it through the skew shift &delta;(q) = (w/2)&thinsp;log(q/(1&minus;q)):
-    every regime&rsquo;s experience trains the same table. The correction is exact to first
-    order in q&nbsp;&minus;&nbsp;&frac12;; the residual &gamma; and M(q) effects are second
-    order, and show up only as a small asymptotic gap. The <strong>oracle</strong> quotes the
-    exact optimal policy.
+    400 enquiries). Identical tabular Q-learners quote into this market. The
+    <strong>baseline</strong> learns a separate policy per regime; each table sees a quarter of
+    the data. The <strong>symmetry learner</strong> keeps one policy in the balanced frame and
+    maps it through the skew shift &delta;(q) = (w/2)&thinsp;log(q/(1&minus;q)): every
+    regime&rsquo;s experience trains the same table. The <strong>robust learner</strong> adds a
+    small per-regime residual table on top of the shared one, so it can absorb whatever the
+    symmetry gets wrong. The <strong>oracle</strong> quotes the exact optimal policy for the
+    true generative model.
   </p>
-  <p class="lookfor">Look for: the symmetry learner reaching in ten thousand enquiries a level
-  the baseline has not reached in eighty thousand. Same algorithm, same stream &mdash; the
-  invariance is the only difference.</p>
+  <p>
+    The <strong>win curve</strong> selector changes the generative model of the best competing
+    quote. <em>Exponential</em> is the paper&rsquo;s model: constant hazard, symmetry exact.
+    <em>Logistic</em> is the shape Fermanian&ndash;Gu&eacute;ant&ndash;Pu fit to real RFQ data
+    &mdash; increasing hazard &mdash; plus competitors who crowd the flow-heavy side, so the
+    symmetry becomes only approximately true. The &delta; the learners use is deliberately NOT
+    recalibrated: it is the misspecified, exponential-model formula.
+  </p>
+  <p class="lookfor">Look for: under the exponential model, the symmetry learner reaching in
+  ten thousand enquiries a level the baseline never reaches. Then switch to logistic &mdash;
+  and notice the symmetry learner barely degrades. Acting is self-correcting: the shared table
+  quietly re-centers around the misspecified &delta;. The place the deviation really bites is
+  the inverse problem below.</p>
 
   <div class="widget">
     <div class="controls">
+      <label>win curve</label>
+      <select id="winCurve">
+        <option value="exponential" selected>exponential (paper's model, symmetry exact)</option>
+        <option value="logistic">logistic + crowding (realistic, symmetry approximate)</option>
+      </select>
       <button id="runBtn">Run</button>
       <button id="resetBtn">Reset</button>
       <label>speed</label>
@@ -82,44 +99,52 @@
 
   <div class="tiles">
     <div class="tile"><div class="lbl">Enquiries</div><div class="val" id="tN">0</div><div class="note">regimes cycle every 400</div></div>
-    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-1)"></span>Symmetry learner</div><div class="val" id="tSym">&ndash;</div><div class="note">rolling P&amp;L per enquiry</div></div>
-    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-2)"></span>Per-regime baseline</div><div class="val" id="tBase">&ndash;</div><div class="note">rolling P&amp;L per enquiry</div></div>
-    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">exact optimal policy</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-1)"></span>Symmetry</div><div class="val" id="tSym">&ndash;</div><div class="note">one shared table</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-4)"></span>Robust</div><div class="val" id="tRob">&ndash;</div><div class="note">shared + residuals</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-2)"></span>Per-regime</div><div class="val" id="tBase">&ndash;</div><div class="note">no symmetry</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">exact optimum</div></div>
   </div>
 
   <div class="widget">
     <div class="widget-title">Learning curves: rolling average P&amp;L per enquiry (window 4,000)</div>
     <div class="legend">
-      <span class="key"><span class="sw" style="background:var(--series-1)"></span> symmetry learner (one table, all regimes)</span>
-      <span class="key"><span class="sw" style="background:var(--series-2)"></span> baseline (one table per regime)</span>
+      <span class="key"><span class="sw" style="background:var(--series-1)"></span> symmetry (one table, all regimes)</span>
+      <span class="key"><span class="sw" style="background:var(--series-4)"></span> robust (shared + per-regime residual)</span>
+      <span class="key"><span class="sw" style="background:var(--series-2)"></span> per-regime baseline</span>
       <span class="key"><span class="sw" style="background:var(--series-3)"></span> oracle</span>
     </div>
     <div id="chartLearn"></div>
-    <div class="readout">Identical Q-learning throughout: &epsilon;-greedy exploration, the
-    same action grid, the same random draws. The symmetry learner&rsquo;s small asymptotic gap
-    to the oracle is the second-order (&gamma;, M) residue plus exploration and
-    discretization.</div>
+    <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy exploration,
+    same action grid, same random draws. Under misspecification the shared table re-centers
+    itself around the wrong &delta;, which is why hard weight-sharing is safer in the forward
+    direction than intuition suggests; the residual layer is insurance that costs a little
+    variance.</div>
   </div>
 
-  <h2>The inverse problem: reading a dealer&rsquo;s cost from her quotes</h2>
+  <h2>The inverse problem, where robustness earns its keep</h2>
   <p>
-    Now watch instead of act. A dealer quotes optimally across the same four regimes, and an
-    observer sees noisy quotes only. The observer wants her skew curve S(x) &mdash; by the
-    paper&rsquo;s identities, the slope of her inventory cost. The <strong>per-regime</strong>
-    estimator uses only observations from the target regime. The <strong>pooled</strong>
-    estimator de-tilts every observation by &delta;(q) into the balanced frame, so all four
-    regimes&rsquo; quotes estimate one curve.
+    Now watch instead of act. A dealer quotes optimally across the same regimes; an observer
+    sees noisy quotes and wants her skew curve S(x) &mdash; by the paper&rsquo;s identities,
+    the slope of her inventory cost. Three estimators: <strong>per-regime</strong> uses only
+    the target regime&rsquo;s observations. <strong>Pooled</strong> de-tilts everything by
+    &delta;(q) and averages &mdash; unbeatable when the symmetry is exact, but it has no way to
+    re-center when it isn&rsquo;t: unlike the forward learner, an estimator cannot absorb its
+    own bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling, in
+    which the between-regime dispersion of the de-tilted means estimates the size of the
+    symmetry violation and sets the pooling weight automatically &mdash; the same
+    reliability-sets-the-dial mechanism as the Schur damping &gamma;*.
   </p>
-  <p class="lookfor">Look for: pooling cutting the estimation error severalfold at realistic
-  sample sizes &mdash; and, at very large samples, the pooled error hitting a floor. That floor
-  is the second-order bias of the first-order-exact symmetry: the approximate symmetry, made
-  visible.</p>
+  <p class="lookfor">Look for: under the exponential model, pooled wins and shrunk tracks it.
+  Under the logistic model, pooled becomes the WORST estimator at large samples &mdash; its
+  bias never averages away &mdash; while shrunk quietly slides toward per-regime. The dial
+  sets itself; you never have to know which world you are in.</p>
 
   <div class="widget">
     <div class="widget-title">Inverse estimation error against observation count</div>
     <div class="legend">
       <span class="key"><span class="sw" style="background:var(--series-1)"></span> pooled, de-tilted (all regimes)</span>
-      <span class="key"><span class="sw" style="background:var(--series-2)"></span> per-regime (target regime only)</span>
+      <span class="key"><span class="sw" style="background:var(--series-2)"></span> per-regime (target only)</span>
+      <span class="key"><span class="sw" style="background:var(--series-4)"></span> shrunk (self-tuning partial pooling)</span>
     </div>
     <div id="chartIrl"></div>
     <div class="readout" id="irlReadout">Computing&hellip;</div>
@@ -127,7 +152,7 @@
 
   <p class="muted" style="font-size:0.9rem">Environment and solver:
   <a href="./mm_core.js">mm_core.js</a>, <a href="./rl_core.js">rl_core.js</a>. Roadmap
-  entries P7 and P9 in
+  entries P3, P7 and P9 in
   <a href="https://github.com/microprediction/inventory/blob/main/papers/ROADMAP.md">papers/ROADMAP.md</a>.</p>
 </main>
 
@@ -194,21 +219,24 @@ function drawSeries(containerId, seriesList, opts) {
 }
 
 /* ---- forward learning, animated ---- */
-const STRIDE = 200, WINDOW_SAMPLES = 20; // rolling window = 4000 enquiries
+const STRIDE = 200, WINDOW_SAMPLES = 20;
 let env, agents, samples, running = false, raf = null;
+
+function currentModel() { return document.getElementById('winCurve').value; }
 
 function resetForward() {
   running = false; if (raf) cancelAnimationFrame(raf);
   document.getElementById('runBtn').textContent = 'Run';
   document.getElementById('runBtn').classList.remove('on');
-  env = RL.makeEnv({ seed: (Math.random() * 2 ** 31) >>> 0 });
+  env = RL.makeEnv({ seed: (Math.random() * 2 ** 31) >>> 0, winCurve: currentModel() });
   const actions = RL.makeActions();
   agents = {
-    sym: RL.makeLearner({ env, symmetry: true, actions }),
-    base: RL.makeLearner({ env, symmetry: false, actions }),
+    sym: RL.makeLearner({ env, mode: 'sym', actions }),
+    rob: RL.makeLearner({ env, mode: 'robust', actions, resRate: 0.3 }),
+    base: RL.makeLearner({ env, mode: 'per', actions }),
     ora: RL.makeOracle({ env, MM }),
   };
-  samples = { t: [0], sym: [0], base: [0], ora: [0] };
+  samples = { t: [0], sym: [0], rob: [0], base: [0], ora: [0] };
   redrawForward();
 }
 
@@ -221,19 +249,24 @@ function rolling(cum, ts) {
 }
 
 function redrawForward() {
-  const pSym = rolling(samples.sym, samples.t);
-  const pBase = rolling(samples.base, samples.t);
-  const pOra = rolling(samples.ora, samples.t);
+  const p = {
+    sym: rolling(samples.sym, samples.t),
+    rob: rolling(samples.rob, samples.t),
+    base: rolling(samples.base, samples.t),
+    ora: rolling(samples.ora, samples.t),
+  };
   drawSeries('chartLearn', [
-    { color: cssVar('--series-3'), points: pOra, dash: '5 4' },
-    { color: cssVar('--series-2'), points: pBase },
-    { color: cssVar('--series-1'), points: pSym },
+    { color: cssVar('--series-3'), points: p.ora, dash: '5 4' },
+    { color: cssVar('--series-2'), points: p.base },
+    { color: cssVar('--series-4'), points: p.rob },
+    { color: cssVar('--series-1'), points: p.sym },
   ], { xlabel: 'enquiries', ylabel: 'rolling P&L / enquiry' });
   document.getElementById('tN').textContent = env.t.toLocaleString();
   const last = a => a.length ? a[a.length - 1][1].toFixed(3) : '–';
-  document.getElementById('tSym').textContent = last(pSym);
-  document.getElementById('tBase').textContent = last(pBase);
-  document.getElementById('tOra').textContent = last(pOra);
+  document.getElementById('tSym').textContent = last(p.sym);
+  document.getElementById('tRob').textContent = last(p.rob);
+  document.getElementById('tBase').textContent = last(p.base);
+  document.getElementById('tOra').textContent = last(p.ora);
 }
 
 function frame() {
@@ -241,10 +274,11 @@ function frame() {
   const batch = +document.getElementById('speed').value;
   for (let i = 0; i < batch; i++) {
     const e = env.enquiry();
-    agents.sym.learn(e); agents.base.learn(e); agents.ora.learn(e);
+    agents.sym.learn(e); agents.rob.learn(e); agents.base.learn(e); agents.ora.learn(e);
     if (env.t % STRIDE === 0) {
       samples.t.push(env.t);
       samples.sym.push(agents.sym.pnl);
+      samples.rob.push(agents.rob.pnl);
       samples.base.push(agents.base.pnl);
       samples.ora.push(agents.ora.pnl);
     }
@@ -260,27 +294,37 @@ document.getElementById('runBtn').addEventListener('click', () => {
   if (running) frame();
 });
 document.getElementById('resetBtn').addEventListener('click', resetForward);
+document.getElementById('winCurve').addEventListener('change', () => {
+  resetForward();
+  running = true; document.getElementById('runBtn').textContent = 'Pause';
+  document.getElementById('runBtn').classList.add('on'); frame();
+  setTimeout(runIrl, 60);
+});
 window.addEventListener('resize', () => { redrawForward(); });
 
-/* ---- inverse problem, computed once on load ---- */
+/* ---- inverse problem ---- */
 function runIrl() {
+  const wc = currentModel();
   const ns = [500, 1000, 2000, 4000, 8000, 16000, 32000, 64000];
-  const pooled = [], per = [];
-  let ratioAt4k = null;
+  const pooled = [], per = [], shr = [];
+  let at16k = null;
   for (const n of ns) {
-    const envI = RL.makeEnv({ seed: 42 });
+    const envI = RL.makeEnv({ seed: 42, winCurve: wc });
     const r = RL.irlRun({ env: envI, MM, nObs: n, noise: 0.4, targetQ: 0.6 });
     if (isFinite(r.pooledRMSE)) pooled.push([n, r.pooledRMSE]);
     if (isFinite(r.perRegimeRMSE)) per.push([n, r.perRegimeRMSE]);
-    if (n === 4000) ratioAt4k = r.perRegimeRMSE / r.pooledRMSE;
+    if (isFinite(r.shrunkRMSE)) shr.push([n, r.shrunkRMSE]);
+    if (n === 16000) at16k = r;
   }
   drawSeries('chartIrl', [
     { color: cssVar('--series-2'), points: per, dots: true },
     { color: cssVar('--series-1'), points: pooled, dots: true },
+    { color: cssVar('--series-4'), points: shr, dots: true },
   ], { xlabel: 'observations (log scale)', ylabel: 'skew-curve RMSE', logx: true });
-  document.getElementById('irlReadout').innerHTML =
-    `At 4,000 observations the pooled estimator's error is <b>${ratioAt4k.toFixed(1)}&times; smaller</b>. ` +
-    `The pooled curve flattens at large samples: the second-order bias floor of a first-order-exact symmetry.`;
+  const msg = wc === 'exponential'
+    ? `Symmetry exact: pooling wins (${(at16k.perRegimeRMSE / at16k.pooledRMSE).toFixed(1)}&times; lower error than per-regime at 16k observations) and the shrinkage estimator tracks it without being told the symmetry holds.`
+    : `Symmetry approximate: hard pooling is now the WORST at large samples &mdash; its de-tilt bias never averages away &mdash; while the shrinkage estimator detects the violation from the data and slides to per-regime (${(at16k.pooledRMSE / at16k.shrunkRMSE).toFixed(1)}&times; lower error than pooling at 16k).`;
+  document.getElementById('irlReadout').innerHTML = msg;
 }
 
 resetForward();

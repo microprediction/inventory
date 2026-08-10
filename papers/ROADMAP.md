@@ -16,8 +16,11 @@ The steady-state theorem becomes a corollary.
 matrix. Conjugate, diagonalize, transform back. Watch the two exactness hazards: the
 terminal condition (inventory penalty must transform consistently under the tilt) and
 the max(·,0) quote floor (excluded region, as in the current paper).
-**Risk.** Low-medium: the algebra is mechanical; the terminal condition is where it
-could degrade from exact to approximate — which would still be a result.
+**Risk.** RETIRED — verified 2026-08-10 (`finite_horizon_imbalance/verify_finite_horizon.py`):
+the conjugation is exact to machine precision, boundary rows included, and the tilted
+terminal condition means precisely "mark the terminal book at fair value shifted by
+delta". The skew shift is the SAME (w/2) log-odds constant at every time and inventory.
+What remains is writing, not proving.
 **Venue.** Mathematics and Financial Economics (GLFT's home) or SIFIN full-length.
 
 ### P2. Closed-form order book first-passage laws via symmetrization
@@ -101,7 +104,10 @@ Python twin). Train identical agents with and without the symmetry layer across 
 [0.5, 0.85]; report the sample-efficiency ratio; a one-line theory section (orbit
 reduction of the policy space).
 **Risk.** Low technically; medium on venue fit. Fun, demonstrable, citable by the
-Guéant–Manziuk line.
+Guéant–Manziuk line. Demo live (docs/rl.html) with a robustness finding worth a section:
+under a misspecified delta the FORWARD learner self-corrects (the shared table
+re-centers), so hard weight-sharing is safer than intuition suggests; the fragility
+lives in the INVERSE direction. Validated numbers in the demo and rl_core.js.
 **Venue.** Applied Mathematical Finance, or an ML-for-finance workshop for speed.
 
 ### P9. Efficient inverse reinforcement learning: reading ν from quotes across regimes
