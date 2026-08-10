@@ -1,23 +1,24 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage[margin=1.15in]{geometry}
-\usepackage{hyperref}
-\usepackage{booktabs}
+\usepackage[round,authoryear]{natbib}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+\usepackage{microtype}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
 
-\title{Finite-Horizon Market Making with Imbalanced Flow,\\ in Closed Form}
-\author{Peter Cotton\thanks{Companion to \emph{On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading} (working paper, 2026), which proves the steady-state case of the equivalence in a sealed-bid model. A numerical certificate for every exact claim in the present paper, \texttt{verify\_finite\_horizon.py}, accompanies it. Comments welcome.}}
+\title{\textbf{Finite-Horizon Market Making with Imbalanced Flow,\\ in Closed Form}}
+\author{Peter Cotton\thanks{Companion to \emph{On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading} (working paper, 2026), which proves the steady-state case in a sealed-bid model. A numerical certificate for every exact claim, \texttt{verify\_finite\_horizon.py}, accompanies the paper. Comments welcome.}}
 \date{\today}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-The optimal market making literature descending from Avellaneda and Stoikov treats asymmetric buy and sell arrival intensities numerically. We observe that no numerics are needed: the finite-horizon problem with imbalanced flow is the balanced problem in disguise. The linear system of Gu\'eant, Lehalle and Fernandez-Tapia with side scales $A^b \neq A^a$ is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal quotes follow immediately: the mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is the long-horizon limit. A more general lemma comes free: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The imbalance costs one line of algebra, at any horizon.
+In the exponential-intensity market making model of \citet{glft2012}, the balanced problem is solvable in closed form and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, has been handled numerically. We observe that within this model the imbalance costs one line of algebra. The linear system of \citet{glft2012} with asymmetric scales is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is recovered as the long-horizon limit. A more general lemma follows from the same calculation: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The exponential intensity curve is the load-bearing assumption, and we are explicit about that boundary.
 \end{abstract}
 
 \medskip
@@ -27,17 +28,17 @@ The optimal market making literature descending from Avellaneda and Stoikov trea
 
 \section{Introduction}
 
-Avellaneda and Stoikov \cite{avellaneda2008} posed the modern market making problem, and Gu\'eant, Lehalle and Fernandez-Tapia \cite{glft2012} solved it: with exponential fill intensities and symmetric buy and sell arrival scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory, solvable in closed form. The symmetry of the arrival scales is load-bearing. When customers are more often sellers than buyers, the scales differ, and the literature handles the asymmetric case numerically \cite{gueant2017,bergaultgueant2021}.
+\citet{avellaneda2008} posed the modern market making problem, and \citet{glft2012} solved it: with exponential fill intensities $\lambda(\delta) = A e^{-k\delta}$ and symmetric buy and sell scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory. The symmetry of the scales is load-bearing in that solution. When customers are more often sellers than buyers the scales differ, and the treatments of the asymmetric case are numerical \citep{gueant2017,bergaultgueant2021}.
 
-The companion paper \cite{cotton2026skew} showed that in the steady state no numerics are needed: the imbalanced problem compresses exactly onto the balanced one, with the imbalance absorbed by a translation of the skew, a widening of the quotes, and a multiplication of the effective cost of carry. This paper extends the compression to every horizon. The instrument is a single diagonal conjugation of the Gu\'eant--Lehalle--Fernandez-Tapia system, and the result is exact: the finite-horizon imbalanced problem equals the balanced problem at the geometric-mean intensity, provided the balanced dealer marks her terminal book at a shifted price. The optimal mid shifts by the same constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ at every time and every inventory. The spread does not respond to the imbalance at all, at any horizon; it responds only to the change in effective market activity, which is second order.
+This note makes a single observation and develops its consequence. Within the exponential-intensity model, the imbalanced linear system is conjugate to the balanced one: a diagonal transform absorbs the asymmetry into a geometric-mean intensity and a tilted terminal condition, and the tilt has a plain meaning. The optimal mid shifts by the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ at every time and every inventory, and the spread does not respond to the imbalance at all. The companion paper \citep{cotton2026skew} proved this compression for the steady state of a sealed-bid model; here it holds at every horizon.
 
-We are explicit about what is claimed. The result is a property of the reduced linear system, so it inherits that system's assumptions: exponential intensity curves with a common decay $k$, CARA preferences, and the inventory bounds of \cite{glft2012}. Within those assumptions the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script. Beyond them it degrades gracefully, in the manner quantified for the steady state in \cite{cotton2026skew}.
+We are explicit about the boundary of the claim. The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place; general intensity curves have no such reduction, and for them the numerical treatments of \citet{gueant2017} remain the state of the art. The scope is therefore exactly the model in which the balanced problem is celebrated for its closed form. Within that scope the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script.
 
 \section{The reduced system with imbalanced flow}\label{sec:model}
 
-Following \cite{glft2012}, a dealer quotes a bid $S - \delta^b$ and an ask $S + \delta^a$ around a mid $S$ with $dS = \sigma\, dW$. Fills arrive with intensities $\lambda^b(\delta^b) = A^b e^{-k\delta^b}$ and $\lambda^a(\delta^a) = A^a e^{-k\delta^a}$, moving the inventory $q$ within bounds $|q| \le Q$. The dealer has CARA utility with risk aversion $\gamma$ and horizon $T$. The only departure from \cite{glft2012} is $A^b \neq A^a$: sellers and buyers arrive at different rates, in constant ratio.
+Following \citet{glft2012}, a dealer quotes a bid $S - \delta^b$ and an ask $S + \delta^a$ around a mid $S$ with $dS = \sigma\, dW$. Fills arrive with intensities $\lambda^b(\delta^b) = A^b e^{-k\delta^b}$ and $\lambda^a(\delta^a) = A^a e^{-k\delta^a}$, moving the inventory $q$ within bounds $|q| \le Q$. The dealer has CARA utility with risk aversion $\gamma$ and horizon $T$. The only departure from \citet{glft2012} is $A^b \neq A^a$: sellers and buyers arrive at different rates, in constant ratio.
 
-The change of variables of \cite{glft2012} survives the asymmetry untouched, because the side scales enter only through constants. Write $u(t,x,q,S) = -\exp(-\gamma(x+qS))\, v_q(t)^{-\gamma/k}$ and the HJB collapses to the linear system
+The change of variables of \citet{glft2012} survives the asymmetry untouched, because the side scales enter only through constants. Write $u(t,x,q,S) = -\exp(-\gamma(x+qS))\, v_q(t)^{-\gamma/k}$ and the HJB collapses to the linear system
 \begin{equation}\label{eq:system}
 \dot v_q(t) \;=\; \alpha q^2\, v_q(t) \;-\; \eta^b\, v_{q+1}(t) \;-\; \eta^a\, v_{q-1}(t),
 \qquad v_q(T) = 1,
@@ -52,7 +53,7 @@ In matrix form $\dot v = Mv$ where $M$ is tridiagonal with diagonal $\alpha q^2$
 
 \section{The symmetrization}\label{sec:theorem}
 
-The general fact costs nothing extra, so we state it first.
+The general fact requires no more work than the special case, so we state it first.
 
 \begin{lemma}[Any imbalance profile symmetrizes]\label{lem:general}
 Let $M$ be tridiagonal with arbitrary diagonal and off-diagonal entries $-\eta^b_q$ (coupling $q$ to $q+1$) and $-\eta^a_q$ (coupling $q$ to $q-1$), all $\eta$ positive and possibly inventory-dependent. Define $d_{q+1}/d_q = \sqrt{\eta^b_q/\eta^a_{q+1}}$ and $D = \mathrm{diag}(d_q)$. Then $DMD^{-1}$ is symmetric, with both off-diagonals between levels $q$ and $q+1$ equal to $-\sqrt{\eta^b_q\, \eta^a_{q+1}}$. In particular the spectrum of $M$ is real, and the system \eqref{eq:system} with any inventory-dependent imbalance is solved by one symmetric eigendecomposition.
@@ -96,7 +97,7 @@ since the tilt cancels from the second difference. Imbalance displaces the mid b
 \[
 \frac{\eta^a + \eta^b}{2\bar\eta} \;=\; \frac{1}{2\sqrt{p(1-p)}} \;=\; M(p),
 \]
-the carry multiplier of \cite{cotton2026skew}. The skew response to imbalance is first order; the spread response is second order, at every horizon.
+the carry multiplier of \citet{cotton2026skew}. The skew response to imbalance is first order; the spread response is second order, at every horizon.
 \end{corollary}
 
 \begin{corollary}[Closed form]\label{cor:closed}
@@ -104,19 +105,19 @@ Let $\bar M = D M D^{-1}$ be the symmetric matrix of Theorem~\ref{thm:main} with
 \[
 v(t) \;=\; D^{-1} U e^{-\Lambda (T-t)} U^\top D\, \mathbf{1},
 \]
-one real spectral decomposition for every imbalance. The balanced solution of \cite{glft2012} is the case $r = 1$.
+one real spectral decomposition for every imbalance. The balanced solution of \citet{glft2012} is the case $r = 1$.
 \end{corollary}
 
 \begin{corollary}[The steady state is the long-horizon limit]\label{cor:ergodic}
-As $T - t \to \infty$, $e^{-\Lambda(T-t)}$ is dominated by the smallest eigenvalue and $v_q(t)$ aligns with the Perron eigenvector of $\bar M$ tilted back by $r^{-q}$. The quote displacements converge to the stationary policy, and \eqref{eq:shift} becomes the steady-state statement of \cite{cotton2026skew}: a dealer with zero inventory skews by $\delta$, which is $\tfrac{w}{2}\log\tfrac{p}{1-p}$ with $w = 1/k$ the width scale.
+As $T - t \to \infty$, $e^{-\Lambda(T-t)}$ is dominated by the smallest eigenvalue and $v_q(t)$ aligns with the Perron eigenvector of $\bar M$ tilted back by $r^{-q}$. The quote displacements converge to the stationary policy, and \eqref{eq:shift} becomes the steady-state statement of \citet{cotton2026skew}: a dealer with zero inventory skews by $\delta$, which is $\tfrac{w}{2}\log\tfrac{p}{1-p}$ with $w = 1/k$ the width scale.
 \end{corollary}
 
 \begin{remark}[The algebra, again]
-The conjugation is the same birth--death symmetrization used in the companion paper, whose provenance runs through the spectral theory of birth and death processes \cite{karlinmcgregor1957} and, in random-walk form, through the tilt factors of first-passage theory \cite{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. What is new here is the destination: the market making literature has treated asymmetric intensities numerically \cite{gueant2017,bergaultgueant2021}, and the tilted terminal condition turns out to carry the entire economics of the imbalance.
+The conjugation is the same birth--death symmetrization used in the companion paper, whose provenance runs through the spectral theory of birth and death processes \citep{karlinmcgregor1957} and, in random-walk form, through the tilt factors of first-passage theory \citep{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. The destination is what is new: the market making treatments of asymmetric intensities have been numerical \citep{gueant2017,bergaultgueant2021}, and the tilted terminal condition turns out to carry the entire economics of the imbalance.
 \end{remark}
 
 \begin{remark}[What is not claimed]
-The equivalence is exact for the reduced system \eqref{eq:system} and hence within its assumptions. A common decay $k$ across sides is used in \eqref{eq:shift}; side-dependent decays $k^b \neq k^a$ break the constant shift, though Lemma~\ref{lem:general} still symmetrizes the system state by state. Time-dependent scales $A^b(t), A^a(t)$ in constant ratio preserve the theorem verbatim; a time-varying ratio makes $\delta$ time-varying and the terminal tilt path-dependent, the case treated as a stochastic modulation in the companion program. Adverse selection and market impact are absent, as in \cite{glft2012}.
+The equivalence is exact for the reduced system \eqref{eq:system} and hence exactly within its assumptions. The exponential intensity curve is essential: it is what produces a linear system, and the constant shift in \eqref{eq:shift} additionally uses a common decay $k$ across sides. Side-dependent decays $k^b \neq k^a$ break the constant shift, though Lemma~\ref{lem:general} still symmetrizes the system. Time-dependent scales in constant ratio preserve the theorem verbatim; a time-varying ratio makes $\delta$ time-varying, the case treated as a stochastic modulation in the companion program. For the steady-state model, the companion paper shows the analogous exponential assumption is needed only locally, with quantified error; we expect, but do not prove here, a finite-horizon analogue.
 \end{remark}
 
 \section{Numerical certificate}\label{sec:certificate}
@@ -125,18 +126,19 @@ The claims are linear algebra, and linear algebra can be checked by machine. The
 
 \section{Use}\label{sec:use}
 
-One balanced solve now serves every imbalance at every horizon. A desk that recalibrates its flow forecast intraday does not re-solve anything: the policy update is the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ added to the mid, with the spread left alone. The same invariance can be imposed on learned policies, where it pools training experience across flow regimes; a companion demonstration quantifies the sample-efficiency gain and its robustness to misspecification. And because the shift is constant in time and inventory, it is the cleanest falsifiable prediction of the framework: quote data with measured flow imbalance should show mids displaced by $\tfrac{w}{2}\log\tfrac{p}{1-p}$ and spreads unmoved, whatever the horizon of the book.
+One balanced solve now serves every imbalance at every horizon, within the exponential-intensity model. A desk that recalibrates its flow forecast intraday does not re-solve anything: the policy update is the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ added to the mid, with the spread left alone. The same invariance can be imposed on learned policies, where it pools training experience across flow regimes. Because the shift is constant in time and inventory, it is also a falsifiable prediction: quote data with measured flow imbalance should show mids displaced by $\tfrac{w}{2}\log\tfrac{p}{1-p}$ and spreads unmoved, whatever the horizon of the book.
+
+We leave to future work the two directions the remark identifies: the robustness of the finite-horizon statement to locally exponential intensity curves, and the stochastically modulated ratio, where the constant tilt should become a spectral one.
 
 \begin{thebibliography}{9}
-\bibitem{avellaneda2008} Avellaneda, M., Stoikov, S. (2008). High-frequency trading in a limit order book. \emph{Quantitative Finance} 8(3), 217--224.
-\bibitem{glft2012} Gu\'eant, O., Lehalle, C.-A., Fernandez-Tapia, J. (2012). Dealing with the inventory risk: a solution to the market making problem. \emph{Mathematics and Financial Economics} 7(4), 477--507.
-\bibitem{gueant2017} Gu\'eant, O. (2017). Optimal market making. \emph{Applied Mathematical Finance} 24(2), 112--154.
-\bibitem{bergaultgueant2021} Bergault, P., Gu\'eant, O. (2021). Size matters for OTC market makers: general results and dimensionality reduction techniques. \emph{Mathematical Finance} 31(1), 279--322.
-\bibitem{cotton2026skew} Cotton, P. (2026). On a simple relationship between order imbalance, skew and width in over-the-counter trading. Working paper, \url{https://inventory.microprediction.org}.
-\bibitem{karlinmcgregor1957} Karlin, S., McGregor, J. (1957). The differential equations of birth-and-death processes, and the Stieltjes moment problem. \emph{Transactions of the American Mathematical Society} 85(2), 489--546.
-\bibitem{feller1968} Feller, W. (1968). \emph{An Introduction to Probability Theory and Its Applications}, Vol.~I, 3rd ed., Ch.~XIV. Wiley.
-\bibitem{bergaultgueant2023} Bergault, P., Gu\'eant, O. (2023). Liquidity dynamics in RFQ markets and impact on pricing. arXiv:2309.04216.
-\bibitem{gueantmanziuk2019} Gu\'eant, O., Manziuk, I. (2019). Deep reinforcement learning for market making in corporate bonds: beating the curse of dimensionality. \emph{Applied Mathematical Finance} 26(5), 387--452.
+\bibitem[Avellaneda and Stoikov(2008)]{avellaneda2008} Avellaneda, M., Stoikov, S. (2008). High-frequency trading in a limit order book. \emph{Quantitative Finance} 8(3), 217--224.
+\bibitem[Gu\'eant et al.(2012)]{glft2012} Gu\'eant, O., Lehalle, C.-A., Fernandez-Tapia, J. (2012). Dealing with the inventory risk: a solution to the market making problem. \emph{Mathematics and Financial Economics} 7(4), 477--507.
+\bibitem[Gu\'eant(2017)]{gueant2017} Gu\'eant, O. (2017). Optimal market making. \emph{Applied Mathematical Finance} 24(2), 112--154.
+\bibitem[Bergault and Gu\'eant(2021)]{bergaultgueant2021} Bergault, P., Gu\'eant, O. (2021). Size matters for OTC market makers: general results and dimensionality reduction techniques. \emph{Mathematical Finance} 31(1), 279--322.
+\bibitem[Cotton(2026)]{cotton2026skew} Cotton, P. (2026). On a simple relationship between order imbalance, skew and width in over-the-counter trading. Working paper, \url{https://inventory.microprediction.org}.
+\bibitem[Karlin and McGregor(1957)]{karlinmcgregor1957} Karlin, S., McGregor, J. (1957). The differential equations of birth-and-death processes, and the Stieltjes moment problem. \emph{Transactions of the American Mathematical Society} 85(2), 489--546.
+\bibitem[Feller(1968)]{feller1968} Feller, W. (1968). \emph{An Introduction to Probability Theory and Its Applications}, Vol.~I, 3rd ed., Ch.~XIV. Wiley.
+\bibitem[Gu\'eant and Manziuk(2019)]{gueantmanziuk2019} Gu\'eant, O., Manziuk, I. (2019). Deep reinforcement learning for market making in corporate bonds: beating the curse of dimensionality. \emph{Applied Mathematical Finance} 26(5), 387--452.
 \end{thebibliography}
 
 \end{document}
