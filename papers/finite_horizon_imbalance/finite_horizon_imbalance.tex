@@ -28,7 +28,7 @@ In the exponential-intensity market making model of \citet{glft2012}, the balanc
 
 \section{Introduction}
 
-\citet{avellaneda2008} posed the modern market making problem, and \citet{glft2012} solved it: with exponential fill intensities $\lambda(\delta) = A e^{-k\delta}$ and symmetric buy and sell scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory. The symmetry of the scales is load-bearing in that solution. When customers are more often sellers than buyers the scales differ; \citet{gueant2017} develops closed-form approximations for this and more general cases, and the exact quotes are computed numerically \citep{gueant2017,bergaultgueant2021}.
+\citet{avellaneda2008} posed the modern market making problem, and \citet{glft2012} solved it: with exponential fill intensities $\lambda(\delta) = A e^{-k\delta}$ and symmetric buy and sell scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory. The symmetry of the scales is essential to that solution. When customers are more often sellers than buyers the scales differ; \citet{gueant2017} develops closed-form approximations for this and more general cases, and the exact quotes are computed numerically \citep{gueant2017,bergaultgueant2021}.
 
 This note makes a single observation and develops its consequence, including the consequence it does not have. The imbalanced linear system is diagonally conjugate to a symmetric system at the geometric-mean activity. The conjugation is exact, spectrum included, so the asymmetric finite-horizon problem acquires an exact spectral representation. But the conjugation carries the imbalance into the terminal condition as an exponential tilt, and the tilt does not commute with the horizon: at maturity it exactly cancels the flow skew, and only as the horizon grows does the displacement of the quoted mid converge to the steady-state constant $-\delta$ of the companion paper \citep{cotton2026skew}. The finite-horizon story is a term structure, not a constant.
 
@@ -77,14 +77,14 @@ and, writing $\delta^s_{w}$ for the depths computed from $w$ via \eqref{eq:quote
 \qquad
 \delta^a_{\mathrm{imb}}(t,q) = \delta^a_{w}(t,q) - \delta .
 \end{equation}
-The comparator in \eqref{eq:shift} is the TILTED-terminal problem, not the ordinary balanced problem: unless $r=1$, $w$ is not proportional to the balanced solution $z(t) = e^{-\bar M (T-t)}\mathbf{1}$ at finite horizon, where $\bar M$ denotes the symmetric matrix of \eqref{eq:balanced}.
+The comparator in \eqref{eq:shift} is the \emph{tilted}-terminal problem, not the ordinary balanced problem: unless $r=1$, $w$ is not proportional to the balanced solution $z(t) = e^{-\bar M (T-t)}\mathbf{1}$ at finite horizon, where $\bar M$ denotes the symmetric matrix of \eqref{eq:balanced}.
 \end{theorem}
 
 \begin{proof}
 Lemma~\ref{lem:general} with constant scales gives $d_q = r^q$, common off-diagonal $\bar\eta$, and $w_q(T) = r^q v_q(T) = r^q$. The quote relations follow from $\log(v_q/v_{q\pm1}) = \log(w_q/w_{q\pm1}) \pm \log r$. For the last statement, $w(T) = r^{\cdot}$ and $z(T) = \mathbf{1}$ are not proportional unless $r = 1$, and $e^{-\bar M \tau}$ is invertible.
 \end{proof}
 
-The terminal tilt has an exact economic meaning, and its sign deserves care. Through the ansatz, multiplying $v_q$ by $e^{cq}$ shifts the reference price by $c/k$; the asymmetric arrival curves $A^s e^{-k\delta^s}$ are balanced around the shifted price $\bar S = S - \delta$, while terminal inventory is liquidated at $S_T = \bar S_T + \delta$. The mismatch between the price the flow is balanced around and the price the book is marked at is what generates everything horizon-dependent below.
+The terminal tilt has an exact economic meaning, and the sign matters. Through the ansatz, multiplying $v_q$ by $e^{cq}$ shifts the reference price by $c/k$; the asymmetric arrival curves $A^s e^{-k\delta^s}$ are balanced around the shifted price $\bar S = S - \delta$, while terminal inventory is liquidated at $S_T = \bar S_T + \delta$. The mismatch between the price the flow is balanced around and the price the book is marked at is what generates everything horizon-dependent below.
 
 \begin{theorem}[The term structure of the flow displacement]\label{thm:term}
 Let $z(\tau) = e^{-\bar M \tau}\mathbf{1}$ and $w(\tau) = e^{-\bar M \tau} r^{\cdot}$, and let $\delta^s_{\mathrm{std}}$ denote the ordinary balanced quotes computed from $z$. For interior inventory $-Q < q < Q$, the displacement of the quote-price midpoint $m = S + \tfrac12(\delta^a - \delta^b)$ and the spread difference relative to the ordinary balanced problem are

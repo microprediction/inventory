@@ -104,7 +104,8 @@ for t2 in (0.05, 0.5, 1.0, 4.0):
     assert abs(a1[0] - a2[0]) < 1e-10 and abs(a1[1] - a2[1]) < 1e-10
 dm0, ds0 = dm_ds(1e-9)
 assert abs(dm0) < 1e-8 and abs(ds0) < 1e-8
-evals = np.sort(np.linalg.eigvalsh(D_ := (lambda: (np.diag(r**qs.astype(float)) @ Mi @ np.diag(r**(-qs.astype(float)))))()))
+Mbar = np.diag(r ** qs.astype(float)) @ Mi @ np.diag(r ** (-qs.astype(float)))
+evals = np.sort(np.linalg.eigvalsh(Mbar))
 gap = evals[1] - evals[0]
 dm_far, _ = dm_ds(30.0)
 assert abs(dm_far + delta) < 10 * np.exp(-gap * 30.0) + 1e-12
