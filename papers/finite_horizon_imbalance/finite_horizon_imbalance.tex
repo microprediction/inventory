@@ -10,15 +10,15 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
 
-\title{\textbf{Finite-Horizon Market Making with Imbalanced Flow, in Closed Form}}
-\author{Peter Cotton\thanks{Companion to \emph{On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading} (working paper, 2026), which proves the steady-state case in a sealed-bid model. A numerical certificate for every exact claim, \texttt{verify\_finite\_horizon.py}, accompanies the paper. Comments welcome.}}
+\title{\textbf{Finite-Horizon Market Making with Imbalanced Flow: An Exact Symmetrization and Its Term Structure}}
+\author{Peter Cotton\thanks{Companion to \emph{On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading} (working paper, 2026), which proves the steady-state case in a sealed-bid model. A numerical certificate for every exact claim, \texttt{verify\_finite\_horizon.py}, accompanies the paper, and includes the terminal-time counterexample that rules out a stronger all-horizon claim. Comments welcome.}}
 \date{\today}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-In the exponential-intensity market making model of \citet{glft2012}, the balanced problem is solvable in closed form and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, has been handled numerically. We observe that within this model the imbalance costs one line of algebra. The linear system of \citet{glft2012} with asymmetric scales is conjugate, by an explicit diagonal transform, to the balanced system at the geometric-mean intensity, with terminal inventory marked at a price shifted by $\delta = \tfrac{1}{2k}\log(A^b/A^a)$. The optimal mid shifts by the constant $\delta$ at every time and every inventory, and the spread does not move at all. The steady-state equivalence of the companion paper is recovered as the long-horizon limit. A more general lemma follows from the same calculation: the system with arbitrary inventory-dependent asymmetric intensities is always diagonally symmetrizable, so its spectrum is real and one balanced-form solve suffices. The reduction, and hence the result, requires the exponential intensity curve.
+In the exponential-intensity market making model of \citet{glft2012}, the balanced problem has an exact solution and the imbalanced problem, with buy and sell arrival scales $A^b \neq A^a$, requires numerical treatment in general. We show that the asymmetric finite-horizon system is diagonally similar to a symmetric system at the geometric-mean activity, with an imbalance-dependent exponential tilt in the terminal condition. This yields an exact real spectral representation for every imbalance. The terminal tilt is load-bearing: relative to the ordinary balanced problem, the flow-induced displacement of the quoted mid is horizon-dependent, vanishing at maturity and converging at the spectral-gap rate to the steady-state constant $-\delta$, with $\delta = \tfrac{1}{2k}\log(A^b/A^a)$, while the spread exhibits a finite-horizon transient that is second order in the imbalance at zero inventory. The steady-state equivalence of the companion paper is the long-horizon limit. An exact all-horizon constant shift does hold, but for a modified problem: the dealer who marks her terminal inventory at the flow-adjusted price $S_T - \delta$ is, at every horizon, exactly the balanced dealer of the slower market. The exponential intensity curve with a common decay $k$ is essential to the reduction.
 \end{abstract}
 
 \medskip
@@ -28,107 +28,126 @@ In the exponential-intensity market making model of \citet{glft2012}, the balanc
 
 \section{Introduction}
 
-\citet{avellaneda2008} posed the modern market making problem, and \citet{glft2012} solved it: with exponential fill intensities $\lambda(\delta) = A e^{-k\delta}$ and symmetric buy and sell scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory. The symmetry of the scales is load-bearing in that solution. When customers are more often sellers than buyers the scales differ, and the treatments of the asymmetric case are numerical \citep{gueant2017,bergaultgueant2021}.
+\citet{avellaneda2008} posed the modern market making problem, and \citet{glft2012} solved it: with exponential fill intensities $\lambda(\delta) = A e^{-k\delta}$ and symmetric buy and sell scales, the Hamilton--Jacobi--Bellman equation reduces to a linear system of ordinary differential equations indexed by inventory. The symmetry of the scales is load-bearing in that solution. When customers are more often sellers than buyers the scales differ; \citet{gueant2017} develops closed-form approximations for this and more general cases, and the exact quotes are computed numerically \citep{gueant2017,bergaultgueant2021}.
 
-This note makes a single observation and develops its consequence. Within the exponential-intensity model, the imbalanced linear system is conjugate to the balanced one: a diagonal transform absorbs the asymmetry into a geometric-mean intensity and a tilted terminal condition. The optimal mid shifts by the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ at every time and every inventory, and the spread does not respond to the imbalance at all. The companion paper \citep{cotton2026skew} proved this compression for the steady state of a sealed-bid model; here it holds at every horizon.
+This note makes a single observation and develops its consequence, including the consequence it does not have. The imbalanced linear system is diagonally conjugate to a symmetric system at the geometric-mean activity. The conjugation is exact, spectrum included, so the asymmetric finite-horizon problem acquires an exact spectral representation. But the conjugation carries the imbalance into the terminal condition as an exponential tilt, and the tilt does not commute with the horizon: at maturity it exactly cancels the flow skew, and only as the horizon grows does the displacement of the quoted mid converge to the steady-state constant $-\delta$ of the companion paper \citep{cotton2026skew}. The finite-horizon story is a term structure, not a constant.
 
-The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place. General intensity curves have no such reduction, and for them the numerical treatments of \citet{gueant2017} remain the state of the art. Within the model the equivalence is exact, boundary states included, and it is certified to machine precision by an accompanying script.
+The exponential intensity curve, with a common decay $k$ on both sides, is what linearizes the HJB in the first place. General intensity curves have no such reduction; side-dependent decays $k^b \neq k^a$ destroy the linearization itself. Within the model the results are exact on interior inventory states and certified to machine precision by an accompanying script, which also verifies the terminal-time counterexample that rules out the stronger claim.
 
 \section{The reduced system with imbalanced flow}\label{sec:model}
 
-Following \citet{glft2012}, a dealer quotes a bid $S - \delta^b$ and an ask $S + \delta^a$ around a mid $S$ with $dS = \sigma\, dW$. Fills arrive with intensities $\lambda^b(\delta^b) = A^b e^{-k\delta^b}$ and $\lambda^a(\delta^a) = A^a e^{-k\delta^a}$, moving the inventory $q$ within bounds $|q| \le Q$. The dealer has CARA utility with risk aversion $\gamma$ and horizon $T$. The only departure from \citet{glft2012} is $A^b \neq A^a$: sellers and buyers arrive at different rates, in constant ratio.
+Following \citet{glft2012}, a dealer quotes a bid $S - \delta^b$ and an ask $S + \delta^a$ around a mid $S$ with $dS = \sigma\, dW$. Fills arrive with intensities $\lambda^b(\delta^b) = A^b e^{-k\delta^b}$ and $\lambda^a(\delta^a) = A^a e^{-k\delta^a}$, moving the inventory $q$ within bounds $|q| \le Q$. The dealer has CARA utility with risk aversion $\gamma$, horizon $T$, and liquidates terminal inventory at $S_T$; the admissible quote processes are those of \citet{glft2012}. The only departure is $A^b \neq A^a$: sellers and buyers arrive at different rates, in constant ratio.
 
-The change of variables of \citet{glft2012} survives the asymmetry untouched, because the side scales enter only through constants. Write $u(t,x,q,S) = -\exp(-\gamma(x+qS))\, v_q(t)^{-\gamma/k}$ and the HJB collapses to the linear system
+The change of variables of \citet{glft2012} survives the asymmetry, because the side scales enter only through constants. Write $u(t,x,q,S) = -\exp(-\gamma(x+qS))\, v_q(t)^{-\gamma/k}$ and the HJB collapses to the linear system
 \begin{equation}\label{eq:system}
 \dot v_q(t) \;=\; \alpha q^2\, v_q(t) \;-\; \eta^b\, v_{q+1}(t) \;-\; \eta^a\, v_{q-1}(t),
 \qquad v_q(T) = 1,
 \end{equation}
-with $\alpha = \tfrac{k\gamma\sigma^2}{2}$, $\eta^s = A^s\big(1+\tfrac{\gamma}{k}\big)^{-(1+k/\gamma)}$ for $s \in \{a,b\}$, and the missing neighbor terms dropped at $q = \pm Q$. The optimal quotes are read off as in the balanced case:
+with $\alpha = \tfrac{k\gamma\sigma^2}{2}$, $\eta^s = A^s\big(1+\tfrac{\gamma}{k}\big)^{-(1+k/\gamma)}$ for $s \in \{a,b\}$, and the missing neighbor terms dropped at $q = \pm Q$. Writing $c_0 = \tfrac{1}{\gamma}\log(1+\tfrac{\gamma}{k})$, the optimal quote depths are
 \begin{equation}\label{eq:quotes}
-\delta^b(t,q) = \frac{1}{k}\log\frac{v_q(t)}{v_{q+1}(t)} + \frac{1}{\gamma}\log\Big(1+\frac{\gamma}{k}\Big),
+\delta^b(t,q) = \frac{1}{k}\log\frac{v_q(t)}{v_{q+1}(t)} + c_0 \quad (q < Q),
 \qquad
-\delta^a(t,q) = \frac{1}{k}\log\frac{v_q(t)}{v_{q-1}(t)} + \frac{1}{\gamma}\log\Big(1+\frac{\gamma}{k}\Big).
+\delta^a(t,q) = \frac{1}{k}\log\frac{v_q(t)}{v_{q-1}(t)} + c_0 \quad (q > -Q).
 \end{equation}
-In matrix form $\dot v = Mv$ where $M$ is tridiagonal with diagonal $\alpha q^2$ and off-diagonals $-\eta^b$ above and $-\eta^a$ below. The matrix is asymmetric exactly when the flow is.
+In matrix form $\dot v = Mv$ where $M$ is tridiagonal with diagonal $\alpha q^2$ and off-diagonals $-\eta^b$ above and $-\eta^a$ below. Since $-M$ is a Metzler matrix and the coupling graph is irreducible, $v(t) = e^{-M(T-t)}\mathbf{1}$ is strictly positive for $t < T$ and the logarithms in \eqref{eq:quotes} are well defined. The matrix is asymmetric exactly when the flow is.
 
-\section{The symmetrization}\label{sec:theorem}
+\section{The symmetrization and what it does and does not give}\label{sec:theorem}
 
 We state the general fact first.
 
 \begin{lemma}[Any imbalance profile symmetrizes]\label{lem:general}
-Let $M$ be tridiagonal with arbitrary diagonal and off-diagonal entries $-\eta^b_q$ (coupling $q$ to $q+1$) and $-\eta^a_q$ (coupling $q$ to $q-1$), all $\eta$ positive and possibly inventory-dependent. Define $d_{q+1}/d_q = \sqrt{\eta^b_q/\eta^a_{q+1}}$ and $D = \mathrm{diag}(d_q)$. Then $DMD^{-1}$ is symmetric, with both off-diagonals between levels $q$ and $q+1$ equal to $-\sqrt{\eta^b_q\, \eta^a_{q+1}}$. In particular the spectrum of $M$ is real, and the system \eqref{eq:system} with any inventory-dependent imbalance is solved by one symmetric eigendecomposition.
+Let $M$ be tridiagonal with arbitrary diagonal and off-diagonal entries $-\eta^b_q$ (coupling $q$ to $q+1$) and $-\eta^a_q$ (coupling $q$ to $q-1$), all $\eta$ positive and possibly inventory-dependent. Define $d_{q+1}/d_q = \sqrt{\eta^b_q/\eta^a_{q+1}}$ and $D = \mathrm{diag}(d_q)$. Then $DMD^{-1}$ is symmetric, with both off-diagonals between levels $q$ and $q+1$ equal to $-\sqrt{\eta^b_q\, \eta^a_{q+1}}$. In particular the spectrum of $M$ is real and, the couplings being strictly positive, simple.
 \end{lemma}
 
 \begin{proof}
-$(DMD^{-1})_{q,q+1} = -\eta^b_q\, d_q/d_{q+1} = -\sqrt{\eta^b_q \eta^a_{q+1}}$ and $(DMD^{-1})_{q+1,q} = -\eta^a_{q+1}\, d_{q+1}/d_q = -\sqrt{\eta^b_q \eta^a_{q+1}}$. Boundary rows have no missing counterpart to disturb. Similarity to a real symmetric matrix gives a real spectrum.
+$(DMD^{-1})_{q,q+1} = -\eta^b_q\, d_q/d_{q+1} = -\sqrt{\eta^b_q \eta^a_{q+1}}$ and $(DMD^{-1})_{q+1,q} = -\eta^a_{q+1}\, d_{q+1}/d_q = -\sqrt{\eta^b_q \eta^a_{q+1}}$. Boundary rows have no missing counterpart to disturb. A symmetric Jacobi matrix with nonzero off-diagonals has real simple eigenvalues.
 \end{proof}
 
-For constant scales the conjugation is a geometric tilt and the economics becomes explicit.
+For constant scales the conjugation is a geometric tilt. Let $r = \sqrt{\eta^b/\eta^a} = \sqrt{A^b/A^a}$, $\bar\eta = \sqrt{\eta^b\eta^a}$, $\delta = \tfrac{1}{k}\log r = \tfrac{1}{2k}\log(A^b/A^a)$, and $\tau = T - t$.
 
-\begin{theorem}[The imbalanced horizon compresses onto the balanced one]\label{thm:main}
-Let $r = \sqrt{\eta^b/\eta^a} = \sqrt{A^b/A^a}$, $\bar\eta = \sqrt{\eta^b\eta^a}$, and $w_q(t) = r^{q} v_q(t)$. Then $w$ solves the perfectly balanced system
+\begin{theorem}[Conjugacy, with the imbalance in the terminal condition]\label{thm:conj}
+Let $w_q(t) = r^{q} v_q(t)$. Then $w$ solves the symmetric-dynamics system
 \begin{equation}\label{eq:balanced}
 \dot w_q(t) \;=\; \alpha q^2\, w_q(t) \;-\; \bar\eta\,\big(w_{q+1}(t) + w_{q-1}(t)\big),
 \qquad w_q(T) = r^{q},
 \end{equation}
-and the quotes of the imbalanced problem are those of the balanced problem displaced by a constant:
+and, writing $\delta^s_{w}$ for the depths computed from $w$ via \eqref{eq:quotes},
 \begin{equation}\label{eq:shift}
-\delta^b_{\mathrm{imb}}(t,q) = \delta^b_{\mathrm{bal}}(t,q) + \delta,
+\delta^b_{\mathrm{imb}}(t,q) = \delta^b_{w}(t,q) + \delta,
 \qquad
-\delta^a_{\mathrm{imb}}(t,q) = \delta^a_{\mathrm{bal}}(t,q) - \delta,
-\qquad
-\delta = \frac{1}{2k}\log\frac{A^b}{A^a} .
+\delta^a_{\mathrm{imb}}(t,q) = \delta^a_{w}(t,q) - \delta .
 \end{equation}
-Multiplying $v_q$ by $e^{cq}$ is, through the ansatz, a shift of the reference price by $c/k$, so the condition $w_q(T) = r^q$ says the balanced dealer marks her terminal inventory at the price $S - \delta$. In words: the imbalanced dealer is a balanced dealer in a slower market, $\bar\eta \le \tfrac{1}{2}(\eta^a + \eta^b)$, who marks her book at fair value shifted by $\delta$.
+The comparator in \eqref{eq:shift} is the TILTED-terminal problem, not the ordinary balanced problem: unless $r=1$, $w$ is not proportional to the balanced solution $z(t) = e^{-\bar M (T-t)}\mathbf{1}$ at finite horizon, where $\bar M$ denotes the symmetric matrix of \eqref{eq:balanced}.
 \end{theorem}
 
 \begin{proof}
-Lemma~\ref{lem:general} with constant scales gives $d_q = r^q$ and common off-diagonal $\bar\eta$, which is \eqref{eq:balanced}; the terminal condition transforms as $w_q(T) = r^q v_q(T) = r^q$. For the quotes, $\log(v_q/v_{q+1}) = \log(w_q/w_{q+1}) + \log r$ in \eqref{eq:quotes}, and $\log r / k = \delta$; the ask likewise with the opposite sign.
+Lemma~\ref{lem:general} with constant scales gives $d_q = r^q$, common off-diagonal $\bar\eta$, and $w_q(T) = r^q v_q(T) = r^q$. The quote relations follow from $\log(v_q/v_{q\pm1}) = \log(w_q/w_{q\pm1}) \pm \log r$. For the last statement, $w(T) = r^{\cdot}$ and $z(T) = \mathbf{1}$ are not proportional unless $r = 1$, and $e^{-\bar M \tau}$ is invertible.
 \end{proof}
 
-\begin{corollary}[The mid moves, the spread does not]\label{cor:spread}
-At every $(t,q)$ the total spread satisfies
+The terminal tilt has an exact economic meaning, and its sign deserves care. Through the ansatz, multiplying $v_q$ by $e^{cq}$ shifts the reference price by $c/k$; the asymmetric arrival curves $A^s e^{-k\delta^s}$ are balanced around the shifted price $\bar S = S - \delta$, while terminal inventory is liquidated at $S_T = \bar S_T + \delta$. The mismatch between the price the flow is balanced around and the price the book is marked at is what generates everything horizon-dependent below.
+
+\begin{theorem}[The term structure of the flow displacement]\label{thm:term}
+Let $z(\tau) = e^{-\bar M \tau}\mathbf{1}$ and $w(\tau) = e^{-\bar M \tau} r^{\cdot}$, and let $\delta^s_{\mathrm{std}}$ denote the ordinary balanced quotes computed from $z$. For interior inventory $-Q < q < Q$, the displacement of the quote-price midpoint $m = S + \tfrac12(\delta^a - \delta^b)$ and the spread difference relative to the ordinary balanced problem are
+\begin{equation}\label{eq:dm}
+\Delta m_q(\tau) \;=\; -\delta \;+\; \frac{1}{2k}\log\frac{w_{q+1}(\tau)\, z_{q-1}(\tau)}{w_{q-1}(\tau)\, z_{q+1}(\tau)},
+\qquad
+\Delta s_q(\tau) \;=\; \frac{1}{k}\log\frac{w_q(\tau)^2\, z_{q+1}(\tau)\, z_{q-1}(\tau)}{w_{q+1}(\tau)\, w_{q-1}(\tau)\, z_q(\tau)^2}.
+\end{equation}
+Consequently $\Delta m_q(0) = 0$ and $\Delta s_q(0) = 0$: at maturity the terminal condition cancels the flow skew entirely, and both quote depths tend to $c_0$ regardless of $A^b/A^a$. As $\tau \to \infty$ with $\bar\eta$ fixed, both $w$ and $z$ align with the positive ground-state eigenvector of $\bar M$, so
 \[
-\delta^b_{\mathrm{imb}} + \delta^a_{\mathrm{imb}}
-= \frac{1}{k}\log\frac{v_q^2}{v_{q+1}v_{q-1}} + \frac{2}{\gamma}\log\Big(1+\frac{\gamma}{k}\Big)
-= \delta^b_{\mathrm{bal}} + \delta^a_{\mathrm{bal}},
+\Delta m_q(\tau) \longrightarrow -\delta, \qquad \Delta s_q(\tau) \longrightarrow 0,
 \]
-since the tilt cancels from the second difference. Imbalance displaces the mid by $\delta$, at every horizon and inventory, and touches the spread only through the slower activity $\bar\eta$. Writing $p = A^b/(A^b+A^a)$ for the seller fraction, the activity ratio is
-\[
-\frac{\eta^a + \eta^b}{2\bar\eta} \;=\; \frac{1}{2\sqrt{p(1-p)}} \;=\; M(p),
-\]
-the carry multiplier of \citet{cotton2026skew}. The skew response to imbalance is first order; the spread response is second order, at every horizon.
+at a rate governed by the spectral gap of $\bar M$. When sellers dominate ($A^b > A^a$, $\delta > 0$) both quoted prices sit below their balanced counterparts in the long-horizon limit; the DEPTH skew $\tfrac12(\delta^b - \delta^a)$ correspondingly tends to $+\delta$.
+\end{theorem}
+
+\begin{proof}
+Subtract the standard-balanced depths from \eqref{eq:shift} using $\delta^b_{w} - \delta^b_{\mathrm{std}} = \tfrac1k \log(w_q z_{q+1}/(w_{q+1} z_q))$ and its ask counterpart, then form the mid and spread combinations. At $\tau = 0$, $w = r^{\cdot}$ and $z = \mathbf{1}$ give $\tfrac{1}{2k}\log r^2 = \delta$ in \eqref{eq:dm}, cancelling $-\delta$; the spread ratio is $1$. As $\tau \to \infty$, $w(\tau) \sim (r^{\cdot}, \varphi)\, e^{-\lambda_1 \tau} \varphi$ and $z(\tau) \sim (\mathbf{1}, \varphi)\, e^{-\lambda_1 \tau} \varphi$ for the simple ground pair $(\lambda_1, \varphi)$ of $\bar M$ with $\varphi > 0$, so all component ratios converge to ratios of $\varphi$ and the logarithms in \eqref{eq:dm} tend to $0$; the error is $O(e^{-(\lambda_2 - \lambda_1)\tau})$.
+\end{proof}
+
+\begin{corollary}[Numerical anchor]\label{cor:counter}
+For $Q=2$, $\alpha = 0.1$, $\eta^b = 2$, $\eta^a = \tfrac12$, $k=1$, $\gamma = 0.1$, $\tau = 1$: the ordinary balanced problem at $\bar\eta = 1$ has both depths $1.109623$; the imbalanced problem has bid depth $1.435402$, ask depth $0.818182$, mid displacement $-0.308610$, and spread $2.253584$. The steady-state shift is $-\delta = -0.693147$. An all-horizon constant displacement is therefore false for the standard terminal condition; the certificate reproduces these numbers to machine precision.
 \end{corollary}
 
-\begin{corollary}[Closed form]\label{cor:closed}
-Let $\bar M = D M D^{-1}$ be the symmetric matrix of Theorem~\ref{thm:main} with eigendecomposition $\bar M = U \Lambda U^\top$. Then
+\begin{corollary}[Exact spectral representation]\label{cor:closed}
+For constant coefficients, with $\bar M = D M D^{-1} = U \Lambda U^\top$,
 \[
 v(t) \;=\; D^{-1} U e^{-\Lambda (T-t)} U^\top D\, \mathbf{1},
 \]
-one real spectral decomposition for every imbalance. The balanced solution of \citet{glft2012} is the case $r = 1$.
+one real spectral decomposition for every imbalance; the balanced solution of \citet{glft2012} is the case $r=1$. Time-dependent scales in constant ratio preserve the conjugation but not this formula: $\bar M(t)$ at different times need not commute, and a time-ordered exponential or direct integration replaces the eigendecomposition. A time-varying ratio adds the diagonal term $q\, \tfrac{d}{dt}\log r(t)$ to the transformed system and is not captured by a time-varying $\delta$ alone.
 \end{corollary}
 
-\begin{corollary}[The steady state is the long-horizon limit]\label{cor:ergodic}
-As $T - t \to \infty$, $e^{-\Lambda(T-t)}$ is dominated by the smallest eigenvalue and $v_q(t)$ aligns with the Perron eigenvector of $\bar M$ tilted back by $r^{-q}$. The quote displacements converge to the stationary policy, and \eqref{eq:shift} becomes the steady-state statement of \citet{cotton2026skew}: a dealer with zero inventory skews by $\delta$, which is $\tfrac{w}{2}\log\tfrac{p}{1-p}$ with $w = 1/k$ the width scale.
+\begin{corollary}[The all-horizon shift holds under flow-adjusted terminal marking]\label{cor:salvage}
+Suppose the dealer marks terminal inventory at $S_T - \delta$ instead of $S_T$. Then $v_q(T) = r^{-q}$, hence $w_q(T) = \mathbf{1}$: the transformed problem is exactly the ordinary balanced problem, and
+\[
+\delta^b_{\mathrm{imb}}(t,q) = \delta^b_{\mathrm{std}}(t,q) + \delta,
+\qquad
+\delta^a_{\mathrm{imb}}(t,q) = \delta^a_{\mathrm{std}}(t,q) - \delta
+\qquad \text{for all } t, \; -Q < q < Q:
+\]
+constant mid displacement $-\delta$ and identical spread at every horizon. The dealer who marks her book at the price her flow is balanced around is, at every horizon, the balanced dealer of the slower market.
+\end{corollary}
+
+\begin{corollary}[Parity of the spread response]\label{cor:parity}
+Fix $\bar\eta$ and write $r = e^{\varepsilon}$. Reflection of inventory maps $(q, \varepsilon) \mapsto (-q, -\varepsilon)$ and leaves the system invariant, so the spread satisfies $s_q(\varepsilon) = s_{-q}(-\varepsilon)$. At $q = 0$ the spread is therefore even in $\varepsilon$ and its imbalance response is second order; at $q \neq 0$ it is generically first order. The mid displacement at $q=0$ is odd in $\varepsilon$.
 \end{corollary}
 
 \begin{remark}[The algebra, again]
-The conjugation is the same birth--death symmetrization used in the companion paper, whose provenance runs through the spectral theory of birth and death processes \citep{karlinmcgregor1957} and, in random-walk form, through the tilt factors of first-passage theory \citep{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. The application is new: asymmetric intensities in market making have been treated numerically \citep{gueant2017,bergaultgueant2021}. The tilted terminal condition carries the entire economics of the imbalance.
+The conjugation is the same birth--death symmetrization used in the companion paper, with provenance in the spectral theory of birth and death processes \citep{karlinmcgregor1957} and, in random-walk form, in the tilt factors of first-passage theory \citep{feller1968}. Lemma~\ref{lem:general} is the standard fact that a Jacobi matrix with positive couplings is diagonally symmetrizable. The contribution is the destination and its boundary: an exact symmetrization and spectral representation for the common-$k$ exponential asymmetric-scale finite-horizon problem, together with the exact term structure \eqref{eq:dm} that the terminal condition imposes.
 \end{remark}
 
 \begin{remark}[The exponential assumption]
-The equivalence is exact for the reduced system \eqref{eq:system} and hence exactly within its assumptions. The exponential intensity curve is essential: it is what produces a linear system, and the constant shift in \eqref{eq:shift} additionally uses a common decay $k$ across sides. Side-dependent decays $k^b \neq k^a$ break the constant shift, though Lemma~\ref{lem:general} still symmetrizes the system. Time-dependent scales in constant ratio preserve the theorem verbatim; a time-varying ratio makes $\delta$ time-varying, the case treated as a stochastic modulation in the companion program. For the steady-state model, the companion paper shows the analogous exponential assumption is needed only locally, with quantified error; we expect, but do not prove here, a finite-horizon analogue.
+The reduction \eqref{eq:system}, and hence everything here, requires the exponential intensity curve with a common decay $k$. Side-dependent decays $k^b \neq k^a$ do not merely break the constant shift: no single change of variables of the GLFT form linearizes both sides at once, so there is no linear tridiagonal system for Lemma~\ref{lem:general} to act on. If quote depths are constrained to be nonnegative, \eqref{eq:quotes} must be clipped where the unconstrained optimizer is negative, and the exact reduction fails in those states. For the steady-state model the companion paper shows the analogous exponential assumption is needed only locally, with quantified error; we expect, but do not prove here, a finite-horizon analogue.
 \end{remark}
 
 \section{Numerical certificate}\label{sec:certificate}
 
-The claims are linear algebra and can be checked by machine. The script \texttt{verify\_finite\_horizon.py} accompanying this paper constructs the asymmetric system \eqref{eq:system} for representative parameters, verifies the conjugation of Lemma~\ref{lem:general} to $10^{-16}$, integrates both systems by fourth-order Runge--Kutta, and confirms $v_q(t) = r^{-q} w_q(t)$ and the quote displacement \eqref{eq:shift} to $10^{-14}$ at every grid time and inventory, boundary states included. The general lemma is verified separately with randomized inventory-dependent intensities.
+The claims are linear algebra and can be checked by machine. The script \texttt{verify\_finite\_horizon.py} verifies, to near machine precision: the conjugation of Lemma~\ref{lem:general} for randomized inventory-dependent intensities; the identities $v_q = r^{-q} w_q$ and \eqref{eq:shift} against the tilted comparator; the counterexample of Corollary~\ref{cor:counter} against the ordinary balanced comparator, reproducing the table; the term-structure formulas \eqref{eq:dm} against direct computation, with $\Delta m_q(0) = 0$ and the spectral-rate convergence $\Delta m_q(\tau) \to -\delta$; the flow-adjusted marking of Corollary~\ref{cor:salvage} giving the constant shift at every tested horizon; and the parity of Corollary~\ref{cor:parity}.
 
 \section{Use}\label{sec:use}
 
-One balanced solve now serves every imbalance at every horizon, within the exponential-intensity model. A desk that recalibrates its flow forecast intraday does not re-solve anything: the policy update is the constant $\delta = \tfrac{1}{2k}\log(A^b/A^a)$ added to the mid, with the spread left alone. The same invariance can be imposed on learned policies, where it pools training experience across flow regimes. Because the shift is constant in time and inventory, it is also a falsifiable prediction: quote data with measured flow imbalance should show mids displaced by $\tfrac{w}{2}\log\tfrac{p}{1-p}$ and spreads unmoved, whatever the horizon of the book.
+Two objects survive for practice, both exact within the model. The spectral representation prices the imbalanced finite-horizon dealer with one symmetric eigendecomposition, for any imbalance and any horizon. And the term structure \eqref{eq:dm} is itself the falsifiable content: the flow-induced displacement of a dealer's mid should be near zero close to book close-out, should build toward $\tfrac{w}{2}\log\tfrac{p}{1-p}$ (in depth-skew terms, with $w = 1/k$) as the effective horizon grows, and the spread should carry a hump-shaped transient that is second order in the imbalance at flat inventory. A desk that marks its terminal book at the flow-adjusted price recovers the constant shift of the steady-state theory exactly, at which point recalibrating the flow forecast updates quotes by a constant and nothing else.
 
-We leave to future work the two directions the remark identifies: the robustness of the finite-horizon statement to locally exponential intensity curves, and the stochastically modulated ratio, where the constant tilt should become a spectral one.
+We leave to future work the finite-horizon robustness statement for locally exponential intensity curves, and the stochastically modulated ratio, where the tilt acquires the diagonal drift term of Corollary~\ref{cor:closed}.
 
 \begin{thebibliography}{9}
 \bibitem[Avellaneda and Stoikov(2008)]{avellaneda2008} Avellaneda, M., Stoikov, S. (2008). High-frequency trading in a limit order book. \emph{Quantitative Finance} 8(3), 217--224.
