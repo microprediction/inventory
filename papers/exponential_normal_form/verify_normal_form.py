@@ -72,6 +72,20 @@ Checks, numbered as in the paper:
    m*_eta at the exact strikes equals
    K_0 + 1/h + eta [D nu_1 - psi'(K_0)/h^2] + O(eta^2), checked by a
    ratio test.
+
+10. NO RIGID BALANCING OFF THE BOUNDARY (the uniqueness direction of
+   Hamiltonian rigidity, on an instance). For the curved deformation the
+   balancing gap min over ALL (gamma, delta) of
+   sup |H_q(A,S) - H_{1/2}(A + gamma, S - delta)| / |H_q| stays bounded
+   away from zero, while the affine-exponential family achieves ~1e-16 at
+   the standard translations (check 7).
+
+11. OSCILLATION BOUND. The measured oscillation of the defect D on the
+   test interval satisfies the bound of the corollary,
+   osc D <= (|eta|/h) diam(I) (|a1|+|a2|) ||psi''||_inf, at small eta.
+
+12. RESOLVENT FACTOR. ||nu_1|| <= ||L_0^{-1}|| ||R_psi|| holds, and the
+   curvature amplification factor ||L_0^{-1}|| is reported.
 """
 
 import numpy as np
@@ -504,5 +518,56 @@ if __name__ == "__main__":
             assert 3.2 < prev / e < 4.8, "tangent policy not O(eta^2)"
         print(line)
         prev = e
+
+    # --- Check 10: no rigid balancing off the affine-exponential boundary
+    from scipy.optimize import minimize
+    Gc10 = make_G(eta_big)
+    Agrid = np.linspace(0.2, 1.0, 9)
+    Sgrid = np.linspace(-0.4, 0.4, 9)
+
+    def balancing_gap(params):
+        gam, dlt = params
+        worst = 0.0
+        for A in Agrid:
+            for S in Sgrid:
+                hq = q * Gc10(A + S) + (1 - q) * Gc10(A - S)
+                hb = 0.5 * (Gc10(A + gam + (S - dlt))
+                            + Gc10(A + gam - (S - dlt)))
+                worst = max(worst, abs(hq - hb) / abs(hq))
+        return worst
+
+    start = (np.log(Mq) / H0, 0.5 * np.log(q / (1 - q)) / H0)
+    best = min(minimize(balancing_gap, s0, method="Nelder-Mead",
+                        options={"xatol": 1e-10, "fatol": 1e-12}).fun
+               for s0 in (start, (0.0, 0.0), (0.1, 0.3)))
+    print(f"10. uniqueness  : curved G best rigid-balancing gap "
+          f"{best:.2e} (affine-exponential achieves ~1e-16)")
+    assert best > 1e-3, "curved G unexpectedly balances rigidly"
+
+    # --- Check 11: the oscillation bound on the defect ------------------
+    psi_pp = lambda K: H0 ** 2 / (1.0 + H0 * K)
+    for eta in (0.05, 0.025):
+        Phe = make_Phi(eta)
+        D = np.array(
+            [invert_Phi(Phe, Phe(K) - np.log(2 * q))
+             + invert_Phi(Phe, Phe(2 * eps3 - K) - np.log(2 * (1 - q)))
+             for K in Kgrid])
+        osc = D.max() - D.min()
+        hull_lo = min(Kgrid.min() - abs(a1), 2 * eps3 - Kgrid.max() - abs(a2))
+        hull_hi = max(Kgrid.max(), 2 * eps3 - Kgrid.min())
+        norm_pp = psi_pp(hull_lo)  # psi'' decreasing, max at left end
+        bound = (eta / H0) * (Kgrid.max() - Kgrid.min()) \
+            * (abs(a1) + abs(a2)) * norm_pp
+        print(f"11. osc bound   : eta={eta}: osc D = {osc:.3e} <= "
+              f"bound {bound:.3e}")
+        assert osc <= bound * 1.05, "oscillation bound violated"
+
+    # --- Check 12: the resolvent factor ----------------------------------
+    n1 = np.max(np.abs(u1))
+    amp = np.linalg.norm(np.linalg.inv(L0), np.inf)
+    rn = np.max(np.abs(Rpsi))
+    print(f"12. resolvent   : ||nu_1|| = {n1:.3f} <= ||L_0^-1|| ||R_psi|| "
+          f"= {amp:.1f} * {rn:.4f} = {amp * rn:.3f}")
+    assert n1 <= amp * rn * (1 + 1e-12)
 
     print("all checks passed")
