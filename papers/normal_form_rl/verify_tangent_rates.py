@@ -1,0 +1,273 @@
+"""Numerical certificate for the rate targets in architecture.md section 9.
+
+Environment: the bounded-lattice steady-state dealer chain. Inventory
+x in {-N..N}; enquiries arrive each period (tau = 1); a seller calls with
+probability q (a buy opportunity, moving x up on a fill) and a buyer with
+probability 1-q; fills are Bernoulli in the quoted markup through the true
+survival curve; profit per won trade is s(m - eps); carrying cost c(x) per
+period. The true family is Weibull, survival(m) = exp(-(h m)^k) with
+k = 1 + eta, so eta = 0 is the exponential anchor and the effective
+log-value deformation is psi(K) = (1 + hK) log(1 + hK) (envelope transfer,
+certified in ../exponential_normal_form/verify_normal_form.py).
+
+Two structural facts make the ground truth exact rather than approximate,
+and both are verified below:
+
+  A. On the bounded lattice, with one-sided Hamiltonians at x = +-N (the
+     dealer cannot buy at the top or sell at the bottom), the consistency
+     solution nu* satisfies the average-reward Bellman equation with
+     differential value -nu* and gain g = s H_q(0). It is therefore exactly
+     the optimal policy of the chain, and its gain must equal the direct
+     stationary-distribution evaluation of the greedy policy. Checked to
+     near machine precision.
+
+  B. The imbalance tilt passes through the boundary rows exactly: at
+     eta = 0 the tilted balanced solution nu_bal + delta x solves the
+     imbalanced bounded system to machine precision. The exponential anchor
+     theorem needs no closure approximation on the bounded chain.
+
+Rate measurements (eps proportional to eta):
+
+  action errors    ||nu*_eta - nu_0||        = O(eta)    [ratio ~ 2]
+                   ||nu*_eta - nu_tan||      = O(eta^2)  [ratio ~ 4]
+  value regrets    J* - J(anchor policy)     = O(eta^2)  [ratio ~ 4]
+                   J* - J(tangent policy)    = O(eta^4)  [ratio ~ 16]
+
+where nu_tan = nu_0 + eta nu_1 with L_0 nu_1 = -R_psi solved once at the
+anchor (the bounded-system linearization), and the anchor policy is scored
+in two variants: exponential extraction (m = K + w, the fully exponential
+controller) and true extraction (anchor potential, correct win curve in the
+one-dimensional quote optimization). The O(eta^4) tangent rate is the
+conjectured sharpening in architecture.md; this certificate is its first
+evidence.
+"""
+
+import numpy as np
+from scipy.optimize import brentq, root
+
+TAU, S_LOT, EPS = 1.0, 1.0, 0.3
+N = 8
+XS = np.arange(-N, N + 1)
+I0 = N
+H0 = 1.0
+Q = 0.6
+ELL = 0.5 * np.log(Q / (1 - Q))
+DELTA = ELL / H0
+MQ = 1.0 / (2 * np.sqrt(Q * (1 - Q)))
+COST = lambda x: 0.002 * x ** 2
+
+
+# ----------------------------------------------------------------------
+# true family: Weibull, k = 1 + eta; k = 1 is the exponential anchor
+# ----------------------------------------------------------------------
+
+def survival(m, k):
+    return np.exp(-((H0 * m) ** k)) if m > 0 else 1.0
+
+
+def m_star(K, k):
+    """argmax_{m >= 0} (m - K) survival(m, k)."""
+    if k == 1.0:
+        return max(K + 1.0 / H0, 0.0)
+    f = lambda m: (m - K) * k * H0 * (H0 * m) ** (k - 1) - 1.0
+    lo = max(K, 0.0) + 1e-14
+    if f(lo) >= 0:
+        return lo
+    return brentq(f, lo, 200.0, xtol=1e-15, rtol=8.9e-16)
+
+
+def G_true(K, k):
+    m = m_star(K, k)
+    return (m - K) * survival(m, k)
+
+
+G_exp = lambda K: (1.0 / H0) * np.exp(-1.0 - H0 * K)
+
+
+def psi_weibull(K):
+    z = 1.0 + H0 * K
+    return z * np.log(z)
+
+
+# ----------------------------------------------------------------------
+# bounded-lattice consistency system: at |x| = N only one side trades
+# ----------------------------------------------------------------------
+
+def hamiltonian(G, q, nu, i):
+    x = XS[i]
+    val = 0.0
+    if x < N:
+        val += q * G(EPS + (nu[i + 1] - nu[i]) / S_LOT)
+    if x > -N:
+        val += (1 - q) * G(EPS + (nu[i - 1] - nu[i]) / S_LOT)
+    return val
+
+
+def residuals(G, q, cost, nu):
+    h0v = hamiltonian(G, q, nu, I0)
+    return np.array([TAU * cost(XS[i]) / S_LOT
+                     - (hamiltonian(G, q, nu, i) - h0v)
+                     for i in range(2 * N + 1) if i != I0])
+
+
+def solve_system(G, q, cost, init):
+    def wrap(u):
+        nu = np.concatenate([u[:N], [0.0], u[N:]])
+        return residuals(G, q, cost, nu)
+
+    u0 = np.concatenate([init[:I0], init[I0 + 1:]])
+    sol = root(wrap, u0, method="lm", options={"maxiter": 80000, "xtol": 1e-15})
+    nu = np.concatenate([sol.x[:N], [0.0], sol.x[N:]])
+    res = np.max(np.abs(residuals(G, q, cost, nu)))
+    assert res < 1e-11, f"solver residual {res:.2e}"
+    return nu
+
+
+# ----------------------------------------------------------------------
+# policy evaluation on the chain: exact stationary distribution and gain
+# ----------------------------------------------------------------------
+
+def policy_eval(nu, k, extraction="true"):
+    """Average reward per period of the policy generated by potential nu.
+
+    extraction 'true': quotes from the one-dimensional optimization under
+    the true survival curve; 'exp': the exponential rule m = K + w.
+    """
+    up = np.zeros(2 * N + 1)     # buy-fill probability (inventory up)
+    dn = np.zeros(2 * N + 1)     # sell-fill probability (inventory down)
+    rew = np.zeros(2 * N + 1)
+    for i, x in enumerate(XS):
+        if x < N:
+            K = EPS + (nu[i + 1] - nu[i]) / S_LOT
+            m = m_star(K, k) if extraction == "true" else max(K + 1.0 / H0, 0.0)
+            p = Q * survival(m, k)
+            up[i] = p
+            rew[i] += p * S_LOT * (m - EPS)
+        if x > -N:
+            K = EPS + (nu[i - 1] - nu[i]) / S_LOT
+            m = m_star(K, k) if extraction == "true" else max(K + 1.0 / H0, 0.0)
+            p = (1 - Q) * survival(m, k)
+            dn[i] = p
+            rew[i] += p * S_LOT * (m - EPS)
+        rew[i] -= TAU * COST(x)
+    # birth-death stationary law by detailed balance
+    logp = np.concatenate([[0.0], np.cumsum(np.log(up[:-1]) - np.log(dn[1:]))])
+    p = np.exp(logp - logp.max())
+    p /= p.sum()
+    return float(p @ rew)
+
+
+# ======================================================================
+if __name__ == "__main__":
+    # --- A/B: anchor exactness and Bellman optimality on the bounded chain
+    G_bal = G_exp
+    nu_bal = solve_system(G_bal, 0.5, lambda x: MQ * COST(x),
+                          0.05 * XS.astype(float) ** 2)
+    nu0 = nu_bal + DELTA * XS
+    res_tilt = np.max(np.abs(residuals(G_exp, Q, COST, nu0)))
+    print(f"B. anchor       : tilted balanced solve on the bounded chain, "
+          f"residual {res_tilt:.2e}")
+    assert res_tilt < 1e-11
+
+    gain0 = S_LOT * hamiltonian(G_exp, Q, nu0, I0)
+    j0 = policy_eval(nu0, 1.0, extraction="true")
+    print(f"A. optimality   : gain s H_q(0) = {gain0:.12f} vs stationary "
+          f"evaluation {j0:.12f}, diff {abs(gain0 - j0):.2e}")
+    assert abs(gain0 - j0) < 1e-12
+
+    strikes0 = [EPS + (nu0[i + 1] - nu0[i]) / S_LOT for i in range(2 * N)]
+    strikes0 += [EPS + (nu0[i - 1] - nu0[i]) / S_LOT for i in range(1, 2 * N + 1)]
+    assert 1.0 + H0 * min(strikes0) > 0.05, "psi domain violated"
+
+    # --- tangent response nu_1 from the bounded-system linearization -----
+    n_unk = 2 * N
+    idx = {x: (x + N if x < 0 else x + N - 1) for x in XS if x != 0}
+
+    def linear_rows(i):
+        """Row of dH/dnu and the psi forcing at lattice index i."""
+        x = XS[i]
+        row = np.zeros(n_unk)
+        forc = 0.0
+        if x < N:
+            K = EPS + (nu0[i + 1] - nu0[i]) / S_LOT
+            wgt = Q * G_exp(K)
+            if XS[i + 1] != 0:
+                row[idx[XS[i + 1]]] -= H0 * wgt / S_LOT
+            if x != 0:
+                row[idx[x]] += H0 * wgt / S_LOT
+            forc += wgt * psi_weibull(K)
+        if x > -N:
+            K = EPS + (nu0[i - 1] - nu0[i]) / S_LOT
+            wgt = (1 - Q) * G_exp(K)
+            if XS[i - 1] != 0:
+                row[idx[XS[i - 1]]] -= H0 * wgt / S_LOT
+            if x != 0:
+                row[idx[x]] += H0 * wgt / S_LOT
+            forc += wgt * psi_weibull(K)
+        return row, forc
+
+    row0, forc0 = linear_rows(I0)
+    L, R = [], []
+    for i in range(2 * N + 1):
+        if i == I0:
+            continue
+        row, forc = linear_rows(i)
+        # residual_x = tau c/s - H(x) + H(0); d/dnu H uses G' = -h G, so the
+        # rows above already carry the sign of d(residual)/dnu
+        L.append(row - row0)
+        R.append(forc - forc0)
+    L, R = np.array(L), np.array(R)
+    u1 = np.linalg.solve(L, R)      # d(residual)/deta = forc(x) - forc(0)
+    nu1 = np.zeros(2 * N + 1)
+    for x, j in idx.items():
+        nu1[x + N] = u1[j]
+
+    # certify nu_1 against nonlinear solves of the bounded system with the
+    # deformed-G family: the remainder after subtracting eta nu_1 must be
+    # O(eta^2), i.e. shrink at ratio ~ 4 when eta halves
+    errs = []
+    for eta_chk in (0.02, 0.01):
+        G_def = lambda K, e=eta_chk: G_exp(K) * np.exp(-e * psi_weibull(K))
+        nu_chk = solve_system(G_def, Q, COST, nu0 + eta_chk * nu1)
+        errs.append(np.max(np.abs(nu_chk - nu0 - eta_chk * nu1)))
+    ratio = errs[0] / errs[1]
+    print(f"nu_1            : remainder {errs[0]:.2e} -> {errs[1]:.2e} under "
+          f"eta halving, ratio {ratio:.2f} ~ 4")
+    assert 3.2 < ratio < 4.8, f"nu_1 remainder not O(eta^2): ratio {ratio:.2f}"
+
+    # --- rate measurements against the true Weibull family ---------------
+    print("rates           : eta | J*-J(exp ctrl) | J*-J(anchor+true) | "
+          "J*-J(tangent) | ||nu*-nu0|| | ||nu*-nutan||")
+    etas = (0.16, 0.08, 0.04, 0.02)
+    rows = []
+    for eta in etas:
+        k = 1.0 + eta
+        Gk = lambda K: G_true(K, k)
+        nu_star = solve_system(Gk, Q, COST, nu0 + eta * nu1)
+        j_star = policy_eval(nu_star, k, "true")
+        gain_star = S_LOT * hamiltonian(Gk, Q, nu_star, I0)
+        assert abs(j_star - gain_star) < 1e-12, "Bellman gain mismatch"
+        nu_tan = nu0 + eta * nu1
+        dj_exp = j_star - policy_eval(nu0, k, "exp")
+        dj_anc = j_star - policy_eval(nu0, k, "true")
+        dj_tan = j_star - policy_eval(nu_tan, k, "true")
+        a_err0 = np.max(np.abs(nu_star - nu0))
+        a_err1 = np.max(np.abs(nu_star - nu_tan))
+        assert min(dj_exp, dj_anc, dj_tan) > -1e-13, "negative regret"
+        rows.append((eta, dj_exp, dj_anc, dj_tan, a_err0, a_err1))
+        print(f"   {eta:>5} | {dj_exp:.3e} | {dj_anc:.3e} | {dj_tan:.3e}"
+              f" | {a_err0:.3e} | {a_err1:.3e}")
+
+    print("ratios          : successive quotients (targets 4, 4, 16, 2, 4)")
+    for (ea, *va), (eb, *vb) in zip(rows, rows[1:]):
+        r = [x / y for x, y in zip(va, vb)]
+        print(f"   {ea}->{eb}: " + " | ".join(f"{x:6.2f}" for x in r))
+    last = [x / y for x, y in zip(rows[-2][1:], rows[-1][1:])]
+    assert 3.2 < last[0] < 4.8, "exponential-controller regret not O(eta^2)"
+    assert 3.2 < last[1] < 4.8, "anchor regret not O(eta^2)"
+    assert 11.0 < last[2] < 22.0, "tangent regret not O(eta^4)"
+    assert 1.7 < last[3] < 2.3, "anchor action error not O(eta)"
+    assert 3.2 < last[4] < 4.8, "tangent action error not O(eta^2)"
+
+    print("all checks passed: anchor exact and optimal on the bounded "
+          "chain; regrets O(eta^2) anchor, O(eta^4) tangent")
