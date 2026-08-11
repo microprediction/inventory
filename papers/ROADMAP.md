@@ -105,6 +105,26 @@ boundary rows + rank-one centering, with the equation count); spectral-gap
 language demoted to conditioning; defect renamed mathcal-D; intro reorganized
 around the five-level ladder (coordinates / sidewise / strikes / quotes /
 global). Certificate extended: concave impostor and borderline-tail checks.
+**Round-3 revision applied 2026-08-11.** (i) Path dependence begins at FIRST order,
+not second: nu_1 depends on the initial tangent, and the additive path's tangent
+-kappa/G_0 has forcing annihilated by the centering (nu_1 = 0 exactly, certified)
+while the Phi-line to the same endpoint moves nu_1 (~0.06 on the test problem);
+the path-convention discussion now sits directly after the deformation equation.
+(ii) Defect scope corrected: mathcal-D measures the gauge-lifting failure, NOT the
+policy correction (additive counterexample: nonconstant defect, potential never
+moves); NEW policy-sensitivity corollary ||nu_1|| <= ||L0^-1|| Gmax R^2 ||psi''||
+is the true robustness radius (certified: 4.11 <= 13.90 <= 196.47). (iii) NEW
+coordinate-uniqueness lemma: chi(lambda z) - chi(z) independent of z forces
+chi = a + b log z, so Phi is canonical, not convenient. (iv) Strike-rigidity
+statement now requires translated strikes to stay in the domain; quote-rigidity
+corollary given its rationalizability hypothesis. (v) Rigid-manifold remark
+upgraded with the osculating anchor formulas (h0 = G''/(-G'), kappa_0 = G -
+(G')^2/G''; verified exactly); Xi geometry retained. (vi) Abstract rewritten to
+the reviewer's tighter shape ("need not lift"); intro item 5 no longer conflates
+gamma with the endogenous convexity response; Weibull domain 1 + hK > 0 stated;
+admissibility openness qualified by a uniform margin; Cotton 2026a/b bibliography
+labels fixed; ancestry remarks moved to related work. Certificate: two new checks
+(13 path dependence/null direction, 14 policy bound), all passing.
 **Remaining.** Editorial pass; decide venue; optionally derive the companion Remark's
 ≈0.25 constant in closed form from the ψ of the linear-hazard experiment; the
 finite-horizon instance (P1's concluding problem) is now posed as this hierarchy with

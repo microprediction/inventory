@@ -93,6 +93,17 @@ Checks, numbered as in the paper:
 
 12. RESOLVENT FACTOR. ||nu_1|| <= ||L_0^{-1}|| ||R_psi|| holds, and the
    curvature amplification factor ||L_0^{-1}|| is reported.
+
+13. FIRST-ORDER PATH DEPENDENCE / NULL DIRECTION. The additive path
+   G_eta = G_0 + eta*kappa has tangent psi_add = -kappa/G_0 whose forcing
+   is exactly constant, so the centering annihilates it: R = 0 and
+   nu_1 = 0 at machine precision, while the Phi-straight-line to the SAME
+   endpoint has tangent -log(1 + kappa/G_0) with nonzero forcing and
+   nonzero nu_1. Path dependence begins at first order.
+
+14. POLICY-SENSITIVITY BOUND. With psi normalized to vanish to first
+   order at the mid-strike, the chain ||nu_1|| <= ||L_0^{-1}|| ||R_psi||
+   <= ||L_0^{-1}|| G_max R^2 ||psi''|| holds on the test problem.
 """
 
 import numpy as np
@@ -305,7 +316,7 @@ if __name__ == "__main__":
     assert 1.0 + H0 * min(K_all) > 0.05, "psi domain violated on the grid"
 
     # build L_0 and R_psi from the paper's formulas
-    def build_L0_Rpsi(nu0):
+    def build_L0_Rpsi(nu0, psi_fn=psi_weibull):
         n_unk = 2 * N            # nu_1 at x != 0; nu_1(0) = 0
         idx = {x: (x + N if x < 0 else x + N - 1) for x in XS if x != 0}
 
@@ -330,8 +341,8 @@ if __name__ == "__main__":
             Kdn, Kup = strikes(nu0, i)
             row = (q * G0(Kdn) * dplus_row(x)
                    + (1 - q) * G0(Kup) * dminus_row(x))
-            forc = (q * G0(Kdn) * psi_weibull(Kdn)
-                    + (1 - q) * G0(Kup) * psi_weibull(Kup))
+            forc = (q * G0(Kdn) * psi_fn(Kdn)
+                    + (1 - q) * G0(Kup) * psi_fn(Kup))
             return row, forc
 
         row0, forc0 = hamil_rows(0)
@@ -603,5 +614,35 @@ if __name__ == "__main__":
     print(f"12. resolvent   : ||nu_1|| = {n1:.3f} <= ||L_0^-1|| ||R_psi|| "
           f"= {amp:.1f} * {rn:.4f} = {amp * rn:.3f}")
     assert n1 <= amp * rn * (1 + 1e-12)
+
+    # --- Check 13: first-order path dependence and the null direction ----
+    kap = 0.05
+    psi_add = lambda K: -kap / G0(K)
+    psi_geo = lambda K: -np.log(1.0 + kap / G0(K))
+    _, R_add, _ = build_L0_Rpsi(nu0, psi_add)
+    L_g, R_geo, idx_g = build_L0_Rpsi(nu0, psi_geo)
+    n1_geo = np.max(np.abs(np.linalg.solve(L_g, -R_geo)))
+    print(f"13. path tangent: additive null direction ||R|| = "
+          f"{np.max(np.abs(R_add)):.2e} (nu_1 = 0 exactly); Phi-line to the "
+          f"same endpoint ||R|| = {np.max(np.abs(R_geo)):.2e}, "
+          f"||nu_1|| = {n1_geo:.2e}")
+    assert np.max(np.abs(R_add)) < 1e-15
+    assert np.max(np.abs(R_geo)) > 1e-4 and n1_geo > 1e-4
+
+    # --- Check 14: the policy-sensitivity bound --------------------------
+    Kmid = 0.5 * (min(K_all) + max(K_all))
+    psi_c = lambda K: (psi_weibull(K) - psi_weibull(Kmid)
+                       - (H0 * (np.log(1 + H0 * Kmid) + 1.0)) * (K - Kmid))
+    L_c, R_c, idx_c = build_L0_Rpsi(nu0, psi_c)
+    n1_c = np.max(np.abs(np.linalg.solve(L_c, -R_c)))
+    Rn = np.max(np.abs(R_c))
+    Gmax = max(G0(k) for k in K_all)
+    Rad = max(abs(k - Kmid) for k in K_all)
+    pp_max = max(H0 ** 2 / (1 + H0 * k) for k in K_all)
+    bound_R = Gmax * Rad ** 2 * pp_max
+    bound_n = amp * bound_R
+    print(f"14. policy bound: ||nu_1|| = {n1_c:.4f} <= ||L0^-1|| ||R|| = "
+          f"{amp * Rn:.4f} <= ||L0^-1|| Gmax R^2 ||psi''|| = {bound_n:.4f}")
+    assert n1_c <= amp * Rn * (1 + 1e-12) <= bound_n * (1 + 1e-12)
 
     print("all checks passed")
