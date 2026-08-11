@@ -317,14 +317,16 @@ $\mathcal F(\nu_0, 0) = 0$ by the theorem of \citet{cotton2026skew}. The partial
 Before centering, the operator inside \eqref{eq:L0} is a birth--death tridiagonal operator with positive weights $qG_0(K^{\downarrow}_0)$ and $(1-q)G_0(K^{\uparrow}_0)$; the centering $\Delta_0$ subtracts one fixed linear functional of $u$ from every row, so $L_0$ is a tridiagonal matrix plus a rank-one correction --- equivalently, retaining the ergodic constant as an unknown instead of eliminating it through $\Delta_0$ gives a genuinely tridiagonal block with one border column. Either way it is factored once, for the fixed anchor problem (fixed $q$, cost, grid, and overhead), and every order of the expansion and every basis direction of Section~\ref{sec:envelope} is then one back-substitution; nothing nonlinear is ever re-solved. The certificate factors $L_0$ once and verifies, on a Weibull-born deformation, $\|\nu_\eta - \nu_0 - \eta\nu_1\|_\infty = O(\eta^2)$ and $\|\nu_\eta - \nu_0 - \eta\nu_1 - \eta^2\nu_2\|_\infty = O(\eta^3)$, with observed error ratios $3.9 \approx 4$ and $8.1 \approx 8$ under halving of $\eta$ (Section~\ref{sec:certificate}).
 \end{remark}
 
-The value correction becomes a quote correction by one more envelope evaluation. Write $K^{+} = K^{\downarrow}$ and $K^{-} = K^{\uparrow}$, so that $K^{\pm} = \epsilon + \mathrm{D}^{\pm}\nu$. Combining \eqref{eq:envelope} with the first-order condition $m^\ast - K = 1/h(m^\ast)$ of \citet{cotton2026skew} gives $m^\ast_\eta(K) = K + 1/\Phi_\eta'(K)$, and the exact strikes expand as $K^{\pm}_\eta(x) = K^{\pm}_0(x) + \eta\,\mathrm{D}^{\pm}\nu_1(x) + O(\eta^2)$, so:
+The value correction becomes a quote correction by one more envelope evaluation. Combining \eqref{eq:envelope} with the first-order condition $m^\ast - K = 1/h(m^\ast)$ of \citet{cotton2026skew} gives $m^\ast_\eta(K) = K + 1/\Phi_\eta'(K)$, and the exact strikes expand as $K^{\downarrow}_\eta(x) = K^{\downarrow}_0(x) + \eta\,\mathrm{D}^{+}\nu_1(x) + O(\eta^2)$, and likewise on the sell side with $\mathrm{D}^{-}$, so:
 
 \begin{corollary}[The tangent policy]\label{cor:tangentpolicy}
-On interior states, the optimal quotes of the deformed problem satisfy
-\[
-m^{\ast,\pm}_\eta(x) \;=\; K^{\pm}_0(x) + \frac1h
-\;+\; \eta\,\Big[\, \mathrm{D}^{\pm}\nu_1(x) \;-\; \frac{\psi'\big(K^{\pm}_0(x)\big)}{h^{2}} \,\Big] \;+\; O(\eta^2).
-\]
+On interior states, the optimal markdown and markup of the deformed problem satisfy
+\begin{align*}
+m^{\ast\downarrow}_\eta(x) \;&=\; K^{\downarrow}_0(x) + \frac1h
+\;+\; \eta\,\Big[\, \mathrm{D}^{+}\nu_1(x) \;-\; \frac{\psi'\big(K^{\downarrow}_0(x)\big)}{h^{2}} \,\Big] \;+\; O(\eta^2), \\
+m^{\ast\uparrow}_\eta(x) \;&=\; K^{\uparrow}_0(x) + \frac1h
+\;+\; \eta\,\Big[\, \mathrm{D}^{-}\nu_1(x) \;-\; \frac{\psi'\big(K^{\uparrow}_0(x)\big)}{h^{2}} \,\Big] \;+\; O(\eta^2).
+\end{align*}
 The first-order quote correction decomposes into the inventory-value response $\mathrm{D}^{\pm}\nu_1$ and the direct markup-distribution response $-\psi'/h^2$; the two are computable separately, from one linear solve and one derivative evaluation.
 \end{corollary}
 
