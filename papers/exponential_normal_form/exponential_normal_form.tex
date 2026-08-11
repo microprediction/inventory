@@ -65,7 +65,7 @@ The formulas and their predicted asymptotic orders are independently checked in 
 
 \section{Setup: the effective log-value}\label{sec:setup}
 
-The model is that of \citet{cotton2026skew}. Enquiries arrive with mean gap $\tau$; each is a sell with probability $q$, a buy with probability $1-q$; trades have size $s$; every won trade concedes $\epsilon$ to adverse selection; holding $x$ costs $c(x)$ per unit time with $c(0)=0$. The policy is characterized by an inventory indifference cost $\nu(x)$ with slope and convexity
+The model is that of \citet{cotton2026skew}. Enquiries arrive with mean gap $\tau$; each is a sell with probability $q$, a buy with probability $1-q$; trades have size $s$; every won trade concedes $\epsilon$ to adverse selection; holding $x$ costs $c(x)$ per unit time with $c(0)=0$. The policy is characterized by an inventory indifference cost $\nu(x)$\footnote{The sign of $\nu$ is opposite to the usual Bellman convention: in the average-reward dynamic programming formulation the differential value function is $-\nu$. The flip makes $\nu$ a \emph{cost} --- the non-myopic price of holding inventory, netting direct carrying charges against the option value of trading out through future enquiries --- which is the object a dealer quotes from.} with slope and convexity
 \[
 S(x) = \frac{\nu(x+s)-\nu(x-s)}{2s}, \qquad
 C(x) = \frac{\nu(x+s)-2\nu(x)+\nu(x-s)}{2s},
