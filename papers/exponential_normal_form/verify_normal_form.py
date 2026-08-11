@@ -55,12 +55,19 @@ Checks, numbered as in the paper:
    the leading coefficients: S(0)/ell -> d1 != 0 and
    (C(0) - C_bal)/ell^2 -> g2 != 0.
 
-7. HAMILTONIAN RIGIDITY BOUNDARY. The affine-exponential family
-   G = C + B e^{-hK} is balanced exactly by the rigid translations
-   (A, S) -> (A + gamma, S - delta) even though Phi is curved: the
-   constant passes through both Hamiltonians. Verified at machine
-   precision, along with the differentiated relation
+7. STRIKE RIGIDITY BOUNDARY. The affine-exponential family
+   G = kappa + B e^{-hK} is balanced exactly by the rigid strike
+   translations (A, S) -> (A + gamma, S - delta) even though Phi is
+   curved: the constant passes through both Hamiltonians. Verified at
+   machine precision, along with the differentiated relation
    2q G'(K) = G'(K + gamma - delta) that drives the rigidity proof.
+   Also verified: the CONCAVE family G = kappa - B e^{+hK} (decreasing,
+   C^2, but G'' < 0) balances rigidly too, with the opposite-signed
+   translations (A - gamma, S + delta) -- the counterexample showing the
+   convexity hypothesis in the strike-rigidity theorem is load-bearing.
+   And the borderline-tail reading of the constant: along the
+   affine-exponential family, m*(K) Fbar(m*(K)) -> kappa as K grows, so
+   kappa > 0 is a 1/m survival tail and finite mean forces kappa = 0.
 
 8. ADMISSIBILITY. For the curved deformation, the reconstruction
    m*(K) = K + 1/Phi'(K), survival = G Phi', satisfies the local
@@ -465,6 +472,33 @@ if __name__ == "__main__":
           f"{worst_bal:.2e}; 2q G'(K) = G'(K + gamma - delta) to "
           f"{worst_dif:.2e}")
     assert worst_bal < 1e-14 and worst_dif < 1e-13
+
+    # concave counterexample: G = kappa - B e^{+hK}, decreasing but G'' < 0,
+    # balances rigidly with the OPPOSITE-signed translations; convexity is
+    # what excludes it
+    Ccc, Bcc = 3.0, 0.4
+    G_cc = lambda K: Ccc - Bcc * np.exp(H0 * K)
+    worst_cc = 0.0
+    for _ in range(200):
+        A = rng.uniform(-0.5, 0.8)
+        S = rng.uniform(-0.4, 0.4)
+        qq = rng.uniform(0.1, 0.9)
+        l = 0.5 * np.log(qq / (1 - qq))
+        Mqq = 1.0 / (2 * np.sqrt(qq * (1 - qq)))
+        gam, dlt = np.log(Mqq) / H0, l / H0
+        lhs = qq * G_cc(A + S) + (1 - qq) * G_cc(A - S)
+        rhs = 0.5 * G_cc(A - gam + (S + dlt)) + 0.5 * G_cc(A - gam - (S + dlt))
+        worst_cc = max(worst_cc, abs(lhs - rhs) / abs(lhs))
+    print(f"   concave family balances rigidly to {worst_cc:.2e} "
+          f"(G'' < 0; excluded by the convexity hypothesis)")
+    assert worst_cc < 1e-14
+
+    # borderline-tail reading: m* Fbar(m*) -> kappa along the affine family
+    tail = [(K + 1 / H0 + Cae / (H0 * Bae) * np.exp(H0 * K))
+            * H0 * Bae * np.exp(-H0 * K) for K in (5.0, 10.0, 20.0)]
+    print(f"   m* Fbar(m*) at K = 5, 10, 20: "
+          + ", ".join(f"{t:.6f}" for t in tail) + f"  -> kappa = {Cae}")
+    assert abs(tail[-1] - Cae) < 1e-6
 
     # --- Check 8: admissibility and reconstruction of the win curve ------
     from scipy.interpolate import CubicSpline

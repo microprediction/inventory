@@ -47,8 +47,10 @@ error bound." Now an exponential normal-form theory, standalone paper drafted at
 coordinates of the effective log-value Φ = −log G, imbalance is exactly a translation
 (by log M(q) in width, by the log-odds ℓ in skew); exponentiality is precisely
 affinity of those coordinates, which makes the translation a rigid quote motion.
-(2) Rigidity: exponential is the unique family for which imbalance removal is
-state-independent translations + a scalar carry rescaling (three-line proof).
+(2) Rigidity, two theorems: sidewise gauges are translations only for the
+exponential; rigid balancing of the two-sided Hamiltonian holds exactly for the
+affine-exponential family C + Be^(-hK), pure exponential under the tail
+condition G(inf) = 0.
 (3) Integrability defect: the pointwise gauge T_c = Φ⁻¹(Φ − log c) always removes
 imbalance pointwise but fails to lift to a single inventory potential; the failure is
 a curvature functional of ψ = the deformation of Φ, and its constant value at the
@@ -79,6 +81,30 @@ m* correction = D±ν₁ − ψ′/h² (the bridge to P7; certified O(η²)). (v
 defect oscillation bound osc D ≤ (|η|/h)diam(I)(|a₁|+|a₂|)‖ψ″‖∞ and the resolvent
 amplification remark ‖ν₁‖ ≤ ‖L₀⁻¹‖‖R_ψ‖ (spectral gap of the anchor; the low-carry
 bridge). (ix) Terminology: win curve = F̄, enquiry-value curve = G; gauge scalar λ.
+**Round-2 revision applied 2026-08-11.** (i) Strike rigidity was FALSE without
+convexity: the concave family kappa - B e^{+hK} balances rigidly with
+opposite-signed translations (verified at 4e-16). Fixed by a new indirect-value
+lemma (G is a sup of affine functions, hence convex with -1 <= G' < 0) and a
+convexity hypothesis; renamed the constant C -> kappa (collision with convexity
+C(x)). (ii) The local-to-tail step was invalid on bounded intervals; the tail
+clause now requires a right half-line, and a new remark shows kappa =
+lim m* Fbar(m*): a positive constant is a borderline 1/m tail, so finite mean
+markup forces kappa = 0. (iii) Strikes vs quotes separated: NEW quote-rigidity
+corollary — the submitted-quote map translates rigidly iff kappa = 0, so quote
+rigidity characterizes the pure exponential with no tail condition; the
+identification remark now operates at the quote level. (iv) Parity restated as
+Taylor jets under C^r with convergent series only under analyticity; the gamma
+vs endogenous-convexity-response conflation fixed. (v) Hierarchy stated for any
+smooth path; NEW homotopy remark — straight line in Phi = log-geometric
+interpolation, higher coefficients path-dependent, additive constant is a null
+direction, and Xi = -log(-G') is the coordinate adapted to strike rigidity.
+(vi) Theorem 2 proof repaired for local shifts; envelope proposition given C^3
+and nondegeneracy hypotheses; admissibility inequality made strict and scoped as
+local; matrix structure stated honestly (interior tridiagonal + two narrow-band
+boundary rows + rank-one centering, with the equation count); spectral-gap
+language demoted to conditioning; defect renamed mathcal-D; intro reorganized
+around the five-level ladder (coordinates / sidewise / strikes / quotes /
+global). Certificate extended: concave impostor and borderline-tail checks.
 **Remaining.** Editorial pass; decide venue; optionally derive the companion Remark's
 ≈0.25 constant in closed form from the ψ of the linear-hazard experiment; the
 finite-horizon instance (P1's concluding problem) is now posed as this hierarchy with

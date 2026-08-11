@@ -14,14 +14,14 @@
 \newcommand{\Fbar}{\bar F}
 
 \title{\textbf{The Exponential Normal Form for Imbalanced Market Making}}
-\author{Peter Cotton\thanks{The exact steady-state equivalence under exponential competing quotes is proved in \citet{cotton2026skew}, and the finite-horizon case is treated in \citet{cotton2026finite}. A numerical certificate for every claim, \texttt{verify\_normal\_form.py}, accompanies the paper. Comments welcome.}}
+\author{Peter Cotton\thanks{The exact steady-state equivalence under exponential competing quotes is proved in \citet{cotton2026skew}, and the finite-horizon case is treated in \citet{cotton2026finite}. An accompanying script, \texttt{verify\_normal\_form.py}, checks every formula and asymptotic order numerically. Comments welcome.}}
 \date{\today}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-In the sealed-bid model of \citet{cotton2026skew}, exponential competing quotes make flow imbalance exactly removable: skew translated, quotes widened, carrying cost multiplied. This paper treats arbitrary competing-quote distributions. In coordinates built from the logarithm of the enquiry value, imbalance is an exact translation for every distribution. Rigid quote translations suffice precisely for the affine-exponential family $C + Be^{-hK}$, and for the exponential alone under the natural tail condition; outside it the pointwise removal fails to lift to a single inventory potential, the failure measured by a curvature-controlled integrability defect. A perturbation hierarchy built on one fixed linear operator computes the correction to the potential and to the quotes at every order, with standard distribution families entering through a single envelope evaluation. A distribution-free parity theorem shows the skew is odd and the width response even in the log-odds of the flow. All formulas and asymptotic orders are checked numerically.
+In the sealed-bid model of \citet{cotton2026skew}, exponential competing quotes make flow imbalance exactly removable: skew translated, quotes widened, carrying cost multiplied. This paper treats arbitrary competing-quote distributions. In coordinates built from the logarithm of the enquiry value, imbalance is an exact translation for every distribution. Rigid translations of the break-even strikes suffice precisely for the affine-exponential family $\kappa + Be^{-hK}$; rigidity of the submitted quotes, or a finite-mean tail, singles out the exponential itself. Outside that class the pointwise removal fails to lift to a single inventory potential, the failure measured by a curvature-controlled integrability defect. A perturbation hierarchy built on one fixed linear operator computes the correction to the potential and to the quotes at every order along a chosen deformation path, with first-order deformations of standard families entering through one envelope evaluation. A distribution-free parity theorem shows the skew is odd and the width response even in the log-odds of the flow. All formulas and asymptotic orders are checked numerically.
 \end{abstract}
 
 \medskip
@@ -35,12 +35,6 @@ In the sealed-bid model of \citet{cotton2026skew}, exponential competing quotes 
 
 The exponential assumption invites the obvious question, and \citet{cotton2026skew} gave it a local answer: only the hazard at the quotes actually made enters, and if the hazard varies slowly across the visited strikes the equivalence holds approximately with the local width, with error of the order of the hazard's relative variation. That is a robustness statement. The present paper replaces it with a structure: an exponential \emph{normal form}, in which general win curves are deformations of an integrable anchor and every correction is computable.
 
-A \emph{normal form}, in the sense of dynamical systems and control, is a canonical coordinate system in which a family of problems takes its simplest expression, together with a classification of which members become trivial there. The instructive example is feedback linearization: every controllable linear system is equivalent to a canonical form, and the geometric theory classifies which nonlinear systems the allowed transformations carry onto a linear one.
-
-This paper does the same for imbalanced market making. There are coordinates, built from the logarithm of the value of an enquiry, in which imbalance is a pure translation for \emph{every} win curve; the classification question is then which win curves let that translation be realized by a \emph{rigid motion} of the physical quotes --- every strike sliding by the same constant --- rather than by a gauge that bends the ladder, moving each strike by its own amount.
-
-\emph{Rigidity} is meant as in the memorylessness characterization of the exponential distribution, and in the older tradition of rigidity theorems in geometry where a weak hypothesis forces a short list: demanding a rigid motion collapses the infinite-dimensional family of win curves onto a two-parameter class, and onto the exponential itself once tails are imposed. Exponentiality plays the role here that linearizability plays in control: the distinguished member around which the general theory organizes itself. The remaining results measure the obstruction away from it and compute the correction.
-
 The organizing observation is that after the dealer optimizes her own markup, the distribution of the best competing quote enters the steady state through one function only,
 \[
 G(K) \;=\; \sup_m\,(m-K)\,\Fbar(m), \qquad \Fbar = 1 - F,
@@ -51,13 +45,24 @@ the optimized value of the next enquiry as a function of its strike $K$; quoting
 \]
 with $G_\star$ an arbitrary normalization. By the envelope identity of \citet{cotton2026skew}, $-\tfrac{d}{dK}\log G(K)$ equals the hazard rate of the win curve evaluated at the optimal markup, so $\Phi$ is the integral of the effective hazard sampled along the optimal response; exponential competing quotes correspond exactly to $\Phi$ affine, and $\Phi''$ is the natural local measure of non-exponentiality.
 
+The results separate five levels at which imbalance can be removed, and the levels do not coincide:
+\begin{itemize}
+\item translation in the coordinates built from $\Phi$ --- every positive enquiry-value curve;
+\item sidewise gauge rigidity, each side's gauge a translation --- the exponential only;
+\item rigid translation of the break-even strikes, balancing the two-sided problem --- the affine-exponential family $\kappa + Be^{-hK}$;
+\item rigid translation of the submitted quotes $m^\ast(K)$ --- the exponential only;
+\item global rigidity for a win curve with finite mean markup --- the exponential only.
+\end{itemize}
+
+The vocabulary is from control theory. A \emph{normal form} is a canonical coordinate system together with a classification of which members of a family become trivial there, as in feedback linearization; \emph{rigidity} is meant as in the memorylessness characterization of the exponential distribution: a weak hypothesis forces a short list. Exponentiality plays the role here that linearizability plays in control, and the results away from it measure the obstruction and compute the correction.
+
 Five results organize the theory.
 
 \begin{enumerate}
 \item \emph{Normal form} (Theorem~\ref{thm:normalform}). For every smooth positive enquiry-value curve, in the nonlinear coordinates $(U,V)$ built from $\Phi$, imbalance is exactly a translation: by $\log M(q)$ in the width-like coordinate and by the log-odds $\ell = \tfrac12\log\tfrac{q}{1-q}$ in the skew-like coordinate. Exponentiality is not what creates the symmetry; it is what makes the coordinates affine, so that the translation is a rigid motion of the physical quotes.
-\item \emph{Rigidity} (Theorems~\ref{thm:rigidity} and~\ref{thm:hamrigidity}). The sidewise gauge maps are translations only for exponential $G$; and, at the level that matters economically, rigid quote translations balance the two-sided enquiry Hamiltonian exactly for the affine-exponential family $G = C + Be^{-hK}$ and no other. The constant $C$ cancels from the consistency equation, so the compression of \citet{cotton2026skew} extends verbatim to that family; the tail condition $G(K) \to 0$, automatic for genuine win curves, then singles out the pure exponential.
+\item \emph{Rigidity} (Theorems~\ref{thm:rigidity} and~\ref{thm:hamrigidity}, Corollary~\ref{cor:quoterigidity}). The sidewise gauge maps are translations only for exponential $G$. With the convexity every enquiry-value curve has (Lemma~\ref{lem:indirect}), rigid strike translations balance the two-sided Hamiltonian exactly for the affine-exponential family $G = \kappa + Be^{-hK}$; the constant cancels from the consistency equation, so the compression of \citet{cotton2026skew} extends verbatim to that family. The pure exponential is recovered in two independent ways: rigidity of the submitted quotes, and a finite-mean tail.
 \item \emph{Integrability defect} (Theorem~\ref{thm:defect}). Outside the rigid class the pointwise removal survives but generically fails to respect the constraint that both strike ladders derive from a single inventory potential; the exact criterion is that a defect functional be constant on the visited strike set. The defect's variation begins at first order in the curvature, with an explicit oscillation bound, and its \emph{constant part} at the affine point is exactly $2\gamma$: the widening of \citet{cotton2026skew} is the value of the defect functional at the integrable point.
-\item \emph{Perturbation hierarchy} (Theorem~\ref{thm:hierarchy}), \emph{envelope transfer} (Proposition~\ref{prop:envelope}), and \emph{admissibility} (Proposition~\ref{prop:admissible}). Writing $\Phi_\eta = a + hK + \eta\psi(K)$, where the fixed function $\psi$ carries the shape of the departure from exponentiality and $\eta$ its size (Section~\ref{sec:setup}), the inventory potential expands as $\nu_\eta = \nu_0 + \eta\nu_1 + \cdots$ where $\nu_0$ is the exact exponential solution and every $\nu_j$ solves a linear system with one fixed operator, tridiagonal up to a rank-one centering correction. Deformations of standard families enter through a single envelope evaluation at the exponential optimum --- for the Weibull family with shape $1+\eta$, $\psi(K) = (1+hK)\log(1+hK)$ --- so the theory is a functional expansion of the log-survival curve rather than one calculation per named distribution, and the admissibility proposition guarantees the deformations traversed correspond to genuine markup distributions. Corollary~\ref{cor:tangentpolicy} turns the value correction into the quote correction itself.
+\item \emph{Perturbation hierarchy} (Theorem~\ref{thm:hierarchy}), \emph{envelope transfer} (Proposition~\ref{prop:envelope}), and \emph{admissibility} (Proposition~\ref{prop:admissible}). Writing $\Phi_\eta = a + hK + \eta\psi(K)$, where the fixed function $\psi$ carries the shape of the departure from exponentiality and $\eta$ its size (Section~\ref{sec:setup}), the inventory potential expands as $\nu_\eta = \nu_0 + \eta\nu_1 + \cdots$ where $\nu_0$ is the exact exponential solution and every $\nu_j$ solves a linear system with one fixed operator, tridiagonal up to a rank-one centering correction. First-order deformations of standard families enter through one envelope evaluation at the exponential optimum --- for the Weibull family with shape $1+\eta$, $\psi(K) = (1+hK)\log(1+hK)$ --- with higher orders using higher derivatives of the log-survival curve and the same linear operator; the theory is a functional expansion of the log-survival curve rather than one calculation per named distribution, and the admissibility proposition gives local sufficient conditions for the deformations traversed to correspond to genuine markup distributions. Corollary~\ref{cor:tangentpolicy} turns the value correction into the quote correction itself.
 \item \emph{Parity} (Theorem~\ref{thm:parity}). Distribution-free: with a common win curve on both sides and even carrying cost, the skew contains only odd powers of $\ell$ and the width response only even powers. Under nondegeneracy of the leading coefficients the familiar reading follows --- skew first order, width second order --- and the exponential model supplies the all-orders coefficients $\delta = \ell/h$ and $\gamma = \tfrac1h\log\cosh\ell$, not the parity itself.
 \end{enumerate}
 
@@ -76,7 +81,17 @@ K^{\downarrow}(x) = \epsilon + \frac{\nu(x+s)-\nu(x)}{s} = A(x) + S(x), \qquad
 K^{\uparrow}(x) = \epsilon + \frac{\nu(x-s)-\nu(x)}{s} = A(x) - S(x),
 \label{eq:strikes}
 \end{equation}
-where $A = \epsilon + C$ collects the overhead and convexity. In words: $\nu(x)$ is the haircut at which the dealer would clear her book, so $K^{\downarrow}(x)$ is the all-in break-even markdown for buying one more lot --- adverse selection plus the marginal inventory cost --- and $K^{\uparrow}(x)$ is its selling counterpart. The two strikes sit symmetrically about $A(x)$ at distance $S(x)$: the slope of the inventory cost is the skew and its convexity the discretionary width, the identities of \citet{cotton2026skew}. The best competing response beyond fair value has survival function $\Fbar$, assumed smooth and positive with $G(K) = \sup_m (m-K)\Fbar(m)$ finite, positive, and attained at an interior optimum $m^\ast(K)$ on the strike range of interest; $G(K)$ is what the next enquiry is worth to a dealer whose all-in break-even is $K$, and it falls as $K$ rises. The steady-state consistency equation is, for all $x$,
+where $A = \epsilon + C$ collects the overhead and convexity. In words: $\nu(x)$ is the haircut at which the dealer would clear her book, so $K^{\downarrow}(x)$ is the all-in break-even markdown for buying one more lot --- adverse selection plus the marginal inventory cost --- and $K^{\uparrow}(x)$ is its selling counterpart. The two strikes sit symmetrically about $A(x)$ at distance $S(x)$: the slope of the inventory cost is the skew and its convexity the discretionary width, the identities of \citet{cotton2026skew}. The best competing response beyond fair value has survival function $\Fbar$, assumed smooth and positive with $G(K) = \sup_m (m-K)\Fbar(m)$ finite, positive, and attained at an interior optimum $m^\ast(K)$ on the strike range of interest; $G(K)$ is what the next enquiry is worth to a dealer whose all-in break-even is $K$, and it falls as $K$ rises.
+
+\begin{lemma}[Indirect-value properties]\label{lem:indirect}
+Where $\Fbar > 0$ and the optimum is interior and unique, $G$ is convex and strictly decreasing, with $-1 \le G'(K) = -\Fbar(m^\ast(K)) < 0$.
+\end{lemma}
+
+\begin{proof}
+$G$ is a supremum of the affine functions $K \mapsto (m-K)\Fbar(m)$, each with slope $-\Fbar(m) \in [-1, 0)$, hence convex with slopes in the same range; the envelope theorem identifies the slope at $K$ as $-\Fbar(m^\ast(K))$.
+\end{proof}
+
+The steady-state consistency equation is, for all $x$,
 \begin{equation}
 \frac{\tau\,c(x)}{s} \;=\; H_q\big(A(x), S(x)\big) - H_q\big(A(0), S(0)\big),
 \qquad
@@ -130,7 +145,7 @@ $H_q = G_\star e^{-U}\big(q e^{-V} + (1-q)e^{V}\big)$, and the identity of \cite
 $q e^{-V} + (1-q) e^{V} = 2\sqrt{q(1-q)}\cosh(V - \ell)$, gives \eqref{eq:normalform}. Since $\mathcal H_{1/2}(U,V) = G_\star e^{-U}\cosh V$ and $2\sqrt{q(1-q)} = e^{-\log M(q)}$, \eqref{eq:translation} follows. That $M(q) = \cosh\ell$ is the elementary computation $\cosh\ell = \tfrac{q+(1-q)}{2\sqrt{q(1-q)}}$.
 \end{proof}
 
-\begin{corollary}[The theorem of \citet{cotton2026skew}, and why it is rigid there]\label{cor:companion}
+\begin{corollary}[The theorem of \citet{cotton2026skew}, and why it is rigid there]\label{cor:steadystate}
 For exponential competing quotes, $\Phi(K) = a + hK$, so $U = a + hA$ and $V = hS$ are affine and the translation \eqref{eq:translation} is a rigid motion of the quotes themselves:
 \[
 S \longmapsto S - \frac{\ell}{h} = S - \delta, \qquad
@@ -160,37 +175,37 @@ H_q\big(A(x),S(x)\big) \;=\; \tfrac12\, G\big(T_{2q}(K^{\downarrow}(x))\big) + \
 every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. In words, $T_\lambda$ moves a strike to where the enquiry is $\lambda$ times more valuable: probability weight on a side is traded for a slide of its strike. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
 
 \begin{theorem}[Sidewise gauge rigidity]\label{thm:rigidity}
-Let $G$ be positive and strictly decreasing with $\Phi$ continuously differentiable on an interval $I$, and suppose that for every $\lambda$ in some open interval around $1$ the gauge $T_\lambda$ restricted to $I$ is a translation: $T_\lambda(K) = K - t(\lambda)$ for a constant $t(\lambda)$. Then $\Phi'$ is constant on $I$: $G$ is exponential there.
+Let $G$ be positive and strictly decreasing with $\Phi$ continuously differentiable on an interval $I$, and suppose that for every $\lambda$ in some open interval around $1$ the gauge $T_\lambda$ restricted to $I$ is a translation: $T_\lambda(K) = K - t(\lambda)$ for a constant $t(\lambda)$, for all $K \in I$ with $T_\lambda(K) \in I$. Then $\Phi'$ is constant on $I$: $G$ is exponential there.
 \end{theorem}
 
 \begin{proof}
-$T_\lambda(K) = K - t(\lambda)$ means $G(K - t(\lambda)) = \lambda\,G(K)$ for all $K \in I$, i.e.\ $\Phi(K) - \Phi(K - t(\lambda)) = \log \lambda$ with the left side independent of $K$. Differentiating in $K$: $\Phi'(K) = \Phi'(K - t(\lambda))$ for all $K$ and every $t(\lambda)$. The map $\lambda \mapsto t(\lambda)$ is injective ($G$ is strictly decreasing), so the continuous function $\Phi'$ admits an uncountable set of periods; the period set of a continuous nonconstant function is a discrete subgroup of $\mathbb R$, hence countable. So $\Phi'$ is constant on $I$.
+Fix an interior $K_0$. The shift $t(\lambda) = K_0 - \Phi^{-1}\big(\Phi(K_0) - \log\lambda\big)$ is continuous in $\lambda$ with $t(1) = 0$, so the available shifts fill an interval $(-\tau_0, \tau_0)$. For each such shift, $G(K - t) = \lambda\,G(K)$, i.e.\ $\Phi(K) - \Phi(K - t) = \log \lambda$ with the left side independent of $K$, wherever $K$ and $K - t$ both lie in $I$; differentiating, $\Phi'(K) = \Phi'(K - t)$ there. A continuous function on a connected interval that is invariant under every sufficiently small shift is constant, since any two points are joined by steps shorter than $\tau_0$.
 \end{proof}
 
-Theorem~\ref{thm:rigidity} is a statement about the two sidewise gauges separately. It does not by itself characterize the curves for which the \emph{summed} Hamiltonian can be balanced by rigid quote translations. The two-parameter family
+Theorem~\ref{thm:rigidity} is a statement about the two sidewise gauges separately. It does not by itself characterize the curves for which the \emph{summed} Hamiltonian can be balanced by rigid translations of the strikes. The family
 \[
-G(K) \;=\; C + B\,e^{-hK}, \qquad B > 0, \; C > 0
+G(K) \;=\; \kappa + B\,e^{-hK}, \qquad B > 0, \; \kappa > 0,
 \]
-(the constant $C$ is unrelated to the convexity $C(x)$ of Section~\ref{sec:setup}) has curved $\Phi$, yet
+has curved $\Phi$, yet
 \begin{align*}
-H_q(A,S) &= C + B e^{-hA}\big(q e^{-hS} + (1-q)e^{hS}\big) \\
-        &= C + 2B\sqrt{q(1-q)}\, e^{-hA}\cosh(hS - \ell)
+H_q(A,S) &= \kappa + B e^{-hA}\big(q e^{-hS} + (1-q)e^{hS}\big) \\
+        &= \kappa + 2B\sqrt{q(1-q)}\, e^{-hA}\cosh(hS - \ell)
         \;=\; H_{1/2}(A + \gamma,\, S - \delta):
 \end{align*}
 the constant passes through both sides and the exponential part translates rigidly.
 
-Moreover $C$ cancels from the consistency equation \eqref{eq:consistency}, which sees only differences of $H_q$, so the entire compression of \citet{cotton2026skew} --- shift $\delta$, widening $\gamma$, multiplier $M(q)$ --- holds verbatim for this family; and the family is locally realizable by a genuine markup distribution, with optimizer $m^\ast(K) = K + \tfrac1h + \tfrac{C}{hB}e^{hK}$ and survival $\Fbar(m^\ast(K)) = -G'(K) = hBe^{-hK}$ on any interval where the latter is at most one. The affine-exponential family is therefore not a pathology but the exact boundary of rigid behavior:
+Moreover $\kappa$ cancels from the consistency equation \eqref{eq:consistency}, which sees only differences of $H_q$, so the entire compression of \citet{cotton2026skew} --- shift $\delta$, widening $\gamma$, multiplier $M(q)$ --- holds verbatim for this family; and the family is locally realizable by a genuine markup distribution, with optimizer $m^\ast(K) = K + \tfrac1h + \tfrac{\kappa}{hB}e^{hK}$ and survival $\Fbar(m^\ast(K)) = -G'(K) = hBe^{-hK}$ on any interval where the latter is at most one. Among enquiry-value curves, the affine-exponential family is the exact boundary of rigid behavior:
 
-\begin{theorem}[Hamiltonian rigidity]\label{thm:hamrigidity}
-Let $G$ be twice continuously differentiable and strictly decreasing on an open interval $I$, and suppose that for each $q$ in a nondegenerate interval of imbalances there exist constants $\gamma(q)$ and $\delta(q)$ with
+\begin{theorem}[Strike rigidity]\label{thm:hamrigidity}
+Let $G$ be twice continuously differentiable, strictly decreasing, and convex on an open interval $I$ --- the properties Lemma~\ref{lem:indirect} grants every enquiry-value curve --- and suppose that for each $q$ in a nondegenerate interval of imbalances there exist constants $\gamma(q)$ and $\delta(q)$ with
 \[
 H_q(A,S) \;=\; H_{1/2}\big(A + \gamma(q),\, S - \delta(q)\big)
 \]
-for all $(A,S)$ in an open set whose strikes $A \pm S$ range over $I$. Then $-G'$ satisfies the multiplicative translation property of Theorem~\ref{thm:rigidity}, hence is exponential, and
+for all $(A,S)$ in an open set whose strikes $A \pm S$ range over $I$. Then $-G'$ satisfies the multiplicative translation property of Theorem~\ref{thm:rigidity}, hence is a decaying exponential, and
 \[
-G(K) \;=\; C + B\,e^{-hK} \qquad\text{on } I
+G(K) \;=\; \kappa + B\,e^{-hK} \qquad\text{on } I
 \]
-for some constants $C \in \mathbb R$, $B > 0$, $h > 0$. If in addition $G(K) \to 0$ as $K \to \infty$ --- automatic when $G$ is the enquiry value of a win curve with $\Fbar(m) = o(1/m)$ --- then $C = 0$ and $G$ is exponential.
+for some constants $\kappa \in \mathbb R$, $B > 0$, $h > 0$. If moreover $I$ contains a right half-line and $G(K) \to 0$ along it, then $\kappa = 0$ and $G$ is exponential.
 \end{theorem}
 
 \begin{proof}
@@ -198,11 +213,27 @@ Differentiate the identity with respect to $S$ and with respect to $A$, and add:
 \[
 2q\,G'(A+S) \;=\; G'\big(A + \gamma + S - \delta\big),
 \]
-i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + \gamma(q) - \delta(q))$ for all $K$; subtracting instead gives $2(1-q)\,G'(K') = G'(K' + \gamma(q) + \delta(q))$ with $K' = A - S$. So the positive continuous function $-G'$ is carried to the multiple $2q$ of itself by the state-independent translation $\delta(q) - \gamma(q)$, for every $q$ in the range. These translations are injective in $q$, so applying the argument of Theorem~\ref{thm:rigidity} to $-\log(-G')$, which is continuously differentiable since $G$ is $C^2$, gives $(\log(-G'))'$ constant: $-G'(K) = hB\,e^{-hK}$. Integrating gives $G = C + Be^{-hK}$. The tail condition forces $C = 0$; and for a genuine win curve, $0 \le G(K) \le \sup_{m > K}(m-K)\Fbar(m) \to 0$ whenever $\Fbar(m) = o(1/m)$.
+i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + \gamma(q) - \delta(q))$ for all $K$; subtracting instead gives $2(1-q)\,G'(K') = G'(K' + \gamma(q) + \delta(q))$ with $K' = A - S$. So the positive continuous function $-G'$ is carried to the multiple $2q$ of itself by the state-independent translation $\delta(q) - \gamma(q)$, for every $q$ in the range. These translations are injective in $q$, so applying the argument of Theorem~\ref{thm:rigidity} to $-\log(-G')$, which is continuously differentiable since $G$ is $C^2$, gives $(\log(-G'))'$ constant: $-G'(K) = hB\,e^{-hK}$ for some real $h$. Convexity makes $-G'$ nonincreasing, so $h \ge 0$; and $h = 0$ would make $-G'$ constant, forcing $2q = 1$ in the translation relation, against the nondegenerate range of $q$. Integrating gives $G = \kappa + Be^{-hK}$, and on a right half-line the tail condition forces $\kappa = 0$.
 \end{proof}
 
+\begin{remark}[The concave impostor]
+Convexity is load-bearing. The decreasing, twice differentiable, concave family $G(K) = \kappa - Be^{hK}$ also balances rigidly, with the opposite-signed translations $(A, S) \mapsto (A - \gamma, S + \delta)$: a narrowing rather than a widening. Lemma~\ref{lem:indirect} rules it out --- no enquiry-value curve is concave --- and the accompanying script checks its rigid balancing at machine precision alongside its exclusion.
+\end{remark}
+
+\begin{corollary}[Quote rigidity]\label{cor:quoterigidity}
+Within the family of Theorem~\ref{thm:hamrigidity} the submitted quote is $m^\ast(K) = K + \tfrac1h + \tfrac{\kappa}{hB}e^{hK}$, so
+\[
+m^\ast(K + t) - m^\ast(K) \;=\; t + \tfrac{\kappa}{hB}\,e^{hK}\big(e^{ht} - 1\big),
+\]
+which is independent of $K$ only when $\kappa = 0$. Rigid translation of the break-even strikes therefore characterizes the affine-exponential class, while rigid translation of the \emph{submitted quotes}, over a nondegenerate range of imbalances, characterizes the pure exponential, with no tail condition.
+\end{corollary}
+
+\begin{remark}[The constant is a borderline tail]\label{rem:tail}
+Along the family, $m^\ast(K)\,\Fbar(m^\ast(K)) \to \kappa$ as $K$ grows: a positive constant is exactly a $1/m$ survival tail, an infinite-mean-markup regime. A finite mean markup gives $m\Fbar(m) \to 0$, hence $G(K) \le \sup_{m>K} m\Fbar(m) \to 0$ and $\kappa = 0$. The pure exponential is the finite-mean member of the rigid class.
+\end{remark}
+
 \begin{remark}[What each theorem governs]
-Theorem~\ref{thm:rigidity} is the right tool for the defect functional of the next section, which is built from the sidewise gauges. Theorem~\ref{thm:hamrigidity} is the right statement of the headline claim: among admissible enquiry-value curves, rigid quote translations remove imbalance exactly when $G$ is affine-exponential, and exponential once tails are imposed. The defect functional $D$ below measures the failure of the \emph{chosen termwise gauge} to lift to a potential; Theorem~\ref{thm:hamrigidity} closes the remaining gap by ruling out every other rigid Hamiltonian-level balancing.
+Theorem~\ref{thm:rigidity} is the right tool for the defect functional of the next section, which is built from the sidewise gauges. Theorem~\ref{thm:hamrigidity} governs the break-even strikes: rigid strike translations remove imbalance exactly when $G$ is affine-exponential. Corollary~\ref{cor:quoterigidity} and Remark~\ref{rem:tail} then recover the pure exponential at the level of the submitted quotes and of global tails respectively. The defect functional $\mathcal D$ below measures the failure of the \emph{chosen termwise gauge} to lift to a potential; Theorem~\ref{thm:hamrigidity} closes the remaining gap by ruling out every other rigid balancing of the strikes.
 \end{remark}
 
 \begin{remark}[Provenance of the functional equation]
@@ -210,7 +241,7 @@ The core of Theorem~\ref{thm:rigidity} is the multiplicative Cauchy equation, an
 \end{remark}
 
 \begin{remark}[Rigidity run backwards is identification]
-A dealer who finds that sliding her quotes by a constant absorbs the flow has, by Theorem~\ref{thm:hamrigidity}, learned her market's rejection curve up to two constants. The theorem's economic use is therefore not only to delimit when the formulas of \citet{cotton2026skew} are exact, but to turn an observed sufficiency of rigid skewing into a statement about the shape of the competition.
+A dealer who finds that sliding her \emph{submitted quotes} by a constant absorbs the flow has, by Corollary~\ref{cor:quoterigidity}, identified her market's rejection curve as exponential and learned its width. If only her break-even strikes translate rigidly, she has identified the affine-exponential class, two constants short of the curve. Either way an observed sufficiency of rigid skewing becomes a statement about the shape of the competition.
 \end{remark}
 
 \section{The integrability defect}\label{sec:defect}
@@ -232,39 +263,39 @@ Necessity is the computation \eqref{eq:edge}; sufficiency is the stated summatio
 
 After the pointwise gauge \eqref{eq:pointwise}, the transformed strikes are $\tilde K^{\downarrow}(x) = T_{2q}(K^{\downarrow}(x))$ and $\tilde K^{\uparrow}(x) = T_{2(1-q)}(K^{\uparrow}(x))$, and by \eqref{eq:edge} the reconstruction condition becomes: the \emph{defect functional}
 \begin{equation}
-D(K) \;=\; T_{2q}(K) + T_{2(1-q)}(2\epsilon - K)
+\mathcal D(K) \;=\; T_{2q}(K) + T_{2(1-q)}(2\epsilon - K)
 \label{eq:defect}
 \end{equation}
-must be constant in $K$ across the visited strike set. That equivalence is exact and governs everything in this section: lifting occurs if and only if $D$ is constant on the strikes actually visited. Affinity of $\Phi$ guarantees it globally; curvature destroys it generically but not universally --- a curved $G$ can make $D$ accidentally constant on a particular finite ladder, and at $q = \tfrac12$ the obstruction vanishes trivially since both gauges are the identity.
+must be constant in $K$ across the visited strike set. That equivalence is exact and governs everything in this section: lifting occurs if and only if $\mathcal D$ is constant on the strikes actually visited. Affinity of $\Phi$ guarantees it globally; curvature destroys it generically but not universally --- a curved $G$ can make $\mathcal D$ accidentally constant on a particular finite ladder, and at $q = \tfrac12$ the obstruction vanishes trivially since both gauges are the identity.
 
 \begin{theorem}[The defect measures curvature; its constant part is the widening]\label{thm:defect}
 \emph{(i)} For affine $\Phi = a + hK$,
 \[
-D(K) \;\equiv\; 2\epsilon - \frac{\log\big(4q(1-q)\big)}{h} \;=\; 2\epsilon + 2\gamma :
+\mathcal D(K) \;\equiv\; 2\epsilon - \frac{\log\big(4q(1-q)\big)}{h} \;=\; 2\epsilon + 2\gamma :
 \]
 the defect is constant, the gauged problem is a balanced problem with potential $\tilde\nu(x) = \nu(x) - \delta x$ and overhead $\tilde\epsilon = \epsilon + \gamma$, and the widening of \citet{cotton2026skew} is the value of the defect functional at the integrable point.
 \emph{(ii)} For the deformation \eqref{eq:deformation}, with $a_1 = \tfrac1h\log(2q)$ and $a_2 = \tfrac1h\log\big(2(1-q)\big)$ (so $a_1 + a_2 = -2\gamma$),
 \begin{equation}
 T_\lambda(K) \;=\; K - \frac{\log \lambda}{h} + \frac{\eta}{h}\Big[\psi(K) - \psi\Big(K - \frac{\log \lambda}{h}\Big)\Big] + O(\eta^2),
-\label{eq:Tcexpansion}
+\label{eq:Tlambda}
 \end{equation}
 and
 \begin{equation}
-D(K) \;=\; 2(\epsilon+\gamma) + \frac{\eta}{h}\Big[\psi(K) - \psi(K - a_1) + \psi(2\epsilon - K) - \psi(2\epsilon - K - a_2)\Big] + O(\eta^2).
+\mathcal D(K) \;=\; 2(\epsilon+\gamma) + \frac{\eta}{h}\Big[\psi(K) - \psi(K - a_1) + \psi(2\epsilon - K) - \psi(2\epsilon - K - a_2)\Big] + O(\eta^2).
 \label{eq:defectexpansion}
 \end{equation}
-Affine components of $\psi$ contribute a constant to \eqref{eq:defectexpansion} and no $K$-dependence: they renormalize the exponential width and overhead and create no genuine defect. The variation of $D$ therefore begins, at first order in $\eta$, with a second-difference functional of $\psi$ --- non-exponential curvature is the integrability defect of the local imbalance gauge.
+Affine components of $\psi$ contribute a constant to \eqref{eq:defectexpansion} and no $K$-dependence: they renormalize the exponential width and overhead and create no genuine defect. The variation of $\mathcal D$ therefore begins, at first order in $\eta$, with a second-difference functional of $\psi$ --- non-exponential curvature is the integrability defect of the local imbalance gauge.
 \end{theorem}
 
 \begin{proof}
 (i) Substitute $T_\lambda(K) = K - \tfrac1h\log \lambda$ into \eqref{eq:defect}; the $K$'s cancel and $\log(2q) + \log(2(1-q)) = \log(4q(1-q)) = -2h\gamma$. That $\tilde\nu = \nu - \delta x$ matches: $\tilde K^{\downarrow} = K^{\downarrow} - \tfrac1h\log 2q$ and $\tilde\epsilon + \mathrm{D}^{+}\tilde\nu = \epsilon + \gamma + \mathrm{D}^{+}\nu - \delta$ agree because $\gamma - \delta = \tfrac1h\log\tfrac{1}{2q}$.
-(ii) Write $\Phi_\eta(T) = \Phi_\eta(K) - \log \lambda$ and expand $T = T^{(0)} + \eta T^{(1)} + O(\eta^2)$: at order zero $h(T^{(0)} - K) = -\log \lambda$; at order one $h T^{(1)} + \psi(T^{(0)}) - \psi(K) = 0$, giving \eqref{eq:Tcexpansion}; summing the two gauges per \eqref{eq:defect} gives \eqref{eq:defectexpansion}. For affine $\psi(K) = uK + v$ the bracket in \eqref{eq:defectexpansion} is $u(a_1 + a_2) = -2u\gamma$, a constant.
+(ii) Write $\Phi_\eta(T) = \Phi_\eta(K) - \log \lambda$ and expand $T = T^{(0)} + \eta T^{(1)} + O(\eta^2)$: at order zero $h(T^{(0)} - K) = -\log \lambda$; at order one $h T^{(1)} + \psi(T^{(0)}) - \psi(K) = 0$, giving \eqref{eq:Tlambda}; summing the two gauges per \eqref{eq:defect} gives \eqref{eq:defectexpansion}. For affine $\psi(K) = uK + v$ the bracket in \eqref{eq:defectexpansion} is $u(a_1 + a_2) = -2u\gamma$, a constant.
 \end{proof}
 
 \begin{corollary}[A quantitative curvature bound]\label{cor:oscbound}
 Write $B_\psi(K)$ for the bracket in \eqref{eq:defectexpansion}, and let $\|\psi''\|_\infty$ be taken over the reflected and shifted copies of the visited strike interval $I$ at which \eqref{eq:defectexpansion} evaluates $\psi$. Then $|B_\psi'(K)| \le (|a_1| + |a_2|)\,\|\psi''\|_\infty$, and on $I$,
 \[
-\operatorname*{osc}_{K \in I} D(K) \;\le\; \frac{|\eta|}{h}\,\mathrm{diam}(I)\,\big(|a_1| + |a_2|\big)\,\|\psi''\|_\infty \;+\; O(\eta^2).
+\operatorname*{osc}_{K \in I} \mathcal D(K) \;\le\; \frac{|\eta|}{h}\,\mathrm{diam}(I)\,\big(|a_1| + |a_2|\big)\,\|\psi''\|_\infty \;+\; O(\eta^2).
 \]
 \end{corollary}
 
@@ -285,11 +316,11 @@ The defect obstructs an exact compression, not a computation. Work on the invent
 \mathcal F_x(\nu, \eta) \;=\; q\,G_\eta\big(\epsilon + \mathrm{D}^{+}\nu(x)\big) + (1-q)\,G_\eta\big(\epsilon + \mathrm{D}^{-}\nu(x)\big) - \big[\,x \to 0\,\big] - \frac{\tau c(x)}{s},
 \label{eq:residual}
 \end{equation}
-where $\mathrm{D}^{\pm}\nu(x) = (\nu(x\pm s) - \nu(x))/s$ and $[\,x\to 0\,]$ denotes the same expression at $x = 0$, together with a boundary closure at the lattice ends; the closure used here and in the certificates sets the third difference to zero at each end,
+where $\mathrm{D}^{\pm}\nu(x) = (\nu(x\pm s) - \nu(x))/s$ and $[\,x\to 0\,]$ denotes the same expression at $x = 0$, together with a boundary closure at the lattice ends; the closure used here, as in the script accompanying \citet{cotton2026skew}, sets the third difference to zero at each end,
 \[
 \nu(\pm N s) - 3\nu(\pm(N-1)s) + 3\nu(\pm(N-2)s) - \nu(\pm(N-3)s) \;=\; 0,
 \]
-extrapolating the convexity of the potential through the boundary. At $\eta = 0$ the exact solution is known from \citet{cotton2026skew}: $\nu_0 = \nu_{\mathrm{bal}} + \delta x$, the tilt of the balanced solve at cost $M(q)\,c$.
+extrapolating the convexity of the potential through the boundary. At $\eta = 0$ the exact solution is known from \citet{cotton2026skew}: $\nu_0 = \nu_{\mathrm{bal}} + \delta x$, the tilt of the balanced solve at cost $M(q)\,c$. The hierarchy applies to any smooth path $\eta \mapsto G_\eta$ through the anchor, with $\psi = \partial_\eta \Phi_\eta|_{\eta=0}$ its first-order deformation; the straight line \eqref{eq:deformation} is the default path.
 
 \begin{theorem}[One linear operator computes every order]\label{thm:hierarchy}
 Let $K^{\downarrow}_0, K^{\uparrow}_0$ denote the strikes of $\nu_0$, write $G_0 = G_{\eta = 0}$, and suppose the linearization
@@ -317,7 +348,11 @@ $\mathcal F(\nu_0, 0) = 0$ by the theorem of \citet{cotton2026skew}. The partial
 \end{proof}
 
 \begin{remark}[Structure and cost of the hierarchy]
-Before centering, the operator inside \eqref{eq:L0} is a birth--death tridiagonal operator with positive weights $qG_0(K^{\downarrow}_0)$ and $(1-q)G_0(K^{\uparrow}_0)$; the centering $\Delta_0$ subtracts one fixed linear functional of $u$ from every row, so $L_0$ is a tridiagonal matrix plus a rank-one correction --- equivalently, retaining the ergodic constant as an unknown instead of eliminating it through $\Delta_0$ gives a genuinely tridiagonal block with one border column. Either way it is factored once, for the fixed anchor problem (fixed $q$, cost, grid, and overhead), and every order of the expansion and every basis direction of Section~\ref{sec:envelope} is then one back-substitution; nothing nonlinear is ever re-solved. The certificate factors $L_0$ once and verifies, on a Weibull-born deformation, $\|\nu_\eta - \nu_0 - \eta\nu_1\|_\infty = O(\eta^2)$ and $\|\nu_\eta - \nu_0 - \eta\nu_1 - \eta^2\nu_2\|_\infty = O(\eta^3)$, with observed error ratios $3.9 \approx 4$ and $8.1 \approx 8$ under halving of $\eta$ (Section~\ref{sec:certificate}).
+Before centering, the operator inside \eqref{eq:L0} is a birth--death tridiagonal operator with positive weights $qG_0(K^{\downarrow}_0)$ and $(1-q)G_0(K^{\uparrow}_0)$; the centering $\Delta_0$ subtracts one fixed linear functional of $u$ from every row, so $L_0$ is tridiagonal in the interior, carries two narrow-band boundary rows from the closure, and adds a rank-one centering correction; retaining the ergodic constant as an unknown instead of eliminating it through $\Delta_0$ gives a banded block with one border column. After the pinning $\nu(0) = 0$ there are $2N$ unknowns, matched by the $2N - 2$ centered interior equations and the two boundary rows. Either way the matrix is factored once, for the fixed anchor problem (fixed $q$, cost, grid, and overhead), and every order of the expansion and every basis direction of Section~\ref{sec:envelope} is then one back-substitution; nothing nonlinear is ever re-solved. The accompanying script factors $L_0$ once and verifies, on a Weibull-born deformation, $\|\nu_\eta - \nu_0 - \eta\nu_1\|_\infty = O(\eta^2)$ and $\|\nu_\eta - \nu_0 - \eta\nu_1 - \eta^2\nu_2\|_\infty = O(\eta^3)$, with observed error ratios $3.9 \approx 4$ and $8.1 \approx 8$ under halving of $\eta$ (Section~\ref{sec:certificate}).
+\end{remark}
+
+\begin{remark}[A homotopy expansion, and its null direction]
+The straight line \eqref{eq:deformation} is the log-geometric interpolation $G_\eta = G_0^{1-\eta} G_1^{\eta}$ between the anchor and a target curve: it preserves positivity and moves the normal-form coordinate linearly. It is a chosen homotopy, not an intrinsic expansion of the endpoint: beyond first order the coefficients $\nu_2, \nu_3, \dots$ depend on the path, not only on $G_1$. The centered consistency equation makes this concrete, because it is invariant under $G \mapsto G + \kappa$: the additive path $G_0 + \eta\kappa$ has zero potential correction at every order, while the $\Phi$-line to the same endpoint leaves the rigid class at intermediate $\eta$ and generates nonzero pathwise coefficients. A fully normal-form treatment would separate motion along the exactly reducible manifold, $\kappa(\eta) + B(\eta)e^{-h(\eta)K}$, from a transverse residual; the coordinate adapted to that split is $\Xi = -\log(-G')$, since by Theorem~\ref{thm:hamrigidity} affine $\Xi$ is exactly the rigid class and $\Xi$ removes the constant automatically. $\Phi$ remains the coordinate for the pointwise translation of Theorem~\ref{thm:normalform}; the two geometries serve different theorems.
 \end{remark}
 
 The value correction becomes a quote correction by one more envelope evaluation. Combining \eqref{eq:envelope} with the first-order condition $m^\ast - K = 1/h(m^\ast)$ of \citet{cotton2026skew} gives $m^\ast_\eta(K) = K + 1/\Phi_\eta'(K)$, and the exact strikes expand as $K^{\downarrow}_\eta(x) = K^{\downarrow}_0(x) + \eta\,\mathrm{D}^{+}\nu_1(x) + O(\eta^2)$, and likewise on the sell side with $\mathrm{D}^{-}$, so:
@@ -334,10 +369,10 @@ The first-order quote correction decomposes into the inventory-value response $\
 \end{corollary}
 
 \begin{remark}[The curvature amplification factor]\label{rem:resolvent}
-From \eqref{eq:firstorder}, $\|\nu_1\| \le \|L_0^{-1}\|\,\|R_\psi\|$. The forcing is bounded by the curvature through Corollary~\ref{cor:oscbound}-type estimates, but the resolvent norm belongs to the anchor: it is governed by the spectral gap of the anchor inventory birth--death dynamics, and it grows as the anchor problem approaches a low-carry or weakly mean-reverting regime. Small uncertainty in win-curve curvature therefore need not imply small uncertainty in policy when the inventory dynamics are near instability; $\|L_0^{-1}\|$ is the policy's curvature amplification factor, and it is the quantitative bridge between this paper and robust policy learning built on it.
+From \eqref{eq:firstorder}, $\|\nu_1\| \le \|L_0^{-1}\|\,\|R_\psi\|$. The forcing is bounded by the curvature through Corollary~\ref{cor:oscbound}-type estimates, but the resolvent norm belongs to the anchor. In a weighted-$\ell^2$ realization of the interior birth--death block it would be controlled by a spectral gap; we do not develop that here, and use $\|L_0^{-1}\|$ only as the conditioning amplification factor of the anchor problem, which grows as the anchor approaches a low-carry or weakly mean-reverting regime. Small uncertainty in win-curve curvature therefore need not imply small uncertainty in policy when the inventory dynamics are near instability, and this factor is the quantitative bridge between the present paper and robust policy learning built on it.
 \end{remark}
 
-\begin{remark}[The robustness remark of \citet{cotton2026skew} is the first shadow]
+\begin{remark}[The robustness experiment of \citet{cotton2026skew}, reinterpreted]
 \citet{cotton2026skew} reported numerically that the error in the zero-inventory skew under a slowly varying hazard is about a quarter of the hazard's relative variation across the visited strikes, shrinking linearly. In the present language that experiment perturbs $\Phi$ by a specific near-quadratic $\psi$ and reads one component of $\eta\nu_1$; the observed constant is a functional of $\psi$ computable from \eqref{eq:firstorder}. The robustness statement is thereby upgraded from an error bound to the leading term of a convergent expansion.
 \end{remark}
 
@@ -346,7 +381,7 @@ From \eqref{eq:firstorder}, $\|\nu_1\| \le \|L_0^{-1}\|\,\|R_\psi\|$. The forcin
 The hierarchy consumes deformations of the \emph{effective log-value}; named distribution families are specified by deformations of the \emph{log-survival curve}. The envelope theorem converts one to the other without recomputing the optimal markup.
 
 \begin{proposition}[Envelope transfer]\label{prop:envelope}
-Let $-\log \Fbar_\theta(m) = hm + \sum_j \theta_j\, r_j(m)$ with the optimizer of $(m-K)\Fbar_\theta(m)$ unique and interior on the strike range of interest. Then, with $m_0(K) = K + \tfrac1h$ the exponential optimum,
+Let $-\log \Fbar_\theta(m) = hm + \sum_j \theta_j\, r_j(m)$ with each $r_j$ three times continuously differentiable, and the optimizer of $(m-K)\Fbar_\theta(m)$ unique, interior, and nondegenerate, uniformly over the compact strike interval considered. Then, with $m_0(K) = K + \tfrac1h$ the exponential optimum,
 \begin{equation}
 \Phi_\theta(K) \;=\; \Phi_0(K) + \sum_j \theta_j\, r_j\big(m_0(K)\big)
 \;-\; \frac{1}{2h^2}\sum_{j,k}\theta_j\theta_k\, r_j'\big(m_0(K)\big)\, r_k'\big(m_0(K)\big) + O(\|\theta\|^3).
@@ -364,21 +399,21 @@ For $\Fbar_k(m) = e^{-(hm)^k}$ with $k = 1 + \eta$, the expansion $(hm)^{1+\eta}
 \[
 \psi(K) \;=\; (1 + hK)\,\log(1 + hK),
 \]
-ready for insertion into \eqref{eq:firstorder}.
+ready for insertion into \eqref{eq:firstorder}. Note $\psi'(0) = h$: the raw tangent combines genuine curvature with a first-order recalibration of the local exponential rate. The curvature part alone is $\psi_\perp(K) = (1+hK)\log(1+hK) - hK$; either normalization serves, affine components being absorbed into the anchor.
 \end{corollary}
 
-The hierarchy perturbs through effective log-values, and one should ask when a proposed $\Phi$ corresponds to any markup distribution at all. The question is a rationalizability question of the kind familiar from producer theory, where indirect profit functions determine supply through the envelope; the modern converse direction is \citet{sinander2022}. The envelope identities answer it locally here.
+The hierarchy perturbs through effective log-values, and one should ask when a proposed $\Phi$ corresponds to any markup distribution at all. The question is a rationalizability question of the kind familiar from producer theory, where indirect profit functions determine supply through the envelope; the modern converse direction is \citet{sinander2022}. The envelope identities answer it locally here: the proposition constructs a survival curve on $m^\ast(I)$ and proves optimality over that interval, a local sufficiency result rather than a global rationalization.
 
 \begin{proposition}[Local admissibility]\label{prop:admissible}
 Let $\Phi$ be $C^2$ on an interval $I$ with, on $I$,
 \[
-\Phi'(K) > 0, \qquad \Phi''(K) < \Phi'(K)^2, \qquad G(K)\,\Phi'(K) \le 1 .
+\Phi'(K) > 0, \qquad \Phi''(K) < \Phi'(K)^2, \qquad G(K)\,\Phi'(K) < 1 .
 \]
-Define $m^\ast(K) = K + 1/\Phi'(K)$ and $\Fbar(m^\ast(K)) = G(K)\,\Phi'(K)$. Then $m^\ast$ is strictly increasing on $I$, $G$ is strictly convex, $\Fbar$ is a well-defined strictly decreasing function with values in $(0,1]$ on $m^\ast(I)$, and for every strike $\widetilde K$ with $m^\ast(\widetilde K)$ interior to $m^\ast(I)$ the program $\sup_m (m - \widetilde K)\,\Fbar(m)$ over $m^\ast(I)$ has the unique interior optimum $m^\ast(\widetilde K)$ with value $G(\widetilde K)$. In particular, sufficiently small $C^2$ deformations of the affine anchor remain admissible on any compact strike interval.
+Define $m^\ast(K) = K + 1/\Phi'(K)$ and $\Fbar(m^\ast(K)) = G(K)\,\Phi'(K)$. Then $m^\ast$ is strictly increasing on $I$, $G$ is strictly convex, $\Fbar$ is a well-defined strictly decreasing function with values in $(0,1)$ on $m^\ast(I)$, and for every strike $\widetilde K$ with $m^\ast(\widetilde K)$ interior to $m^\ast(I)$ the program $\sup_m (m - \widetilde K)\,\Fbar(m)$ over $m^\ast(I)$ has the unique interior optimum $m^\ast(\widetilde K)$ with value $G(\widetilde K)$. In particular, sufficiently small $C^2$ deformations of the affine anchor remain admissible on any compact strike interval.
 \end{proposition}
 
 \begin{proof}
-$dm^\ast/dK = 1 - \Phi''/\Phi'^2 > 0$ and, from $G' = -G\Phi'$, $G'' = G(\Phi'^2 - \Phi'') > 0$; also $\tfrac{d}{dK}[G\Phi'] = G(\Phi'' - \Phi'^2) < 0$, so $\Fbar$ is strictly decreasing along the strictly increasing curve $m^\ast$, with values in $(0,1]$ by hypothesis. The hazard of $\Fbar$ along the curve is
+$dm^\ast/dK = 1 - \Phi''/\Phi'^2 > 0$ and, from $G' = -G\Phi'$, $G'' = G(\Phi'^2 - \Phi'') > 0$; also $\tfrac{d}{dK}[G\Phi'] = G(\Phi'' - \Phi'^2) < 0$, so $\Fbar$ is strictly decreasing along the strictly increasing curve $m^\ast$, with values in $(0,1)$ by hypothesis. The hazard of $\Fbar$ along the curve is
 \[
 h_{\Fbar}\big(m^\ast(K)\big) = -\frac{d}{dm}\log\Fbar
 = \frac{-\tfrac{d}{dK}\log\big[G(K)\Phi'(K)\big]}{dm^\ast/dK}
@@ -405,45 +440,42 @@ Two qualifications keep the claim precise. Some of these families contain the ex
 \section{The distribution-free parity theorem}\label{sec:parity}
 
 \begin{theorem}[Parity]\label{thm:parity}
-Suppose the buy and sell sides face the same enquiry-value curve $G$, the carrying cost is even, $c(-x) = c(x)$, and the consistency equation \eqref{eq:consistency} (with any reflection-symmetric boundary closure) has a locally unique solution branch depending smoothly on $\ell$. Then
+Suppose the buy and sell sides face the same enquiry-value curve $G$, the carrying cost is even, $c(-x) = c(x)$, and the consistency equation \eqref{eq:consistency} (with any reflection-symmetric boundary closure) has a locally unique solution branch depending on $\ell$ in class $C^r$. Then
 \[
 \nu_{1-q}(x) \;=\; \nu_q(-x) \qquad\text{(after the normalization $\nu(0)=0$)},
 \]
-so the zero-inventory skew contains only odd and the zero-inventory convexity only even powers of the log-odds:
+so $S_q(0)$ is odd and $C_q(0)$ is even in $\ell$: every derivative of the wrong parity vanishes at balance, and the Taylor jets through order $r$ contain only the stated powers,
 \[
 S_q(0) = d_1 \ell + d_3 \ell^3 + \cdots, \qquad
-C_q(0) - C_{1/2}(0) = g_2 \ell^2 + g_4 \ell^4 + \cdots .
+C_q(0) - C_{1/2}(0) = g_2 \ell^2 + g_4 \ell^4 + \cdots ,
 \]
+with remainders of order $r$; if the branch is real analytic the displayed series converge.
 \end{theorem}
 
 \begin{proof}
-Let $\nu$ solve the problem at imbalance $q$ and set $\tilde\nu(x) = \nu(-x)$. Then $\mathrm{D}^{\pm}\tilde\nu(x) = \mathrm{D}^{\mp}\nu(-x)$, so the strikes swap sides at the reflected inventory, and since $c$ is even, $\tilde\nu$ satisfies \eqref{eq:consistency} with $q$ replaced by $1-q$. Local uniqueness identifies $\tilde\nu$ with $\nu_{1-q}$. Then $S_{1-q}(0) = -S_q(0)$ and $C_{1-q}(0) = C_q(0)$; since $q \mapsto 1-q$ is $\ell \mapsto -\ell$, smoothness in $\ell$ gives the stated power series.
+Let $\nu$ solve the problem at imbalance $q$ and set $\tilde\nu(x) = \nu(-x)$. Then $\mathrm{D}^{\pm}\tilde\nu(x) = \mathrm{D}^{\mp}\nu(-x)$, so the strikes swap sides at the reflected inventory, and since $c$ is even, $\tilde\nu$ satisfies \eqref{eq:consistency} with $q$ replaced by $1-q$. Local uniqueness identifies $\tilde\nu$ with $\nu_{1-q}$. Then $S_{1-q}(0) = -S_q(0)$ and $C_{1-q}(0) = C_q(0)$; since $q \mapsto 1-q$ is $\ell \mapsto -\ell$, oddness and evenness follow. A $C^r$ odd (even) function of $\ell$ has only odd (even) powers in its Taylor jet, and analyticity upgrades the jet to a convergent series.
 \end{proof}
 
 \begin{remark}[Parity versus leading order]
-Symmetry alone does not make $d_1$ or $g_2$ nonzero, nor sign the width response: in principle a particular curve could have cubic-leading skew or quartic-leading widening. What the theorem establishes is the parity; the familiar reading --- skew first order in imbalance, width second order --- holds under the nondegeneracy $d_1 \neq 0$, $g_2 \neq 0$, which the exponential family satisfies with the all-orders coefficients
-\[
-\delta = \frac{\ell}{h}, \qquad \gamma = \frac{\log\cosh\ell}{h},
-\]
-and which the certificate's strongly curved test curve also exhibits, with $d_1 \approx 0.797/h$ against the exponential $1/h$ and $g_2 \approx 0.019 > 0$. Exponentiality supplies coefficients; parity is universal; nondegeneracy sits in between, generic but not automatic.
+Symmetry alone does not make $d_1$ or $g_2$ nonzero, nor sign the width response: in principle a particular curve could have cubic-leading skew or quartic-leading widening. What the theorem establishes is the parity; the familiar reading --- skew first order in imbalance, width second order --- holds under the nondegeneracy $d_1 \neq 0$, $g_2 \neq 0$. The exponential family satisfies it with zero-inventory skew $S_q(0) = \ell/h$ exactly, at all orders. The width response is a different object from the widening $\gamma = \tfrac1h \log\cosh\ell$ of the normal form: $\gamma$ is the exogenous translation of the transformed overhead coordinate, while $C_q(0) - C_{1/2}(0)$ is the endogenous convexity response, which depends on the carrying cost through the multiplier $M(q)$; the certificate's $g_2 \approx 0.019$ measures the latter. The strongly curved test curve of Section~\ref{sec:certificate} exhibits both nondegeneracies, with $d_1 \approx 0.797/h$ against the exponential $1/h$. Exponentiality supplies coefficients; parity is universal; nondegeneracy sits in between, generic but not automatic.
 \end{remark}
 
 \section{Numerical checks}\label{sec:certificate}
 
-A single seventeen-state experiment checks instances, not theorems. What the accompanying script \texttt{verify\_normal\_form.py} provides is an independent check of every formula and every predicted asymptotic order, on the lattice formulation of the certificate of \citet{cotton2026skew}: quadratic cost, $q = 0.6$, the third-difference closure of Section~\ref{sec:hierarchy}, and the Weibull-born deformation $\psi(K) = (1+hK)\log(1+hK)$. It verifies:
+A single seventeen-state experiment checks instances, not theorems. What the accompanying script \texttt{verify\_normal\_form.py} provides is a reproducibility and diagnostic check of the formulas and their predicted asymptotic orders, on one configuration, in the lattice formulation of the corresponding script of \citet{cotton2026skew}: quadratic cost, $q = 0.6$, the third-difference closure of Section~\ref{sec:hierarchy}, and the Weibull-born deformation $\psi(K) = (1+hK)\log(1+hK)$. It verifies:
 \begin{itemize}
 \item the normal form \eqref{eq:normalform} and translation form \eqref{eq:translation} on randomized $(A, S, q)$ at relative error $\sim 10^{-16}$, for a deformation far from exponential ($\eta = 0.35$), and the gauge property $G(T_\lambda(K)) = \lambda\,G(K)$ at $\sim 10^{-15}$;
-\item the affine defect $D \equiv 2\epsilon + 2\gamma$ at $\sim 10^{-16}$, and for curved $\Phi$ the expansions \eqref{eq:Tcexpansion}--\eqref{eq:defectexpansion} with $O(\eta^2)$ remainders (ratios $3.6$--$3.8 \approx 4$ under halving), with the measured oscillation inside the bound of Corollary~\ref{cor:oscbound} by a factor of about two;
+\item the affine defect $\mathcal D \equiv 2\epsilon + 2\gamma$ at $\sim 10^{-16}$, and for curved $\Phi$ the expansions \eqref{eq:Tlambda}--\eqref{eq:defectexpansion} with $O(\eta^2)$ remainders (ratios $3.6$--$3.8 \approx 4$ under halving), with the measured oscillation inside the bound of Corollary~\ref{cor:oscbound} by a factor of about two;
 \item the hierarchy of Theorem~\ref{thm:hierarchy}: $\|\nu_\eta - \nu_0 - \eta\nu_1\|_\infty$ shrinks at ratio $3.9 \approx 4$ and $\|\nu_\eta - \nu_0 - \eta\nu_1 - \eta^2\nu_2\|_\infty$ at ratio $8.1 \approx 8$; the resolvent inequality of Remark~\ref{rem:resolvent} holds with amplification factor $\|L_0^{-1}\|_\infty \approx 73$ on the test anchor;
 \item the envelope transfer \eqref{eq:envelopetransfer} against direct optimization of the true Weibull families: first order at ratio $\approx 4$, second order (including the family's own curvature term) at ratio $\approx 8$;
-\item the rigidity boundary of Theorem~\ref{thm:hamrigidity} in both directions: the affine-exponential family balances rigidly, and satisfies $2q\,G'(K) = G'(K + \gamma - \delta)$, at $\sim 10^{-16}$, while the curved test curve's balancing gap, \emph{minimized over all translation pairs}, stays above $10^{-2}$;
+\item the rigidity boundary of Theorem~\ref{thm:hamrigidity} in both directions: the affine-exponential family balances rigidly, and satisfies $2q\,G'(K) = G'(K + \gamma - \delta)$, at $\sim 10^{-16}$, while the curved test curve's balancing gap, \emph{minimized over all translation pairs}, stays above $10^{-2}$; the concave impostor balances rigidly at $\sim 10^{-16}$ with the opposite-signed translations, and $m^\ast\,\Fbar(m^\ast) \to \kappa$ numerically along the affine family;
 \item the admissibility construction of Proposition~\ref{prop:admissible}, with the reconstructed survival curve re-optimizing to $G$ at $\sim 10^{-16}$, and the tangent policy of Corollary~\ref{cor:tangentpolicy} at ratio $3.9 \approx 4$;
 \item the parity of Theorem~\ref{thm:parity}: $|\nu_{1-q}(x) - \nu_q(-x)| \sim 10^{-15}$, with coefficients $d_1 \to 0.797$ and $g_2 \to 0.019$ stable under $\ell \to \ell/2$.
 \end{itemize}
 
 \section{Relation to earlier work and the program}\label{sec:relation}
 
-\citet{cotton2026skew} proved the exact compression under exponentiality and remarked that the assumption is needed only locally; the present paper is that remark grown into a theory, with the exponential case recast as the integrable anchor of a normal form rather than a fortunate special case.
+\citet{cotton2026skew} proved the exact compression under exponentiality and remarked that the assumption is needed only locally; the present paper develops that remark into a perturbation theory, with the exponential case as the integrable anchor of a normal form.
 
 \citet{cotton2026finite} plays the analogous role in the transient Avellaneda--Stoikov line \citep{avellaneda2008,glft2012}, where the exponential intensity curve is what linearizes the Hamilton--Jacobi--Bellman equation in the first place; its concluding problem --- a finite-horizon robustness statement for locally exponential intensity curves --- is now posed correctly as the finite-horizon instance of this paper's hierarchy, with the tilted terminal condition joining the forcing terms.
 
@@ -453,9 +485,9 @@ The perturbation genre around solvable market-making models expands in scalar pa
 
 The algebraic ancestry is the same as in those papers: the identity behind Theorem~\ref{thm:normalform} is the Cram\'er--Chernoff exponential tilt of an asymmetric walk \citep{chernoff1952,feller1968}, and the affine case's rigid translation is the birth--death symmetrization known since \citet{ledermannreuter1954} and \citet{karlinmcgregor1957}. The envelope argument of Proposition~\ref{prop:envelope} is the standard machinery of \citet{milgromsegal2002}; the win-curve estimation that would supply empirical $\theta$ coordinates is the econometrics of \citet{fgp2017}.
 
-What is new here is the geometry above that algebra. For arbitrary enquiry-value curves the tilt acts as an exact translation in the log-value coordinates, and rigid removal is possible exactly on the affine-exponential family, with pure exponentiality recovered from tails (Theorems~\ref{thm:rigidity} and~\ref{thm:hamrigidity}). The failure to lift the pointwise gauge to a potential is a curvature functional with the widening of \citet{cotton2026skew} as its integrable value and an explicit oscillation bound (Theorem~\ref{thm:defect}, Corollary~\ref{cor:oscbound}). The correction, to the potential and to the quotes, is a hierarchy driven by one bordered-tridiagonal operator with envelope-transferred, admissibility-checked forcing (Theorem~\ref{thm:hierarchy}, Corollary~\ref{cor:tangentpolicy}, Propositions~\ref{prop:envelope} and~\ref{prop:admissible}). The parity theorem, finally, marks the boundary between what imbalance does to a dealer because of arithmetic --- oddness and evenness, which no model in the class can evade --- and what it does because the market's rejection curve is memoryless.
+What is new here is the geometry above that algebra. For arbitrary enquiry-value curves the tilt acts as an exact translation in the log-value coordinates, and rigid strike translations work exactly on the affine-exponential family, with the pure exponential recovered from quote rigidity or a finite-mean tail (Theorems~\ref{thm:rigidity} and~\ref{thm:hamrigidity}, Corollary~\ref{cor:quoterigidity}). The failure to lift the pointwise gauge to a potential is a curvature functional with the widening of \citet{cotton2026skew} as its integrable value and an explicit oscillation bound (Theorem~\ref{thm:defect}, Corollary~\ref{cor:oscbound}). The correction, to the potential and to the quotes, is a hierarchy driven by one bordered-tridiagonal operator with envelope-transferred, admissibility-checked forcing (Theorem~\ref{thm:hierarchy}, Corollary~\ref{cor:tangentpolicy}, Propositions~\ref{prop:envelope} and~\ref{prop:admissible}). The parity theorem, finally, marks the boundary between what imbalance does to a dealer because of arithmetic --- oddness and evenness, which no model in the class can evade --- and what it does because the market's rejection curve is memoryless.
 
-Two objects built here are the intended interface to sequels: the tangent policy of Corollary~\ref{cor:tangentpolicy}, which tells a learning system what the first-order-correct quotes are rather than only what the corrected value function is, and the curvature amplification factor of Remark~\ref{rem:resolvent}, which prices how win-curve uncertainty propagates to policy uncertainty through the anchor's spectral gap. A robust controller assembled from the exponential anchor, the tangent responses, and a learned residual is developed separately.
+Two objects built here are the intended interface to sequels: the tangent policy of Corollary~\ref{cor:tangentpolicy}, which tells a learning system what the first-order-correct quotes are rather than only what the corrected value function is, and the curvature amplification factor of Remark~\ref{rem:resolvent}, which prices how win-curve uncertainty propagates to policy uncertainty through the anchor's conditioning. A robust controller assembled from the exponential anchor, the tangent responses, and a learned residual is developed separately.
 
 \begin{thebibliography}{24}
 \bibitem[Acz\'el(1966)]{aczel1966} Acz\'el, J. (1966). \emph{Lectures on Functional Equations and Their Applications}. Academic Press.
