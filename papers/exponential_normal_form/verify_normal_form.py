@@ -47,12 +47,31 @@ Checks, numbered as in the paper:
    the Weibull family Fbar_k(m) = exp(-(hm)^k), k = 1 + theta, whose
    first-order deformation is psi(K) = (1 + hK) log(1 + hK).
 
-6. PARITY (Theorem 5, distribution-free). With a common win curve on both
-   sides and even carrying cost, reflection maps (q, x) to (1-q, -x), so
-   nu_{1-q}(x) = nu_q(-x): the zero-inventory skew is odd in ell and the
-   zero-inventory convexity is even, for win curves nowhere near
-   exponential. Verified exactly, plus the leading-order scalings
-   S(0) ~ d1 ell and C(0) - C(0)|_bal ~ g2 ell^2.
+6. PARITY (distribution-free). With a common win curve on both sides and
+   even carrying cost, reflection maps (q, x) to (1-q, -x), so
+   nu_{1-q}(x) = nu_q(-x): the zero-inventory skew contains only odd and
+   the zero-inventory convexity only even powers of ell, for win curves
+   nowhere near exponential. Verified exactly, plus the nondegeneracy of
+   the leading coefficients: S(0)/ell -> d1 != 0 and
+   (C(0) - C_bal)/ell^2 -> g2 != 0.
+
+7. HAMILTONIAN RIGIDITY BOUNDARY. The affine-exponential family
+   G = C + B e^{-hK} is balanced exactly by the rigid translations
+   (A, S) -> (A + gamma, S - delta) even though Phi is curved: the
+   constant passes through both Hamiltonians. Verified at machine
+   precision, along with the differentiated relation
+   2q G'(K) = G'(K + gamma - delta) that drives the rigidity proof.
+
+8. ADMISSIBILITY. For the curved deformation, the reconstruction
+   m*(K) = K + 1/Phi'(K), survival = G Phi', satisfies the local
+   admissibility conditions (Phi' > 0, Phi'' < Phi'^2, G Phi' <= 1), and
+   re-optimizing sup_m (m - K)(reconstructed survival) recovers G.
+
+9. TANGENT POLICY. The first-order quote correction decomposes into the
+   inventory-value response and the direct markup-distribution response:
+   m*_eta at the exact strikes equals
+   K_0 + 1/h + eta [D nu_1 - psi'(K_0)/h^2] + O(eta^2), checked by a
+   ratio test.
 """
 
 import numpy as np
@@ -409,5 +428,81 @@ if __name__ == "__main__":
             assert abs((C0 - C0_bal) / l ** 2 - prevC) < 0.1 * abs(prevC) + 1e-4
         print(line)
         prevS, prevC = S0 / l, (C0 - C0_bal) / l ** 2
+
+    # --- Check 7: the Hamiltonian rigidity boundary ----------------------
+    Cae, Bae = 0.7, 1.3
+    G_ae = lambda K: Cae + Bae * np.exp(-H0 * K)
+    Gp_ae = lambda K: -H0 * Bae * np.exp(-H0 * K)
+    worst_bal = worst_dif = 0.0
+    for _ in range(200):
+        A = rng.uniform(-0.5, 1.5)
+        S = rng.uniform(-0.7, 0.7)
+        qq = rng.uniform(0.05, 0.95)
+        l = 0.5 * np.log(qq / (1 - qq))
+        Mqq = 1.0 / (2 * np.sqrt(qq * (1 - qq)))
+        gam, dlt = np.log(Mqq) / H0, l / H0
+        lhs = qq * G_ae(A + S) + (1 - qq) * G_ae(A - S)
+        rhs = 0.5 * G_ae(A + gam + (S - dlt)) + 0.5 * G_ae(A + gam - (S - dlt))
+        worst_bal = max(worst_bal, abs(lhs - rhs) / abs(lhs))
+        K = rng.uniform(-0.5, 1.5)
+        worst_dif = max(worst_dif,
+                        abs(2 * qq * Gp_ae(K) - Gp_ae(K + gam - dlt)))
+    print(f"7. rigidity edge: affine-exponential G balanced rigidly to "
+          f"{worst_bal:.2e}; 2q G'(K) = G'(K + gamma - delta) to "
+          f"{worst_dif:.2e}")
+    assert worst_bal < 1e-14 and worst_dif < 1e-13
+
+    # --- Check 8: admissibility and reconstruction of the win curve ------
+    from scipy.interpolate import CubicSpline
+    from scipy.optimize import minimize_scalar
+    eta_adm = 0.35
+    Ph = make_Phi(eta_adm)
+    Phip = lambda K: H0 + eta_adm * H0 * (np.log(1 + H0 * K) + 1.0)
+    Phipp = lambda K: eta_adm * H0 ** 2 / (1 + H0 * K)
+    Ga = make_G(eta_adm)
+    Kg = np.linspace(-0.5, 1.5, 601)
+    assert np.all(Phip(Kg) > 0)
+    assert np.all(Phipp(Kg) < Phip(Kg) ** 2)
+    fbar = Ga(Kg) * Phip(Kg)
+    assert np.all(fbar > 0) and np.all(fbar <= 1.0)
+    mg = Kg + 1.0 / Phip(Kg)
+    assert np.all(np.diff(mg) > 0), "optimizer map not increasing"
+    log_fbar = CubicSpline(mg, np.log(fbar))
+    worst = 0.0
+    for Kt in np.linspace(-0.2, 1.2, 15):
+        res = minimize_scalar(
+            lambda m: -(m - Kt) * np.exp(log_fbar(m)),
+            bounds=(mg[0], mg[-1]), method="bounded",
+            options={"xatol": 1e-12})
+        worst = max(worst, abs(-res.fun - Ga(Kt)) / Ga(Kt))
+    print(f"8. admissibility: reconstructed win curve re-optimizes to G "
+          f"with max rel err {worst:.2e}")
+    assert worst < 1e-6
+
+    # --- Check 9: the tangent-policy expansion ---------------------------
+    psip = lambda K: H0 * (np.log(1 + H0 * K) + 1.0)
+    prev = None
+    print("9. tangent policy: quote error after the first-order formula")
+    for eta in (0.04, 0.02):
+        Ge = make_G(eta)
+        Phe_p = lambda K: H0 + eta * psip(K)
+        nu_eta = solve_imbalanced(Ge, q, cost, nu0 + eta * nu1)
+        errs_m = []
+        for i in range(1, 2 * N):
+            for sgn in (+1, -1):
+                K_exact = EPS + (nu_eta[i + sgn] - nu_eta[i]) / S_LOT
+                m_exact = K_exact + 1.0 / Phe_p(K_exact)
+                K0v = EPS + (nu0[i + sgn] - nu0[i]) / S_LOT
+                Dn1 = (nu1[i + sgn] - nu1[i]) / S_LOT
+                m_pred = (K0v + 1.0 / H0
+                          + eta * (Dn1 - psip(K0v) / H0 ** 2))
+                errs_m.append(abs(m_exact - m_pred))
+        e = max(errs_m)
+        line = f"   eta={eta:>5}: max quote error {e:.3e}"
+        if prev is not None:
+            line += f"  [ratio {prev / e:.2f} ~ 4]"
+            assert 3.2 < prev / e < 4.8, "tangent policy not O(eta^2)"
+        print(line)
+        prev = e
 
     print("all checks passed")

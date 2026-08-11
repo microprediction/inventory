@@ -62,6 +62,23 @@ free parity: skew odd / width even in ℓ for any symmetric-sided win curve;
 exponentiality supplies the coefficients (δ = ℓ/h, γ = log cosh ℓ / h), not the
 parity. Certified: exact claims ~1e-15; expansions O(η²)/O(η³) at ratios ~4/~8;
 curved-curve d₁ ≈ 0.797/h ≠ 1/h.
+**Round-1 revision applied 2026-08-10.** (i) Rigidity was overstated: G = C + Be^{−hK}
+balances rigidly with curved Φ (the constant passes through both Hamiltonians and
+cancels from the consistency equation, so the companion compression holds verbatim
+for the affine-exponential family). Now two theorems: sidewise gauge rigidity
+(exponential) and Hamiltonian rigidity (affine-exponential; pure exponential under
+the tail condition G(∞)=0, automatic for genuine win curves). (ii) Sign error in the
+displayed ν₂ formula fixed (∂νF = −L₀; the certificate always had the correct sign).
+(iii) Parity softened: symmetry gives odd/even powers only; leading orders one and
+two under nondegeneracy (certified d₁ ≈ 0.797/h ≠ 0, g₂ ≈ 0.019 ≠ 0). (iv) L₀
+described as tridiagonal + rank-one centering (bordered tridiagonal). (v) C^r vs
+analytic split in the hierarchy theorem (splines legal through order r). (vi) NEW:
+local admissibility proposition (Φ′>0, Φ″<Φ′², GΦ′≤1 ⟹ genuine markup distribution;
+reconstruction re-optimizes to G at 1e-16). (vii) NEW: tangent-policy corollary
+m* correction = D±ν₁ − ψ′/h² (the bridge to P7; certified O(η²)). (viii) NEW:
+defect oscillation bound osc D ≤ (|η|/h)diam(I)(|a₁|+|a₂|)‖ψ″‖∞ and the resolvent
+amplification remark ‖ν₁‖ ≤ ‖L₀⁻¹‖‖R_ψ‖ (spectral gap of the anchor; the low-carry
+bridge). (ix) Terminology: win curve = F̄, enquiry-value curve = G; gauge scalar λ.
 **Remaining.** Editorial pass; decide venue; optionally derive the companion Remark's
 ≈0.25 constant in closed form from the ψ of the linear-hazard experiment; the
 finite-horizon instance (P1's concluding problem) is now posed as this hierarchy with

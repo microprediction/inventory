@@ -255,7 +255,12 @@ as a diagnostic of structural failure.
 ## Status
 
 - Mathematics: normal-form paper drafted with certificate
-  (`../exponential_normal_form/`).
+  (`../exponential_normal_form/`). Its round-1 revision added the two objects
+  this architecture consumes directly: the tangent-policy corollary
+  ($m^\ast$ correction $= \mathrm{D}^\pm\nu_1 - \psi'/h^2$, the analytic form of
+  the tangent controller's quotes) and the curvature amplification factor
+  ($\|\nu_1\| \le \|L_0^{-1}\|\|R_\psi\|$, the resolvent norm that sets the
+  robustness radius near low-carry or weakly mean-reverting anchors).
 - Rate targets of section 9: certified on the lattice model
   (`verify_tangent_rates.py`).
 - Zeroth-order demo: live (`docs/rl.html`, `docs/rl_core.js`).
