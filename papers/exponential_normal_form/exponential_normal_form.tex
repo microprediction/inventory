@@ -76,21 +76,21 @@ K^{\downarrow}(x) = \epsilon + \frac{\nu(x+s)-\nu(x)}{s} = A(x) + S(x), \qquad
 K^{\uparrow}(x) = \epsilon + \frac{\nu(x-s)-\nu(x)}{s} = A(x) - S(x),
 \label{eq:strikes}
 \end{equation}
-where $A = \epsilon + C$ collects the overhead and convexity. The best competing response beyond fair value has survival function $\Fbar$, assumed smooth and positive with $G(K) = \sup_m (m-K)\Fbar(m)$ finite, positive, and attained at an interior optimum $m^\ast(K)$ on the strike range of interest. The steady-state consistency equation is, for all $x$,
+where $A = \epsilon + C$ collects the overhead and convexity. In words: $\nu(x)$ is the haircut at which the dealer would clear her book, so $K^{\downarrow}(x)$ is the all-in break-even markdown for buying one more lot --- adverse selection plus the marginal inventory cost --- and $K^{\uparrow}(x)$ is its selling counterpart. The two strikes sit symmetrically about $A(x)$ at distance $S(x)$: the slope of the inventory cost is the skew and its convexity the discretionary width, the identities of \citet{cotton2026skew}. The best competing response beyond fair value has survival function $\Fbar$, assumed smooth and positive with $G(K) = \sup_m (m-K)\Fbar(m)$ finite, positive, and attained at an interior optimum $m^\ast(K)$ on the strike range of interest; $G(K)$ is what the next enquiry is worth to a dealer whose all-in break-even is $K$, and it falls as $K$ rises. The steady-state consistency equation is, for all $x$,
 \begin{equation}
 \frac{\tau\,c(x)}{s} \;=\; H_q\big(A(x), S(x)\big) - H_q\big(A(0), S(0)\big),
 \qquad
 H_q(A,S) = q\,G(A+S) + (1-q)\,G(A-S).
 \label{eq:consistency}
 \end{equation}
-For exponential $\Fbar(m) = e^{-hm}$ one has $G(K) = \tfrac1h e^{-1-hK}$ and \eqref{eq:consistency} is the equation solved in closed correspondence by \citet{cotton2026skew}.
+The left side of \eqref{eq:consistency} is the direct cost of carrying $x$ to the next enquiry; the right side is the extra option value that enquiry has at inventory $x$ versus at zero, a loaded dealer valuing the chance to get out. Indifference requires the two to balance state by state. For exponential $\Fbar(m) = e^{-hm}$ one has $G(K) = \tfrac1h e^{-1-hK}$ and \eqref{eq:consistency} is the equation solved in closed correspondence by \citet{cotton2026skew}.
 
 Define the effective log-value $\Phi(K) = -\log(G(K)/G_\star)$. The envelope identity of \citet{cotton2026skew} gives
 \begin{equation}
 \Phi'(K) \;=\; h\big(m^\ast(K)\big) \;>\; 0,
 \label{eq:envelope}
 \end{equation}
-where $h(m) = -\tfrac{d}{dm}\log\Fbar(m)$ is the hazard rate of the win curve; for the exponential win curve $h(m) \equiv h$, so the two uses of the symbol agree. Thus $\Phi$ is strictly increasing and invertible on its range: it is the integral of the effective hazard sampled at the optimal response. Three consequences of \eqref{eq:envelope} frame everything below:
+where $h(m) = -\tfrac{d}{dm}\log\Fbar(m)$ is the hazard rate of the win curve; for the exponential win curve $h(m) \equiv h$, so the two uses of the symbol agree. The identity says how fast the enquiry loses value as the break-even worsens: a small increase in $K$ costs the dealer only in the states where she wins, and at the optimum that sensitivity, per unit of value, is the hazard at the quote actually made. Thus $\Phi$ is strictly increasing and invertible on its range: it is the integral of the effective hazard sampled at the optimal response. Three consequences of \eqref{eq:envelope} frame everything below:
 exponential competing markups are exactly the case $\Phi(K) = a + hK$;
 departures from exponentiality are exactly departures of $\Phi$ from affinity;
 and $\Phi''$ is the natural local measure of non-exponentiality. Accordingly we write deformations of the anchor as
@@ -101,6 +101,8 @@ and $\Phi''$ is the natural local measure of non-exponentiality. Accordingly we 
 and this is where $\psi$, the object the rest of the paper computes with, is defined: a fixed smooth function, the \emph{deformation}, carrying the shape of the departure from exponentiality, while the scalar $\eta$ carries its size. Constant and affine components of $\psi$ are absorbed into $a$ and $h$, and one may normalize $\psi$ and $\psi'$ to vanish at a chosen anchor strike, so that the perturbation genuinely begins with curvature. Section~\ref{sec:envelope} supplies $\psi$ from named distribution families; until then it is simply given.
 
 \section{The normal form}\label{sec:normalform}
+
+The coordinates that follow average and difference the log-values of the dealer's two strikes: $U$ measures how expensive her two-sided quote is overall, a width in log-value units, and $V$ measures its asymmetry, a skew. The theorem says the flow tilts only $V$, and by a constant.
 
 \begin{theorem}[Imbalance is a translation in the $\Phi$-coordinates]\label{thm:normalform}
 Let $G$ be any positive function with $\Phi = -\log(G/G_\star)$ strictly increasing, and define
@@ -155,7 +157,7 @@ Then
 H_q\big(A(x),S(x)\big) \;=\; \tfrac12\, G\big(T_{2q}(K^{\downarrow}(x))\big) + \tfrac12\, G\big(T_{2(1-q)}(K^{\uparrow}(x))\big):
 \label{eq:pointwise}
 \end{equation}
-every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
+every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. The gauge answers a simple question: to which strike must the dealer move so that the enquiry becomes $\lambda$ times more valuable? Probability weight on a side is thereby traded for a slide of its strike. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
 
 \begin{theorem}[Sidewise gauge rigidity]\label{thm:rigidity}
 Let $G$ be positive and strictly decreasing with $\Phi$ continuously differentiable on an interval $I$, and suppose that for every $\lambda$ in some open interval around $1$ the gauge $T_\lambda$ restricted to $I$ is a translation: $T_\lambda(K) = K - t(\lambda)$ for a constant $t(\lambda)$. Then $\Phi'$ is constant on $I$: $G$ is exponential there.
@@ -218,6 +220,7 @@ The strikes \eqref{eq:strikes} are not free sequences: adjacent inventory states
 K^{\downarrow}(x) + K^{\uparrow}(x+s) \;=\; 2\epsilon \qquad\text{for all } x .
 \label{eq:edge}
 \end{equation}
+In words: a buy at inventory $x$ followed by a sell at $x+s$ is a round trip, the two marginal inventory costs cancel, and what remains is twice the overhead.
 
 \begin{lemma}[Reconstruction]\label{lem:edge}
 A pair of sequences $\big(\tilde K^{\downarrow}(x), \tilde K^{\uparrow}(x)\big)$ derives from a single potential $\tilde\nu$ and overhead $\tilde\epsilon$ via \eqref{eq:strikes} if and only if $\tilde K^{\downarrow}(x) + \tilde K^{\uparrow}(x+s) = 2\tilde\epsilon$ for all $x$, in which case $\tilde\nu$ is recovered, up to an additive constant, by summing $\tilde\nu(x+s) - \tilde\nu(x) = s\,(\tilde K^{\downarrow}(x) - \tilde\epsilon)$.
