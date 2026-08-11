@@ -38,17 +38,35 @@ edge made solid.
 
 ## Tier 2 — the approximate symmetry, made rigorous
 
-### P3. Robustness of the imbalance equivalence (the approximate symmetry)
-**Claim.** For win curves that are only locally exponential, the equivalence holds to
-first order with the local width, with an explicit error bound and an explicit
-second-order correction: δ correction proportional to the hazard's log-slope at the
-operating point. Makes the paper's Remark (envelope identity −(log G)′ = h(m*(K))) a
-theorem with constants; explains the observed error ≈ 0.25 × hazard variation.
-**Attack.** Perturbation expansion of the consistency equation in ε = hazard variation
-across the visited strike range; the certificate script already computes both sides.
-**Risk.** Low. The numerics already show the scaling; the work is bookkeeping.
-**Venue.** Fold into P1 as a section, or standalone SIFIN Short Communication if P1
-runs long. Do not let it delay P1.
+### P3. The exponential normal form (UPGRADED 2026-08-10; drafted)
+**Was:** "robustness of the equivalence under locally exponential win curves, with an
+error bound." Now an exponential normal-form theory, standalone paper drafted at
+`exponential_normal_form/exponential_normal_form.tex` with certificate
+`verify_normal_form.py` (all checks pass).
+**Claim.** Five results. (1) Normal form: for EVERY smooth positive win curve, in the
+coordinates of the effective log-value Φ = −log G, imbalance is exactly a translation
+(by log M(q) in width, by the log-odds ℓ in skew); exponentiality is precisely
+affinity of those coordinates, which makes the translation a rigid quote motion.
+(2) Rigidity: exponential is the unique family for which imbalance removal is
+state-independent translations + a scalar carry rescaling (three-line proof).
+(3) Integrability defect: the pointwise gauge T_c = Φ⁻¹(Φ − log c) always removes
+imbalance pointwise but fails to lift to a single inventory potential; the failure is
+a curvature functional of ψ = the deformation of Φ, and its constant value at the
+affine point is exactly 2γ — the widening IS the defect functional at the integrable
+point. (4) Perturbation hierarchy: ν_η = ν₀ + ην₁ + ..., every order solved by ONE
+pinned tridiagonal operator L₀ assembled at the exponential anchor; envelope transfer
+converts log-survival deformations of any named family (Weibull ψ = (1+hK)log(1+hK),
+Gompertz, gamma, mixtures, empirical win curves) into forcing terms without
+recomputing the optimal markup — a precomputable response library. (5) Distribution-
+free parity: skew odd / width even in ℓ for any symmetric-sided win curve;
+exponentiality supplies the coefficients (δ = ℓ/h, γ = log cosh ℓ / h), not the
+parity. Certified: exact claims ~1e-15; expansions O(η²)/O(η³) at ratios ~4/~8;
+curved-curve d₁ ≈ 0.797/h ≠ 1/h.
+**Remaining.** Editorial pass; decide venue; optionally derive the companion Remark's
+≈0.25 constant in closed form from the ψ of the linear-hazard experiment; the
+finite-horizon instance (P1's concluding problem) is now posed as this hierarchy with
+the tilted terminal condition in the forcing.
+**Venue.** Standalone — SIFIN or MAFE. No longer folded into P1.
 
 ### P4. The spectral carry multiplier: Markov-modulated imbalance
 **Claim.** When the imbalance q_t follows a Markov chain, the equivalence survives with
@@ -95,20 +113,34 @@ and P5 so its inputs are theorems.
 
 ## Tier 4 — applied and empirical
 
-### P7. The symmetry as an invariance for market making RL
-**Claim.** Enforcing the (δ, γ, M) equivalence as an equivariance layer (or data
-augmentation across q) provably reduces sample complexity in market making RL, and
-measurably: same policy quality from a fraction of the episodes.
-**Attack.** The simulator already exists (`docs/mm_core.js` / the certificate script's
-Python twin). Train identical agents with and without the symmetry layer across q ∈
-[0.5, 0.85]; report the sample-efficiency ratio; a one-line theory section (orbit
-reduction of the policy space).
-**Risk.** Low technically; medium on venue fit. Fun, demonstrable, citable by the
-Guéant–Manziuk line. Demo live (docs/rl.html) with a robustness finding worth a section:
-under a misspecified delta the FORWARD learner self-corrects (the shared table
-re-centers), so hard weight-sharing is safer than intuition suggests; the fragility
-lives in the INVERSE direction. Validated numbers in the demo and rl_core.js.
-**Venue.** Applied Mathematical Finance, or an ML-for-finance workshop for speed.
+### P7. Normal-form RL for market making (UPGRADED 2026-08-10)
+**Was:** "the symmetry as an equivariance layer / data augmentation across q."
+Now a three-layer architecture, designed in `normal_form_rl/architecture.md`:
+exact exponential controller + perturbative tangent controller + small learned
+residual. The learner never spends data rediscovering the exponential symmetry;
+learning is reserved for the curvature of −log G, its uncertainty, and the global
+integrability defect.
+**Claim.** (a) Learn one inventory potential ν(x,z), not two quote functions —
+quotes extracted analytically, edge identity enforced by construction. (b) Critic
+and replay in the nonlinear normal coordinates (Ū, V̄) = (U + log M(q), V − ℓ):
+imbalance vanishes from the local Hamiltonian for EVERY win curve, so every regime
+lands in one balanced frame. (c) Response library: L₀νⱼ = −Rⱼ solved once per
+curvature basis direction; residual indexed by win-curve shape, not regime label —
+extrapolates to unseen q and unseen families. (d) Robustness as a sensitivity
+penalty ρ‖Σ^{1/2}∇_θ J‖ over hazard curvature, not rectangular robust MDPs;
+minimax regret rather than max–min so "do no business" cannot win. (e) Exponential
+anchor as Bellman control variate (shaped TD target, telescoping potential).
+(f) Demo learner replacement with identification: R(0,q)=0, E_q[R]=0, hierarchical
+λ_t set by measured symmetry failure.
+**Certified 2026-08-10** (`normal_form_rl/verify_tangent_rates.py`): on the bounded
+lattice the consistency solution is exactly average-reward optimal (gain = sH_q(0),
+agreement 6e-17) and the imbalance tilt is exact through the boundary rows; regret
+of the exponential controller is O(ε²) and of the anchor+tangent controller O(ε⁴)
+(ratios → 15.5 ≈ 16), three orders of magnitude better at Weibull k = 1.16.
+**Remaining.** The ε⁴ theorem (strong concavity + implicit function); the oracle
+inequality; rebuild rl_core.js per the design; the model-based experiment grid with
+held-out families. **Venue.** Applied Mathematical Finance, or an ML-for-finance
+workshop for speed. Depends on P3 (the normal form supplies the coordinates).
 
 ### P9. Efficient inverse reinforcement learning: reading ν from quotes across regimes
 **Claim.** Inferring a dealer's objective from behavior — inverse RL — is generically
@@ -139,9 +171,12 @@ log-linear), q from direction counts, test the pinned coefficient.
 
 ```
 P1 (finite horizon) ──┬─▶ P4 (spectral, = C–P revision) ──▶ P6 (endogenous carry)
-P3 folds into P1      │
-P2 (LOB note) ────────┘         P5 (filtering bridge) ─────▶ P6
+P3 (normal form,      │
+  standalone, drafted)┘         P5 (filtering bridge) ─────▶ P6
+P2 (LOB note) ────────┘
 P7 (RL) + P9 (inverse RL) share a demo and likely a paper; P8 (empirics) opportunistic
+P3 also feeds P1's open problem (finite-horizon local exponentiality) and P5 (the
+exponential-family exactness question is a Φ-affinity question)
 ```
 
 ## Tier 5 — symmetry, more broadly (added 2026-08-10)
