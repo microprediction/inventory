@@ -115,11 +115,11 @@ and $\Phi''$ is the natural local measure of non-exponentiality. Accordingly we 
 \end{equation}
 where $\psi$ is a fixed smooth function, the \emph{deformation}, carrying the shape of the departure from exponentiality, and the scalar $\eta$ carries its size. Constant and affine components of $\psi$ are absorbed into $a$ and $h$, and one may normalize $\psi$ and $\psi'$ to vanish at a chosen anchor strike, so that the perturbation genuinely begins with curvature. Section~\ref{sec:envelope} supplies $\psi$ from named distribution families; until then it is simply given.
 
-One point governs the interpretation of everything built on \eqref{eq:deformation}. The coefficients of the perturbation hierarchy are attached to a parameterized \emph{path} of curves, not to its endpoint: the first coefficient depends only on the initial tangent $\psi = \partial_\eta \Phi_\eta|_{\eta=0}$, the $j$-th on the path jet through order $j$, and different paths to the same endpoint can differ already at first order because their tangents differ. The centered consistency equation has null directions that make this concrete. It is invariant under $G \mapsto G + \kappa$, so the additive path $G_\eta = G_0 + \eta\kappa$, whose tangent is $\psi_{\mathrm{add}} = -\kappa/G_0$, produces forcing that the centering annihilates: the potential never moves. The straight line \eqref{eq:deformation} to the same endpoint has tangent $-\log(1 + \kappa/G_0)$ and moves the potential already at first order. A path convention must therefore be chosen and reported; \eqref{eq:deformation}, the log-geometric interpolation $G_\eta = G_0^{1-\eta}G_1^{\eta}$ with target $G_1 = G_0 e^{-\psi}$, is this paper's default, and for a named parametric family the family's own parameter path is the natural alternative.
+One point governs the interpretation of everything built on \eqref{eq:deformation}. The coefficients of the perturbation hierarchy are attached to a parameterized \emph{path} of curves, not to its endpoint: the first coefficient depends only on the initial tangent $\psi = \partial_\eta \Phi_\eta|_{\eta=0}$, the $j$-th on the path jet through order $j$, and different paths to the same endpoint can differ already at first order because their tangents differ. The centered consistency equation has null directions that make this concrete. It is invariant under $G \mapsto G + \kappa$, so the additive path $G_\eta = G_0 + \eta\kappa$, whose tangent is $\psi_{\mathrm{add}} = -\kappa/G_0$, produces forcing that the centering annihilates: the potential never moves. The straight line \eqref{eq:deformation} to the same endpoint has tangent $-\log(1 + \kappa/G_0)$ and moves the potential already at first order. A path convention must therefore be chosen and reported; \eqref{eq:deformation}, the log-geometric interpolation $G_\eta = G_0^{1-\eta}G_1^{\eta}$ with target $G_1 = G_0 e^{-\psi}$, is this paper's default, and for a named parametric family the family's own parameter path is the natural alternative. Equivalently, the hierarchy computes directional Taylor derivatives of the solution map $\Phi \mapsto \nu[\Phi]$ in the affine chart that Lemma~\ref{lem:coordinate} distinguishes; $\eta$ is only the device for taking them, and parametric families enter through the chain rule along their own paths. The coordinate adapted to the full rigid class, $\Xi = -\log(-G')$, appears in Remark~\ref{rem:rigidmanifold}.
 
 \section{The normal form}\label{sec:normalform}
 
-The coordinates that follow average and difference the log-values of the dealer's two strikes: $U$ measures how expensive her two-sided quote is overall, a width in log-value units, and $V$ measures its asymmetry, a skew. The theorem says the flow tilts only $V$, and by a constant. The logarithm is not merely convenient:
+The coordinates that follow average and difference the log-values of the dealer's two strikes: $U$ measures how expensive her two-sided quote is overall, a width in log-value units, and $V$ measures its asymmetry, a skew. The theorem says the flow translates the width-like coordinate by $\log M(q)$ and the skew-like coordinate by $-\ell$, both constants. The logarithm is not merely convenient:
 
 \begin{lemma}[The log-value coordinate is forced]\label{lem:coordinate}
 Let $\chi : (0,\infty) \to \mathbb R$ be $C^1$ and suppose $\chi(\lambda z) - \chi(z)$ is independent of $z$ for every $\lambda$ in a neighborhood of one. Then $\chi(z) = a + b\log z$. Up to affine rescaling, $\Phi = -\log(G/G_\star)$ is therefore the unique $C^1$ coordinate on enquiry values under which the multiplicative imbalance weights act as translations.
@@ -182,7 +182,7 @@ Then
 H_q\big(A(x),S(x)\big) \;=\; \tfrac12\, G\big(T_{2q}(K^{\downarrow}(x))\big) + \tfrac12\, G\big(T_{2(1-q)}(K^{\uparrow}(x))\big):
 \label{eq:pointwise}
 \end{equation}
-every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. In words, $T_\lambda$ moves a strike to where the enquiry is $\lambda$ times as valuable: probability weight on a side is traded for a slide of its strike. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
+every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. On an interval $I$ the gauge is defined on $I_\lambda = \{K \in I : \Phi(K) - \log\lambda \in \Phi(I)\}$, and every gauge statement below is on these domains. In words, $T_\lambda$ moves a strike to where the enquiry is $\lambda$ times as valuable: probability weight on a side is traded for a slide of its strike. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
 
 \begin{theorem}[Sidewise gauge rigidity]\label{thm:rigidity}
 Let $G$ be positive and strictly decreasing with $\Phi$ continuously differentiable on an interval $I$, and suppose that for every $\lambda$ in some open interval around $1$ the gauge $T_\lambda$ restricted to $I$ is a translation: $T_\lambda(K) = K - t(\lambda)$ for a constant $t(\lambda)$, for all $K \in I$ with $T_\lambda(K) \in I$. Then $\Phi'$ is constant on $I$: $G$ is exponential there.
@@ -223,7 +223,7 @@ Differentiate the identity with respect to $S$ and with respect to $A$, and add:
 \[
 2q\,G'(A+S) \;=\; G'\big(A + \gamma + S - \delta\big),
 \]
-i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + t(q))$ for all $K$, where $t(q) = \gamma(q) - \delta(q)$; subtracting instead gives the sell-side relation $2(1-q)\,G'(K') = G'(K' + \gamma(q) + \delta(q))$. Write $f = -G'$. It is positive --- at an interior zero of $G'$, convexity would make $G$ nondecreasing to the right, against strict decrease --- and nonincreasing, by convexity. From $f(K_0 + t(q)) = 2q\,f(K_0)$ the map $q \mapsto t(q)$ is strictly decreasing, hence continuous off a countable set; pick a continuity point $q_0$ and $q_n \to q_0$, so the nonzero shifts $\Delta_n = t(q_n) - t(q_0) \to 0$ satisfy, by composing the $q_n$ and $q_0$ relations, $f(K + \Delta_n) = (q_n/q_0)\,f(K)$ for all relevant $K$. The difference quotient $\big[\log f(K + \Delta_n) - \log f(K)\big]/\Delta_n = \log(q_n/q_0)/\Delta_n$ is independent of $K$, and $\log f$ is differentiable since $G$ is $C^2$; letting $n \to \infty$ makes $(\log f)'$ constant, so $f(K) = hB\,e^{-hK}$ for some real $h$. Since $f$ is nonincreasing, $h \ge 0$; and $h = 0$ would make $f$ constant, forcing $2q = 1$, against the nondegenerate range. Integrating gives $G = \kappa + Be^{-hK}$, and on a right half-line the tail condition forces $\kappa = 0$.
+i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + t(q))$ for all $K$, where $t(q) = \gamma(q) - \delta(q)$; subtracting instead gives the sell-side relation $2(1-q)\,G'(K') = G'(K' + \gamma(q) + \delta(q))$. Write $f = -G'$. It is positive --- at an interior zero of $G'$, convexity would make $G$ nondecreasing to the right, against strict decrease --- and nonincreasing, by convexity. From $f(K_0 + t(q)) = 2q\,f(K_0)$ the map $q \mapsto t(q)$ is strictly decreasing, hence continuous off a countable set; pick a continuity point $q_0$ and $q_n \to q_0$, so the nonzero shifts $\Delta_n = t(q_n) - t(q_0) \to 0$ satisfy, by composing the $q_n$ and $q_0$ relations, $f(K + \Delta_n) = (q_n/q_0)\,f(K)$ for all relevant $K$. The difference quotient $\big[\log f(K + \Delta_n) - \log f(K)\big]/\Delta_n = \log(q_n/q_0)/\Delta_n$ is independent of $K$, and $\log f$ is differentiable since $G$ is $C^2$; letting $n \to \infty$ makes $(\log f)'$ constant, so $f(K) = A\,e^{-hK}$ for some $A > 0$ and real $h$. Since $f$ is nonincreasing, $h \ge 0$; and $h = 0$ would make $f$ constant, forcing $2q = 1$, against the nondegenerate range. So $h > 0$; writing $A = hB$ and integrating gives $G = \kappa + Be^{-hK}$, and on a right half-line the tail condition forces $\kappa = 0$.
 \end{proof}
 
 \begin{remark}[The concave impostor]
@@ -247,7 +247,7 @@ Theorem~\ref{thm:rigidity} is the right tool for the defect functional of the ne
 \end{remark}
 
 \begin{remark}[Rigidity run backwards is identification]
-A dealer who finds that sliding her \emph{submitted quotes} by a constant absorbs the flow has, by Corollary~\ref{cor:quoterigidity}, identified her market's rejection curve as exponential and learned its width. If only her break-even strikes translate rigidly, she has identified the affine-exponential class, two constants short of the curve. Either way an observed sufficiency of rigid skewing becomes a statement about the shape of the competition.
+A dealer who finds that sliding her \emph{submitted quotes} by a constant absorbs the flow has, by Corollary~\ref{cor:quoterigidity}, identified her market's rejection curve as exponential on the strike range her book visits, and learned its width there. If only her break-even strikes translate rigidly, she has identified the affine-exponential class, two constants short of the curve. Either way an observed sufficiency of rigid skewing becomes a statement about the shape of the competition.
 \end{remark}
 
 \section{The integrability defect}\label{sec:defect}
@@ -314,7 +314,7 @@ The bound controls the failure of the canonical sidewise gauge to reconstruct a 
 
 \section{The perturbation hierarchy}\label{sec:hierarchy}
 
-The defect obstructs an exact compression, not a computation. Work on the inventory lattice $x \in \{-Ns, \dots, Ns\}$ with the normalization $\nu(0) = 0$, write $G_\eta = G_\star e^{-\Phi_\eta}$ with \eqref{eq:deformation}, and define the residual map
+A nonconstant defect obstructs compression by the canonical gauge, not a computation --- and, by the null directions of the centered equation, not necessarily the policy. Work on the inventory lattice $x \in \{-Ns, \dots, Ns\}$ with the normalization $\nu(0) = 0$, write $G_\eta = G_\star e^{-\Phi_\eta}$ with \eqref{eq:deformation}, and define the residual map
 \begin{equation}
 \mathcal F_x(\nu, \eta) \;=\; q\,G_\eta\big(\epsilon + \mathrm{D}^{+}\nu(x)\big) + (1-q)\,G_\eta\big(\epsilon + \mathrm{D}^{-}\nu(x)\big) - \big[\,x \to 0\,\big] - \frac{\tau c(x)}{s},
 \label{eq:residual}
@@ -339,7 +339,7 @@ L_0\,\nu_1 = -R_\psi,
 R_\psi(x) = \Delta_0\Big[\, q\,G_0(K^{\downarrow}_0)\,\psi(K^{\downarrow}_0) + (1-q)\,G_0(K^{\uparrow}_0)\,\psi(K^{\uparrow}_0) \,\Big](x),
 \label{eq:firstorder}
 \end{equation}
-with, for every $2 \le j \le r$, $L_0\,\nu_j = R_j$, where $R_j$ is an explicit forcing built from lower-order data; in particular
+with, for every $2 \le j \le r$, $L_0\,\nu_j = R_j$, where $R_j$ is an explicit forcing constructed from $\nu_1, \dots, \nu_{j-1}$ and the path jet of $\Phi_\eta$ through order $j$ --- for the straight line \eqref{eq:deformation} the higher $\eta$-derivatives of $\Phi_\eta$ vanish and $R_j$ uses $\psi$ alone; in particular
 \[
 L_0 \nu_2 \;=\; \lim_{\eta\to 0}\frac{1}{\eta^{2}}\,\mathcal F\big(\nu_0 + \eta \nu_1,\ \eta\big).
 \]
@@ -361,7 +361,7 @@ h_0 = \frac{G''(K_0)}{-G'(K_0)}, \qquad
 B_0 e^{-h_0 K_0} = \frac{[G'(K_0)]^2}{G''(K_0)}, \qquad
 \kappa_0 = G(K_0) - \frac{[G'(K_0)]^2}{G''(K_0)};
 \]
-equivalently, fit an affine tangent to $\Xi$ and recover $\kappa_0$ from the value of $G$. We leave the transverse expansion to future work and use the pure-exponential anchor with a reported path.
+equivalently, fit an affine tangent to $\Xi$ and recover $\kappa_0$ from the value of $G$. At the pure exponential point the tangent space of the rigid manifold in the $\Phi$-chart is $\operatorname{span}\{1, K, e^{hK}\}$: the deformation \eqref{eq:deformation} absorbs the first two directions into $a$ and $h$, and the third is the additive-$\kappa$ null direction, which is why a curved $\psi$ can carry a gauge defect while leaving the potential unmoved. We leave the transverse expansion to future work and use the pure-exponential anchor with a reported path.
 \end{remark}
 
 The value correction becomes a quote correction by one more envelope evaluation. Combining \eqref{eq:envelope} with the first-order condition $m^\ast - K = 1/h(m^\ast)$ of \citet{cotton2026skew} gives $m^\ast_\eta(K) = K + 1/\Phi_\eta'(K)$, and the exact strikes expand as $K^{\downarrow}_\eta(x) = K^{\downarrow}_0(x) + \eta\,\mathrm{D}^{+}\nu_1(x) + O(\eta^2)$, and likewise on the sell side with $\mathrm{D}^{-}$, so:
@@ -422,7 +422,7 @@ For $\Fbar_k(m) = e^{-(hm)^k}$ with $k = 1 + \eta$, the expansion $(hm)^{1+\eta}
 \[
 \psi(K) \;=\; (1 + hK)\,\log(1 + hK),
 \]
-ready for insertion into \eqref{eq:firstorder}, on the domain $1 + hK > 0$, where the anchor optimum $m_0(K) = K + 1/h$ is a positive markup. Note $\psi'(0) = h$: the raw tangent combines genuine curvature with a first-order recalibration of the local exponential rate. The curvature part alone is $\psi_\perp(K) = (1+hK)\log(1+hK) - hK$; either normalization serves, affine components being absorbed into the anchor.
+ready for insertion into \eqref{eq:firstorder}, on the domain $1 + hK > 0$, where the anchor optimum $m_0(K) = K + 1/h$ is a positive markup. Note $\psi'(0) = h$: the raw tangent combines genuine curvature with a first-order recalibration of the local exponential rate, and for the fixed-scale Weibull family the raw $\psi$ is the actual path tangent. The transverse part $\psi_\perp(K) = (1+hK)\log(1+hK) - hK$ corresponds to simultaneously recalibrating the exponential rate, and the removed affine response must then be carried by the anchor parameters.
 \end{corollary}
 
 The hierarchy perturbs through effective log-values, and one should ask when a proposed $\Phi$ corresponds to any markup distribution at all. The question is a rationalizability question of the kind familiar from producer theory, where indirect profit functions determine supply through the envelope; the modern converse direction is \citet{sinander2022}. The envelope identities answer it locally here: the proposition constructs a survival curve on $m^\ast(I)$ and proves optimality over that interval, a local sufficiency result rather than a global rationalization.
@@ -442,12 +442,12 @@ h_{\Fbar}\big(m^\ast(K)\big) = -\frac{d}{dm}\log\Fbar
 = \frac{-\tfrac{d}{dK}\log\big[G(K)\Phi'(K)\big]}{dm^\ast/dK}
 = \frac{\Phi' - \Phi''/\Phi'}{\,1 - \Phi''/\Phi'^2\,} = \Phi'(K),
 \]
-so the first-order condition $1/(m - \widetilde K) = h_{\Fbar}(m)$ holds at $m = m^\ast(\widetilde K)$, with value $(1/\Phi')\cdot G\Phi' = G(\widetilde K)$. For uniqueness, differentiate the hazard along the curve: $h_{\Fbar}'(m) = \Phi''\,/\,(1 - \Phi''/\Phi'^2)$, and
+so the first-order condition $1/(m - \widetilde K) = h_{\Fbar}(m)$ holds at $m = m^\ast(\widetilde K)$, with value $(1/\Phi')\cdot G\Phi' = G(\widetilde K)$. Uniqueness and global optimality are immediate: every $m \in m^\ast(I)$ is $m^\ast(K)$ for a unique $K$, with $h_{\Fbar}(m^\ast(K)) = \Phi'(K) = 1/(m^\ast(K) - K)$, so the $m$-derivative of the log-objective along the curve is
 \[
-h_{\Fbar}'(m) + h_{\Fbar}(m)^2 \;=\; \frac{\Phi''\,\Phi'^2 + \Phi'^2\big(\Phi'^2 - \Phi''\big)}{\Phi'^2 - \Phi''}
-\;=\; \frac{\Phi'^4}{\Phi'^2 - \Phi''} \;>\; 0 .
+\frac{1}{m^\ast(K) - \widetilde K} - \frac{1}{m^\ast(K) - K}
+\;=\; \frac{\widetilde K - K}{\big(m^\ast(K) - \widetilde K\big)\big(m^\ast(K) - K\big)} ,
 \]
-At any stationary point of $\log[(m-\widetilde K)\Fbar(m)]$ one has $1/(m-\widetilde K) = h_{\Fbar}(m)$, so the second derivative there is $-1/(m-\widetilde K)^2 - h_{\Fbar}'(m) = -\big(h_{\Fbar}^2 + h_{\Fbar}'\big) < 0$: every stationary point is a strict local maximum, hence there is exactly one on $m^\ast(I)$. The final statement holds because the three inequalities are open under $C^2$ perturbation wherever they hold with a uniform margin.
+positive for $K < \widetilde K$ and negative for $K > \widetilde K$ wherever $m^\ast(K) > \widetilde K$, while the objective is nonpositive where $m^\ast(K) \le \widetilde K$: the objective rises until $K = \widetilde K$ and falls after. The final statement holds because the three inequalities are open under $C^2$ perturbation wherever they hold with a uniform margin.
 \end{proof}
 
 \begin{remark}[A response library, not one calculation per family]

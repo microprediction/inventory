@@ -125,6 +125,17 @@ gamma with the endogenous convexity response; Weibull domain 1 + hK > 0 stated;
 admissibility openness qualified by a uniform margin; Cotton 2026a/b bibliography
 labels fixed; ancestry remarks moved to related work. Certificate: two new checks
 (13 path dependence/null direction, 14 policy bound), all passing.
+**Round-4 revision applied 2026-08-11** (reviewer's upload predated round 3, so
+several flagged items were already in; the new ones): hierarchy opener no longer
+claims the defect obstructs compression (null directions); higher-order forcing
+R_j explicitly uses the path jet of Phi_eta for general paths; gauge maps given
+their domains I_lambda; strike-rigidity proof derives A e^{-hK} before writing
+A = hB; Prop 2 uniqueness replaced by the reviewer's two-line sign argument
+(verified numerically); pre-Theorem-1 sentence fixed (both U and V translate);
+Weibull psi-perp comment made precise (raw psi is the fixed-scale path tangent);
+identification remark localized to the visited strike range; rigid-manifold
+remark gains the tangent-space observation span{1, K, e^{hK}} explaining the
+null direction; directional-Taylor framing of the hierarchy added to the setup.
 **Remaining.** Editorial pass; decide venue; optionally derive the companion Remark's
 ≈0.25 constant in closed form from the ψ of the linear-hazard experiment; the
 finite-horizon instance (P1's concluding problem) is now posed as this hierarchy with
