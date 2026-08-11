@@ -33,7 +33,7 @@ In the sealed-bid model of \citet{cotton2026skew}, exponential competing quotes 
 
 \citet{cotton2026skew} considers a market maker who acquires and disposes of inventory only by responding to sealed-bid enquiries, arriving as a Poisson stream in which a seller calls with probability $q$ and a buyer with probability $1-q$. Under the assumption that the best competing response is exponentially distributed beyond fair value with mean $w = 1/h$, the steady state of the imbalanced problem compresses exactly onto the balanced one: skew translated by $\delta = \tfrac{1}{2h}\log\tfrac{q}{1-q}$, non-discretionary width (the inventory-independent part of the quoted width) widened by $\gamma = \tfrac1h \log \tfrac{1}{2\sqrt{q(1-q)}}$, and carrying cost multiplied by $M(q) = e^{h\gamma} = 1/(2\sqrt{q(1-q)})$.
 
-The exponential assumption invites the obvious question, and \citet{cotton2026skew} gave it a local answer: only the hazard at the quotes actually made enters, and if the hazard varies slowly across the visited strikes the equivalence holds approximately with the local width, with error of the order of the hazard's relative variation. That is a robustness statement. The present paper replaces it with a structure: an exponential \emph{normal form}, in which general win curves are deformations of an integrable anchor and every correction is computable.
+The exponential assumption invites the obvious question, and \citet{cotton2026skew} gave it a local answer: only the hazard at the quotes actually made enters, and if the hazard varies slowly across the visited strikes the equivalence holds approximately with the local width, with error of the order of the hazard's relative variation. That is a robustness statement. The present paper replaces it with a structure: an exponential \emph{normal form}, in which general win curves are deformations of an integrable anchor and the corrections are computable order by order along a deformation path.
 
 The organizing observation is that after the dealer optimizes her own markup, the distribution of the best competing quote enters the steady state through one function only,
 \[
@@ -50,7 +50,7 @@ The results separate five levels at which imbalance can be removed, and the leve
 \item translation in the coordinates built from $\Phi$ --- every positive enquiry-value curve;
 \item sidewise gauge rigidity, each side's gauge a translation --- the exponential only;
 \item rigid translation of the break-even strikes, balancing the two-sided problem --- the affine-exponential family $\kappa + Be^{-hK}$;
-\item rigid translation of the submitted quotes $m^\ast(K)$ --- the exponential only;
+\item rigid translation of the submitted quotes, the optimal markups $m^\ast(K)$ of Section~\ref{sec:setup} --- the exponential only;
 \item global rigidity for a win curve with finite mean markup --- the exponential only.
 \end{itemize}
 
@@ -172,7 +172,7 @@ Then
 H_q\big(A(x),S(x)\big) \;=\; \tfrac12\, G\big(T_{2q}(K^{\downarrow}(x))\big) + \tfrac12\, G\big(T_{2(1-q)}(K^{\uparrow}(x))\big):
 \label{eq:pointwise}
 \end{equation}
-every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. In words, $T_\lambda$ moves a strike to where the enquiry is $\lambda$ times more valuable: probability weight on a side is traded for a slide of its strike. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
+every imbalanced Hamiltonian is a balanced one evaluated at gauged strikes. In words, $T_\lambda$ moves a strike to where the enquiry is $\lambda$ times as valuable: probability weight on a side is traded for a slide of its strike. For exponential $\Phi$ the gauge is the constant translation $T_\lambda(K) = K - \tfrac1h\log \lambda$; in general $T_\lambda(K) - K$ depends on $K$, and the exponential case is the only one in which it does not.
 
 \begin{theorem}[Sidewise gauge rigidity]\label{thm:rigidity}
 Let $G$ be positive and strictly decreasing with $\Phi$ continuously differentiable on an interval $I$, and suppose that for every $\lambda$ in some open interval around $1$ the gauge $T_\lambda$ restricted to $I$ is a translation: $T_\lambda(K) = K - t(\lambda)$ for a constant $t(\lambda)$, for all $K \in I$ with $T_\lambda(K) \in I$. Then $\Phi'$ is constant on $I$: $G$ is exponential there.
@@ -213,7 +213,7 @@ Differentiate the identity with respect to $S$ and with respect to $A$, and add:
 \[
 2q\,G'(A+S) \;=\; G'\big(A + \gamma + S - \delta\big),
 \]
-i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + \gamma(q) - \delta(q))$ for all $K$; subtracting instead gives $2(1-q)\,G'(K') = G'(K' + \gamma(q) + \delta(q))$ with $K' = A - S$. So the positive continuous function $-G'$ is carried to the multiple $2q$ of itself by the state-independent translation $\delta(q) - \gamma(q)$, for every $q$ in the range. These translations are injective in $q$, so applying the argument of Theorem~\ref{thm:rigidity} to $-\log(-G')$, which is continuously differentiable since $G$ is $C^2$, gives $(\log(-G'))'$ constant: $-G'(K) = hB\,e^{-hK}$ for some real $h$. Convexity makes $-G'$ nonincreasing, so $h \ge 0$; and $h = 0$ would make $-G'$ constant, forcing $2q = 1$ in the translation relation, against the nondegenerate range of $q$. Integrating gives $G = \kappa + Be^{-hK}$, and on a right half-line the tail condition forces $\kappa = 0$.
+i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + t(q))$ for all $K$, where $t(q) = \gamma(q) - \delta(q)$; subtracting instead gives the sell-side relation $2(1-q)\,G'(K') = G'(K' + \gamma(q) + \delta(q))$. Write $f = -G'$. It is positive --- at an interior zero of $G'$, convexity would make $G$ nondecreasing to the right, against strict decrease --- and nonincreasing, by convexity. From $f(K_0 + t(q)) = 2q\,f(K_0)$ the map $q \mapsto t(q)$ is strictly decreasing, hence continuous off a countable set; pick a continuity point $q_0$ and $q_n \to q_0$, so the nonzero shifts $\Delta_n = t(q_n) - t(q_0) \to 0$ satisfy, by composing the $q_n$ and $q_0$ relations, $f(K + \Delta_n) = (q_n/q_0)\,f(K)$ for all relevant $K$. The difference quotient $\big[\log f(K + \Delta_n) - \log f(K)\big]/\Delta_n = \log(q_n/q_0)/\Delta_n$ is independent of $K$, and $\log f$ is differentiable since $G$ is $C^2$; letting $n \to \infty$ makes $(\log f)'$ constant, so $f(K) = hB\,e^{-hK}$ for some real $h$. Since $f$ is nonincreasing, $h \ge 0$; and $h = 0$ would make $f$ constant, forcing $2q = 1$, against the nondegenerate range. Integrating gives $G = \kappa + Be^{-hK}$, and on a right half-line the tail condition forces $\kappa = 0$.
 \end{proof}
 
 \begin{remark}[The concave impostor]
@@ -225,7 +225,7 @@ Within the family of Theorem~\ref{thm:hamrigidity} the submitted quote is $m^\as
 \[
 m^\ast(K + t) - m^\ast(K) \;=\; t + \tfrac{\kappa}{hB}\,e^{hK}\big(e^{ht} - 1\big),
 \]
-which is independent of $K$ only when $\kappa = 0$. Rigid translation of the break-even strikes therefore characterizes the affine-exponential class, while rigid translation of the \emph{submitted quotes}, over a nondegenerate range of imbalances, characterizes the pure exponential, with no tail condition.
+which, for $t \neq 0$, is independent of $K$ only when $\kappa = 0$. Rigid translation of the break-even strikes therefore characterizes the affine-exponential class, while rigid translation of the \emph{submitted quotes}, over a nondegenerate range of imbalances, characterizes the pure exponential, with no tail condition.
 \end{corollary}
 
 \begin{remark}[The constant is a borderline tail]\label{rem:tail}
@@ -352,7 +352,7 @@ Before centering, the operator inside \eqref{eq:L0} is a birth--death tridiagona
 \end{remark}
 
 \begin{remark}[A homotopy expansion, and its null direction]
-The straight line \eqref{eq:deformation} is the log-geometric interpolation $G_\eta = G_0^{1-\eta} G_1^{\eta}$ between the anchor and a target curve: it preserves positivity and moves the normal-form coordinate linearly. It is a chosen homotopy, not an intrinsic expansion of the endpoint: beyond first order the coefficients $\nu_2, \nu_3, \dots$ depend on the path, not only on $G_1$. The centered consistency equation makes this concrete, because it is invariant under $G \mapsto G + \kappa$: the additive path $G_0 + \eta\kappa$ has zero potential correction at every order, while the $\Phi$-line to the same endpoint leaves the rigid class at intermediate $\eta$ and generates nonzero pathwise coefficients. A fully normal-form treatment would separate motion along the exactly reducible manifold, $\kappa(\eta) + B(\eta)e^{-h(\eta)K}$, from a transverse residual; the coordinate adapted to that split is $\Xi = -\log(-G')$, since by Theorem~\ref{thm:hamrigidity} affine $\Xi$ is exactly the rigid class and $\Xi$ removes the constant automatically. $\Phi$ remains the coordinate for the pointwise translation of Theorem~\ref{thm:normalform}; the two geometries serve different theorems.
+The straight line \eqref{eq:deformation} is the log-geometric interpolation $G_\eta = G_0^{1-\eta} G_1^{\eta}$ between the anchor and the target curve $G_1 = G_0 e^{-\psi}$, that is, $\psi = \Phi_1 - \Phi_0$: it preserves positivity and moves the normal-form coordinate linearly. It is a chosen homotopy, not an intrinsic expansion of the endpoint: beyond first order the coefficients $\nu_2, \nu_3, \dots$ depend on the path, not only on $G_1$. The centered consistency equation makes this concrete, because it is invariant under $G \mapsto G + \kappa$: the additive path $G_0 + \eta\kappa$ has zero potential correction at every order, while the $\Phi$-line to the same endpoint leaves the rigid class at intermediate $\eta$ and generates nonzero pathwise coefficients. A fully normal-form treatment would separate motion along the exactly reducible manifold, $\kappa(\eta) + B(\eta)e^{-h(\eta)K}$, from a transverse residual; the coordinate adapted to that split is $\Xi = -\log(-G')$, since by Theorem~\ref{thm:hamrigidity} affine $\Xi$ is exactly the rigid class and $\Xi$ removes the constant automatically. $\Phi$ remains the coordinate for the pointwise translation of Theorem~\ref{thm:normalform}; the two geometries serve different theorems.
 \end{remark}
 
 The value correction becomes a quote correction by one more envelope evaluation. Combining \eqref{eq:envelope} with the first-order condition $m^\ast - K = 1/h(m^\ast)$ of \citet{cotton2026skew} gives $m^\ast_\eta(K) = K + 1/\Phi_\eta'(K)$, and the exact strikes expand as $K^{\downarrow}_\eta(x) = K^{\downarrow}_0(x) + \eta\,\mathrm{D}^{+}\nu_1(x) + O(\eta^2)$, and likewise on the sell side with $\mathrm{D}^{-}$, so:
@@ -449,7 +449,7 @@ so $S_q(0)$ is odd and $C_q(0)$ is even in $\ell$: every derivative of the wrong
 S_q(0) = d_1 \ell + d_3 \ell^3 + \cdots, \qquad
 C_q(0) - C_{1/2}(0) = g_2 \ell^2 + g_4 \ell^4 + \cdots ,
 \]
-with remainders of order $r$; if the branch is real analytic the displayed series converge.
+with $o(\ell^{\,r})$ remainders; if the branch is real analytic the displayed series converge.
 \end{theorem}
 
 \begin{proof}
@@ -457,7 +457,7 @@ Let $\nu$ solve the problem at imbalance $q$ and set $\tilde\nu(x) = \nu(-x)$. T
 \end{proof}
 
 \begin{remark}[Parity versus leading order]
-Symmetry alone does not make $d_1$ or $g_2$ nonzero, nor sign the width response: in principle a particular curve could have cubic-leading skew or quartic-leading widening. What the theorem establishes is the parity; the familiar reading --- skew first order in imbalance, width second order --- holds under the nondegeneracy $d_1 \neq 0$, $g_2 \neq 0$. The exponential family satisfies it with zero-inventory skew $S_q(0) = \ell/h$ exactly, at all orders. The width response is a different object from the widening $\gamma = \tfrac1h \log\cosh\ell$ of the normal form: $\gamma$ is the exogenous translation of the transformed overhead coordinate, while $C_q(0) - C_{1/2}(0)$ is the endogenous convexity response, which depends on the carrying cost through the multiplier $M(q)$; the certificate's $g_2 \approx 0.019$ measures the latter. The strongly curved test curve of Section~\ref{sec:certificate} exhibits both nondegeneracies, with $d_1 \approx 0.797/h$ against the exponential $1/h$. Exponentiality supplies coefficients; parity is universal; nondegeneracy sits in between, generic but not automatic.
+Symmetry alone does not make $d_1$ or $g_2$ nonzero, nor sign the width response: in principle a particular curve could have cubic-leading skew or quartic-leading widening. What the theorem establishes is the parity; the familiar reading --- skew first order in imbalance, width second order --- holds under the nondegeneracy $d_1 \neq 0$, $g_2 \neq 0$. The exponential family satisfies it with zero-inventory skew $S_q(0) = \ell/h$ exactly, at all orders. The width response is a different object from the widening $\gamma = \tfrac1h \log\cosh\ell$ of the normal form: $\gamma$ is the exogenous translation of the transformed overhead coordinate, while $C_q(0) - C_{1/2}(0)$ is the endogenous convexity response, which depends on the carrying cost through the multiplier $M(q)$; the script's $g_2 \approx 0.019$ measures the latter. The strongly curved test curve of Section~\ref{sec:certificate} exhibits both nondegeneracies, with $d_1 \approx 0.797/h$ against the exponential $1/h$. Exponentiality supplies coefficients; parity is universal; nondegeneracy sits in between, generic but not automatic.
 \end{remark}
 
 \section{Numerical checks}\label{sec:certificate}
