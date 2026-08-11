@@ -39,7 +39,7 @@ The organizing observation is that after the dealer optimizes her own markup, th
 \[
 G(K) \;=\; \sup_m\,(m-K)\,\Fbar(m), \qquad \Fbar = 1 - F,
 \]
-the optimized value of the next enquiry as a function of its strike $K$. Throughout, \emph{win curve} means the survival function $\Fbar$ and $G$ is called the \emph{enquiry-value curve}; the two are related by the envelope calculus of Section~\ref{sec:setup} and Proposition~\ref{prop:admissible}. The right object to deform is not $\Fbar$ but the \emph{effective log-value}
+the optimized value of the next enquiry as a function of its strike $K$; quoting against the survival curve of the best competing bid in this way descends from \citet{friedman1956}. Throughout, \emph{win curve} means the survival function $\Fbar$ and $G$ is called the \emph{enquiry-value curve}; the two are related by the envelope calculus of Section~\ref{sec:setup} and Proposition~\ref{prop:admissible}. The right object to deform is not $\Fbar$ but the \emph{effective log-value}
 \[
 \Phi(K) \;=\; -\log\frac{G(K)}{G_\star},
 \]
@@ -164,11 +164,11 @@ Theorem~\ref{thm:rigidity} is a statement about the two sidewise gauges separate
 G(K) \;=\; C + B\,e^{-hK}, \qquad B > 0, \; C > 0,
 \]
 has curved $\Phi$, yet
-\[
-H_q(A,S) = C + B e^{-hA}\big(q e^{-hS} + (1-q)e^{hS}\big)
-        = C + 2B\sqrt{q(1-q)}\, e^{-hA}\cosh(hS - \ell)
-        = H_{1/2}(A + \gamma,\, S - \delta):
-\]
+\begin{align*}
+H_q(A,S) &= C + B e^{-hA}\big(q e^{-hS} + (1-q)e^{hS}\big) \\
+        &= C + 2B\sqrt{q(1-q)}\, e^{-hA}\cosh(hS - \ell)
+        \;=\; H_{1/2}(A + \gamma,\, S - \delta):
+\end{align*}
 the constant passes through both sides and the exponential part translates rigidly. Moreover $C$ cancels from the consistency equation \eqref{eq:consistency}, which sees only differences of $H_q$, so the companion paper's entire compression --- shift $\delta$, widening $\gamma$, multiplier $M(q)$ --- holds verbatim for this family; and the family is locally realizable by a genuine markup distribution, with optimizer $m^\ast(K) = K + \tfrac1h + \tfrac{C}{hB}e^{hK}$ and survival $\Fbar(m^\ast(K)) = -G'(K) = hBe^{-hK}$ on any interval where the latter is at most one. The affine-exponential family is therefore not a pathology but the exact boundary of rigid behavior:
 
 \begin{theorem}[Hamiltonian rigidity]\label{thm:hamrigidity}
@@ -193,6 +193,10 @@ i.e.\ with $K = A + S$: $\;2q\,G'(K) = G'(K + \gamma(q) - \delta(q))$ for all $K
 
 \begin{remark}[What each theorem governs]
 Theorem~\ref{thm:rigidity} is the right tool for the defect functional of the next section, which is built from the sidewise gauges. Theorem~\ref{thm:hamrigidity} is the right statement of the headline claim: among admissible enquiry-value curves, rigid quote translations remove imbalance exactly when $G$ is affine-exponential, and exponential once tails are imposed. The defect functional $D$ below measures the failure of the \emph{chosen termwise gauge} to lift to a potential; Theorem~\ref{thm:hamrigidity} closes the remaining gap by ruling out every other rigid Hamiltonian-level balancing.
+\end{remark}
+
+\begin{remark}[Provenance of the functional equation]
+The core of Theorem~\ref{thm:rigidity} is the multiplicative Cauchy equation, and the conclusion is the lack-of-memory characterization of the exponential law, for which the systematic reference is \citet{galamboskotz1978} and the regularity machinery is \citet{aczel1966}; \citet{marsagliatubilla1975} show how far the continuum-of-shifts hypothesis can be weakened. What is not in that literature is the two-sided statement: Theorem~\ref{thm:hamrigidity} lifts the characterization from the distribution to the pricing Hamiltonian, where the memoryless family acquires its affine extension.
 \end{remark}
 
 \section{The integrability defect}\label{sec:defect}
@@ -254,6 +258,10 @@ $B_\psi'(K) = \big[\psi'(K) - \psi'(K - a_1)\big] - \big[\psi'(2\epsilon - K) - 
 \end{proof}
 
 The bound is the rigorous successor of the companion paper's slowly-varying-hazard remark: the defect, hence the size of the correction the hierarchy must supply, is controlled by the curvature of the effective log-value times the lengths $|a_1|, |a_2|$ of the gauge translations, which vanish at balance. It also supplies a natural robustness radius for the policy-learning applications discussed at the end.
+
+\begin{remark}[The genre of the obstruction]
+Conditions under which per-edge weights lift to a potential are the territory of reversibility theory --- Kolmogorov's criterion and its descendants \citep{kelly1979} --- where the obstruction lives on cycles. The inventory lattice is a line, so the obstruction here enters differently: through the pairing \eqref{eq:edge} of the up and down strikes across each bond, which the two sidewise gauges must respect jointly. The defect functional is the pricing-theoretic member of that family of discrete integrability conditions rather than a transplant of the cycle criterion.
+\end{remark}
 
 \section{The perturbation hierarchy}\label{sec:hierarchy}
 
@@ -342,7 +350,7 @@ For $\Fbar_k(m) = e^{-(hm)^k}$ with $k = 1 + \eta$, the expansion $(hm)^{1+\eta}
 ready for insertion into \eqref{eq:firstorder}.
 \end{corollary}
 
-The hierarchy perturbs through effective log-values, and one should ask when a proposed $\Phi$ corresponds to any markup distribution at all. The envelope identities answer this locally.
+The hierarchy perturbs through effective log-values, and one should ask when a proposed $\Phi$ corresponds to any markup distribution at all. The question is a rationalizability question of the kind familiar from producer theory, where indirect profit functions determine supply through the envelope; the modern converse direction is \citet{sinander2022}. The envelope identities answer it locally here.
 
 \begin{proposition}[Local admissibility]\label{prop:admissible}
 Let $\Phi$ be $C^2$ on an interval $I$ with, on $I$,
@@ -420,23 +428,34 @@ and the resolvent inequality of Remark~\ref{rem:resolvent}, with the amplificati
 
 The companion steady-state paper \citep{cotton2026skew} proved the exact compression under exponentiality and remarked that the assumption is needed only locally; the present paper is that remark grown into a theory, with the exponential case recast as the integrable anchor of a normal form rather than a fortunate special case. The finite-horizon companion \citep{cotton2026finite} plays the analogous role in the transient Avellaneda--Stoikov line \citep{avellaneda2008,glft2012}, where the exponential intensity curve is what linearizes the Hamilton--Jacobi--Bellman equation in the first place; its concluding problem --- a finite-horizon robustness statement for locally exponential intensity curves --- is now posed correctly as the finite-horizon instance of this paper's hierarchy, with the tilted terminal condition joining the forcing terms.
 
-The nearest existing literature treats general intensity curves and asymmetric sides numerically: \citet{gueant2017} allows fully general asymmetric intensities and characterizes quotes through an implicit hazard-type condition solved through the HJB system, and \citet{bergaultgueant2021} does the same at scale for OTC market makers; neither states a structural reduction of the asymmetric problem, which is what the normal form and its boundary provide here. The algebraic ancestry is the same as in the companions: the identity behind Theorem~\ref{thm:normalform} is the Cram\'er--Chernoff exponential tilt of an asymmetric walk \citep{chernoff1952,feller1968}, and the affine case's rigid translation is the birth--death symmetrization known since \citet{ledermannreuter1954} and \citet{karlinmcgregor1957}. The envelope argument of Proposition~\ref{prop:envelope} is the standard machinery of \citet{milgromsegal2002}; the win-curve estimation that would supply empirical $\theta$ coordinates is the econometrics of \citet{fgp2017}. What is new here is the geometry above that algebra: that for arbitrary enquiry-value curves the tilt acts as an exact translation in the log-value coordinates; that rigid removal is possible exactly on the affine-exponential family, with pure exponentiality recovered from tails (Theorems~\ref{thm:rigidity} and~\ref{thm:hamrigidity}); that the failure to lift the pointwise gauge to a potential is a curvature functional with the companion's widening as its integrable value and an explicit oscillation bound (Theorem~\ref{thm:defect}, Corollary~\ref{cor:oscbound}); and that the correction --- to the potential and to the quotes --- is a hierarchy driven by one bordered-tridiagonal operator with envelope-transferred, admissibility-checked forcing (Theorem~\ref{thm:hierarchy}, Corollary~\ref{cor:tangentpolicy}, Propositions~\ref{prop:envelope} and~\ref{prop:admissible}). The parity theorem, finally, marks the boundary between what imbalance does to a dealer because of arithmetic --- oddness and evenness, which no model in the class can evade --- and what it does because the market's rejection curve happens to be memoryless.
+The nearest existing literature treats general intensity curves and asymmetric sides numerically or through general Hamiltonians without structural reductions. \citet{gueantlehalle2015} is the canonical treatment of general intensity shapes, on the execution side; \citet{gueant2017} allows fully general asymmetric intensities and characterizes quotes through an implicit hazard-type condition solved through the HJB system; \citet{bergaultgueant2021} does the same at scale for OTC market makers; \citet{campizabal2020} handles general intensities under partial information via viscosity solutions. None states a structural reduction of the asymmetric problem, which is what the normal form and its boundary provide. The perturbation genre around solvable market-making models expands in scalar parameters \citep{bergaultevgv2021}; the hierarchy here deforms the win curve as a function. Among contemporaneous work, \citet{barzykinciceri2026} works with a general fill-probability curve and exact quote-map inversion but without symmetry structure, and \citet{bbgl2025} obtains first-order corrections in effect-strength parameters for adverse selection and price reading. The algebraic ancestry is the same as in the companions: the identity behind Theorem~\ref{thm:normalform} is the Cram\'er--Chernoff exponential tilt of an asymmetric walk \citep{chernoff1952,feller1968}, and the affine case's rigid translation is the birth--death symmetrization known since \citet{ledermannreuter1954} and \citet{karlinmcgregor1957}. The envelope argument of Proposition~\ref{prop:envelope} is the standard machinery of \citet{milgromsegal2002}; the win-curve estimation that would supply empirical $\theta$ coordinates is the econometrics of \citet{fgp2017}. What is new here is the geometry above that algebra: that for arbitrary enquiry-value curves the tilt acts as an exact translation in the log-value coordinates; that rigid removal is possible exactly on the affine-exponential family, with pure exponentiality recovered from tails (Theorems~\ref{thm:rigidity} and~\ref{thm:hamrigidity}); that the failure to lift the pointwise gauge to a potential is a curvature functional with the companion's widening as its integrable value and an explicit oscillation bound (Theorem~\ref{thm:defect}, Corollary~\ref{cor:oscbound}); and that the correction --- to the potential and to the quotes --- is a hierarchy driven by one bordered-tridiagonal operator with envelope-transferred, admissibility-checked forcing (Theorem~\ref{thm:hierarchy}, Corollary~\ref{cor:tangentpolicy}, Propositions~\ref{prop:envelope} and~\ref{prop:admissible}). The parity theorem, finally, marks the boundary between what imbalance does to a dealer because of arithmetic --- oddness and evenness, which no model in the class can evade --- and what it does because the market's rejection curve happens to be memoryless.
 
 Two objects built here are the intended interface to sequels: the tangent policy of Corollary~\ref{cor:tangentpolicy}, which tells a learning system what the first-order-correct quotes are rather than only what the corrected value function is, and the curvature amplification factor of Remark~\ref{rem:resolvent}, which prices how win-curve uncertainty propagates to policy uncertainty through the anchor's spectral gap. A robust controller assembled from the exponential anchor, the tangent responses, and a learned residual is developed separately.
 
-\begin{thebibliography}{12}
+\begin{thebibliography}{24}
+\bibitem[Acz\'el(1966)]{aczel1966} Acz\'el, J. (1966). \emph{Lectures on Functional Equations and Their Applications}. Academic Press.
 \bibitem[Avellaneda and Stoikov(2008)]{avellaneda2008} Avellaneda, M., Stoikov, S. (2008). High-frequency trading in a limit order book. \emph{Quantitative Finance} 8(3), 217--224.
+\bibitem[Barzykin and Ciceri(2026)]{barzykinciceri2026} Barzykin, A., Ciceri, C. (2026). Bond market making with a hit-ratio target. arXiv:2604.20406.
+\bibitem[Barzykin et al.(2025)]{bbgl2025} Barzykin, A., Bergault, P., Gu\'eant, O., Lemmel, M. (2025). Optimal quoting under adverse selection and price reading. arXiv:2508.20225.
 \bibitem[Bergault and Gu\'eant(2021)]{bergaultgueant2021} Bergault, P., Gu\'eant, O. (2021). Size matters for OTC market makers: general results and dimensionality reduction techniques. \emph{Mathematical Finance} 31(1), 279--322.
+\bibitem[Bergault et al.(2021)]{bergaultevgv2021} Bergault, P., Evangelista, D., Gu\'eant, O., Vieira, D. (2021). Closed-form approximations in multi-asset market making. \emph{Applied Mathematical Finance} 28(2), 101--142.
+\bibitem[Campi and Zabaljauregui(2020)]{campizabal2020} Campi, L., Zabaljauregui, D. (2020). Optimal market making under partial information with general intensities. \emph{Applied Mathematical Finance} 27(1--2), 1--45.
 \bibitem[Chernoff(1952)]{chernoff1952} Chernoff, H. (1952). A measure of asymptotic efficiency for tests of a hypothesis based on the sum of observations. \emph{Annals of Mathematical Statistics} 23(4), 493--507.
 \bibitem[Cotton(2026a)]{cotton2026skew} Cotton, P. (2026). On a simple relationship between order imbalance, skew and width in over-the-counter trading. Working paper, \url{https://inventory.microprediction.org}.
 \bibitem[Cotton(2026b)]{cotton2026finite} Cotton, P. (2026). Finite-horizon market making with imbalanced flow: an exact symmetrization and its term structure. Working paper, \url{https://inventory.microprediction.org}.
 \bibitem[Feller(1968)]{feller1968} Feller, W. (1968). \emph{An Introduction to Probability Theory and Its Applications}, Vol.~I, 3rd ed., Ch.~XIV. Wiley.
 \bibitem[Fermanian et al.(2017)]{fgp2017} Fermanian, J.-D., Gu\'eant, O., Pu, J. (2017). The behavior of dealers and clients on the European corporate bond market: the case of multi-dealer-to-client platforms. \emph{Market Microstructure and Liquidity} 2(3--4), 1750004.
+\bibitem[Friedman(1956)]{friedman1956} Friedman, L. (1956). A competitive-bidding strategy. \emph{Operations Research} 4(1), 104--112.
+\bibitem[Galambos and Kotz(1978)]{galamboskotz1978} Galambos, J., Kotz, S. (1978). \emph{Characterizations of Probability Distributions}. Lecture Notes in Mathematics 675, Springer.
 \bibitem[Gu\'eant(2017)]{gueant2017} Gu\'eant, O. (2017). Optimal market making. \emph{Applied Mathematical Finance} 24(2), 112--154.
+\bibitem[Gu\'eant and Lehalle(2015)]{gueantlehalle2015} Gu\'eant, O., Lehalle, C.-A. (2015). General intensity shapes in optimal liquidation. \emph{Mathematical Finance} 25(3), 457--495.
 \bibitem[Gu\'eant et al.(2012)]{glft2012} Gu\'eant, O., Lehalle, C.-A., Fernandez-Tapia, J. (2012). Dealing with the inventory risk: a solution to the market making problem. \emph{Mathematics and Financial Economics} 7(4), 477--507.
 \bibitem[Karlin and McGregor(1957)]{karlinmcgregor1957} Karlin, S., McGregor, J. (1957). The differential equations of birth-and-death processes, and the Stieltjes moment problem. \emph{Transactions of the American Mathematical Society} 85(2), 489--546.
+\bibitem[Kelly(1979)]{kelly1979} Kelly, F.~P. (1979). \emph{Reversibility and Stochastic Networks}. Wiley.
 \bibitem[Ledermann and Reuter(1954)]{ledermannreuter1954} Ledermann, W., Reuter, G.~E.~H. (1954). Spectral theory for the differential equations of simple birth and death processes. \emph{Philosophical Transactions of the Royal Society A} 246(914), 321--369.
+\bibitem[Marsaglia and Tubilla(1975)]{marsagliatubilla1975} Marsaglia, G., Tubilla, A. (1975). A note on the ``lack of memory'' property of the exponential distribution. \emph{Annals of Probability} 3(2), 353--354.
 \bibitem[Milgrom and Segal(2002)]{milgromsegal2002} Milgrom, P., Segal, I. (2002). Envelope theorems for arbitrary choice sets. \emph{Econometrica} 70(2), 583--601.
+\bibitem[Sinander(2022)]{sinander2022} Sinander, L. (2022). The converse envelope theorem. \emph{Econometrica} 90(6), 2795--2819.
 \end{thebibliography}
 
 \end{document}
