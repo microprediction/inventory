@@ -377,6 +377,50 @@ if __name__ == "__main__":
           clip_at == [2],
           f"clipped states {clip_at}")
 
+    # OPT10: fuzzed coverage of the admissible region -- random configs,
+    # keep only draws where BOTH members are interior, check everything
+    fz = np.random.default_rng(2026)
+    tried = accepted = 0
+    w_res = w_map = w_scale = 0.0
+    while accepted < 150 and tried < 3000:
+        tried += 1
+        qf = fz.uniform(0.52, 0.80)
+        configure(int(fz.integers(3, 9)))
+        EPS = fz.uniform(0.10, 0.90)
+        a2, a4, a1 = (10 ** fz.uniform(-4, -2), 10 ** fz.uniform(-6, -3.5),
+                      10 ** fz.uniform(-4, -2.2))
+        ay = fz.uniform(0, 0.5) * a2 if fz.random() < 0.3 else 0.0
+        cost = (lambda a2, a4, a1, ay: lambda x:
+                a2 * x * x + a4 * x ** 4 + a1 * abs(x)
+                + ay * x * x * (x > 0))(a2, a4, a1, ay)
+        Mf = 1 / (2 * np.sqrt(qf * (1 - qf)))
+        dl = 0.5 * np.log(qf / (1 - qf)) / H0
+        try:
+            md, mu, h, rho = pi_converge(qf, cost)
+            mdb, mub, hb, rhob = pi_converge(0.5, lambda x: Mf * cost(x))
+        except Exception:
+            continue
+        if min(np.nanmin(np.concatenate([md, mu])),
+               np.nanmin(np.concatenate([mdb, mub]))) <= 1e-6:
+            continue
+        accepted += 1
+        nu = -h
+        h0v = hamiltonian(qf, nu, I0)
+        w_res = max(w_res, max(abs(TAU * cost(XS[i]) / S_LOT
+                                   - (hamiltonian(qf, nu, i) - h0v))
+                               for i in range(NS) if i != I0))
+        w_map = max(w_map, np.nanmax(np.abs(md - (mdb + dl))),
+                    np.nanmax(np.abs(mu - (mub - dl))))
+        w_scale = max(w_scale, abs(rhob - Mf * rho))
+    configure(4)
+    EPS = 0.15
+    check("OPT10 fuzz: 150 random interior configs, consistency + quote map "
+          "+ gain scaling at every draw",
+          accepted >= 150 and w_res < 1e-9 and w_map < 1e-9
+          and w_scale < 1e-11,
+          f"{accepted}/{tried} draws admissible; worst residual {w_res:.1e}, "
+          f"map {w_map:.1e}, scaling {w_scale:.1e}")
+
     n_ok = sum(ok for _, ok in PASS)
     print(f"\n{n_ok}/{len(PASS)} optimality checks pass")
     assert n_ok == len(PASS)

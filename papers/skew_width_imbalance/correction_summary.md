@@ -111,7 +111,26 @@ spike clips that interior state first, so boundary-first clipping is a
 property of the convex families tested, not universal -- the manuscript's
 interiority remark is worded accordingly. The humpday search is optional
 (scipy differential evolution is the fallback), so the certificate is
-portable. 13/13 pass.
+portable; (viii) a fuzz stage draws random configurations across
+(q, N, eps, cost shape), keeps the ~60 percent whose two members are both
+interior, and checks consistency, the quote map, and gain scaling at every
+one of 150 admissible draws (worst deviation 3e-15). 14/14 pass.
+
+verify_symbolic.py: every purely algebraic identity verified EXACTLY in
+sympy under the log-odds parameterization q = e^t/(e^t + e^-t) -- the FOC
+and enquiry value, the cosh imbalance identity, the termwise Hamiltonian
+scaling used by the new proof, M = e^{h gamma} and DM = 1, parity, the
+integrability identity, and the width-sensitivity derivative
+dC0/dlog a = C0/(2 - hC0). 12/12, no floating point involved.
+
+verify_interval.py: a Krawczyk interval-Newton certificate with
+outward-rounded arithmetic (mpmath.iv) PROVES, at the flagship
+configuration and its balanced image, that exactly one solution exists in
+a box of radius 1e-7 around the reported solution (enclosure width
+2.4e-12), that every available quote of both proven solutions is interior
+(rigorous lower bounds 0.0226 and 0.2254), and that the proven enclosures
+satisfy the tilt map to 2.4e-12. Assumptions 2 (locally) and 3 are
+theorems at this configuration, not instances. 4/4.
 
 Scope finding from the sweep, now a remark after the theorem: in the
 convex cost families tested, interiority binds first at the one-sided
