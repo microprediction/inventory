@@ -57,14 +57,14 @@ XS = np.arange(-N, N + 1)
 I0 = N
 H0 = 1.0
 W = 1.0 / H0
-EPS = 0.1
+EPS = 0.15
 Q = 0.6
 Z = Q - 0.5
 DELTA = 0.5 * np.log(Q / (1 - Q)) / H0
 MQ = 1.0 / (2 * np.sqrt(Q * (1 - Q)))
 GAMMA = np.log(MQ) / H0
 DQ = 2 * np.sqrt(Q * (1 - Q))
-COST = lambda x: 0.01 * x ** 2
+COST = lambda x: 0.0015 * x ** 2
 rng = np.random.default_rng(11)
 
 G_exp = lambda K: W * np.exp(-1.0 - H0 * K)
@@ -100,6 +100,13 @@ def solve_bounded(q, cost, init, eps=EPS):
     nu = np.concatenate([sol.x[:N], [0.0], sol.x[N:]])
     assert np.max(np.abs(residuals_bounded(q, cost, nu, eps=eps))) < 1e-11
     return nu
+
+
+def assert_interior(nu, eps=EPS):
+    m = min(v for x in range(-N, N + 1) for v in quotes(nu, x, eps)
+            if v is not None)
+    assert m > 0, f"interiority violated: min quote {m:.3f}"
+    return m
 
 
 def quotes(nu, x, eps=EPS):
@@ -161,6 +168,7 @@ check("A3 half-width = Delta + C, mid offset = -S", ok3)
 
 # A4: consistency solution is average-reward optimal (gain identity)
 nu_q = solve_bounded(Q, COST, 0.05 * XS.astype(float) ** 2 + DELTA * XS)
+assert_interior(nu_q)
 gain = S_LOT * hamiltonian(Q, nu_q, I0)
 p, up, dn = stationary(Q, nu_q)
 rew = np.zeros(2 * N + 1)
@@ -185,6 +193,7 @@ check("B1 cosh identity", worst < 1e-14, f"max err {worst:.1e}")
 # B2: theorem map both directions
 nu_bal = solve_bounded(0.5, lambda x: MQ * COST(x),
                        0.05 * XS.astype(float) ** 2)
+assert_interior(nu_bal)
 r_fwd = np.max(np.abs(residuals_bounded(Q, COST, nu_bal + DELTA * XS)))
 r_bwd = np.max(np.abs(residuals_bounded(0.5, lambda x: MQ * COST(x),
                                         nu_q - DELTA * XS + (nu_q - DELTA * XS)[I0] * 0)))
@@ -237,8 +246,9 @@ check("B7 overhead frame: same nu; quotes remap removing gamma", okB7)
 
 # B8: flat-book skew delta under even cost; fails without evenness
 S0_q, _ = slope_conv(nu_q, 0)
-cost_asym = lambda x: 0.012 * x ** 2 + 0.006 * x ** 2 * (x > 0) + 0.003 * abs(x)
+cost_asym = lambda x: 0.0008 * x ** 2 + 0.0003 * x ** 2 * (x > 0) + 0.0002 * abs(x)
 nu_qa = solve_bounded(Q, cost_asym, nu_q.copy())
+assert_interior(nu_qa)
 S0_a, _ = slope_conv(nu_qa, 0)
 check("B8 S_q(0) = delta iff cost symmetric",
       abs(S0_q - DELTA) < 1e-10 and abs(S0_a - DELTA) > 1e-3,
@@ -269,6 +279,7 @@ check("B10 delta ~ 2wz (O(z^3)), gamma ~ 2wz^2, M-1 ~ 2z^2 (O(z^4))", okB10)
 
 # B11: exact width identity
 nu_c = solve_bounded(0.5, COST, 0.05 * XS.astype(float) ** 2)
+assert_interior(nu_c)
 okB11 = True
 for x in range(-(N - 1), N):
     mdn_q, mup_q = quotes(nu_q, x)
@@ -483,9 +494,9 @@ check("E2 tilt FAILS where the floor binds (interiority is load-bearing)",
 # E3: configuration sweep of the core identities (theorem map, quote map,
 # time change, width identity) across h, eps, q, N, and cost shapes
 for (hh, ee, qq, NN, cf, name) in [
-        (2.0, 0.25, 0.70, 6, lambda x: 0.004 * x ** 2, "h=2 quad"),
-        (0.5, 0.05, 0.58, 10, lambda x: 0.02 * x ** 2, "h=1/2 quad"),
-        (1.0, 0.30, 0.80, 8, lambda x: 0.001 * x ** 4 + 0.002 * x ** 2, "quartic")]:
+        (2.0, 0.25, 0.62, 5, lambda x: 0.001 * x ** 2, "h=2 quad"),
+        (0.5, 0.10, 0.58, 6, lambda x: 0.004 * x ** 2, "h=1/2 quad"),
+        (1.0, 0.30, 0.62, 4, lambda x: 0.0002 * x ** 4 + 0.0008 * x ** 2, "quartic")]:
     ww = 1.0 / hh
     dd = 0.5 * ww * np.log(qq / (1 - qq))
     MM_ = 1.0 / (2 * np.sqrt(qq * (1 - qq)))
@@ -517,6 +528,10 @@ for (hh, ee, qq, NN, cf, name) in [
         return nu
 
     nb = slv2(0.5, lambda x: MM_ * cf(x), 0.05 * xs2.astype(float) ** 2)
+    mq_min = min(ww + ee + s_ * (nb[i + s_] - nb[i]) + t_ * dd
+                 for i in range(n2) for s_, t_ in ((1, 1), (-1, -1))
+                 if 0 <= i + s_ < n2)
+    assert mq_min > 0, f"E3 {name}: interiority violated ({mq_min:.3f})"
     r_map = np.max(np.abs(res2(qq, cf, nb + dd * xs2)))
     okq = True
     for i in range(1, n2 - 1):

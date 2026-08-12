@@ -6,9 +6,7 @@ Dear Editors,
 In follow-up work we found that the statement of Theorem 1 in our submission
 treats two equivalent representations of a single factor — the carrying-cost
 multiplier M(q) and the overhead displacement gamma — as simultaneous
-corrections. The nu-level reduction to a balanced problem at carrying cost
-M(q)c, its proof, and the accompanying numerical certificate are unchanged
-and correct; what required revision is the interpretive layer built on the
+corrections. The core algebraic reduction in the proof remains valid; what required revision is the interpretive layer built on the
 double-counted factor, most visibly the claim that the dealer's physical
 width widens by gamma.
 
@@ -21,8 +19,9 @@ symmetry, and uniqueness assumptions explicit; and clarifies that the
 constant-width inversion of Section 4 is reduced-form unless its
 integrability condition holds. The central symmetry emerges more cleanly in
 the revision, as a skew translation composed with a uniform time change of
-the inventory process. A new claim-by-claim numerical certificate
-accompanying the manuscript checks every quantitative statement.
+the inventory process. A new certificate accompanying the manuscript provides finite-lattice
+implementation checks of the principal identities and approximations, with
+every test configuration satisfying the theorem's interior-quote assumption.
 
 We preferred to send the corrected manuscript now rather than have referees
 spend time on statements we know to be wrong, and we apologize for the

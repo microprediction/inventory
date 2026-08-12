@@ -21,12 +21,12 @@ Two claims:
 import numpy as np
 from scipy.optimize import root
 
-TAU, S_LOT, EPS = 1.0, 1.0, 0.0
-N = 8
+TAU, S_LOT, EPS = 1.0, 1.0, 0.15
+N = 6
 XS = np.arange(-N, N + 1)
 I0 = N
 H0 = 1.0
-COST = lambda x: 0.01 * x ** 2
+COST = lambda x: 0.0025 * x ** 2
 
 G_exp = lambda K: (1.0 / H0) * np.exp(-1.0 - H0 * K)
 
@@ -90,7 +90,17 @@ def convexity0(nu):
 
 
 if __name__ == "__main__":
+    def assert_interior(nu):
+        m = min(half_width(nu, x) - abs((nu[I0 + x + 1] - nu[I0 + x - 1]) / 2)
+                for x in range(-(N - 1), N))
+        # crude bound: min individual quote
+        mq = min(v for x in range(-(N - 1), N)
+                 for v in (1 / H0 + EPS + (nu[I0 + x + 1] - nu[I0 + x]),
+                           1 / H0 + EPS + (nu[I0 + x - 1] - nu[I0 + x])))
+        assert mq > 0, f"interiority violated: {mq:.3f}"
+
     nu_c = solve_balanced(COST)
+    assert_interior(nu_c)
     C0 = convexity0(nu_c)
     print(f"balanced C(0) = {C0:.5f}  (h C(0) = {H0 * C0:.5f})")
 
@@ -100,6 +110,7 @@ if __name__ == "__main__":
         delta = 0.5 * np.log(q / (1 - q)) / H0
         nu_Mc = solve_balanced(lambda x: M * COST(x))
         nu_imb = solve_imbalanced(q, COST, nu_Mc + delta * XS)
+        assert_interior(nu_imb)
 
         # claim 1: imbalanced width == balanced-at-Mc width, exactly
         d_frames = max(abs(half_width(nu_imb, x) - half_width(nu_Mc, x))

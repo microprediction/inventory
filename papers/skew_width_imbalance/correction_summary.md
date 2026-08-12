@@ -23,12 +23,15 @@ Missing hypotheses, now explicit (substantive, not stylistic): even carrying
 cost, symmetric domain, and solution uniqueness for the flat-book skew
 S_q(0) = delta (numerically, an asymmetric cost gives S_q(0) = 0.254 vs
 delta = 0.203); interior quotes in BOTH members of the equivalence (the tilt
-makes one side's floor bind earlier); admissibility/uniqueness for the
-steady-state relative-value solution. The zero-carry edge c = 0 is degenerate:
-every linear tilt solves the centered interior equation, the tilted image is
-inadmissible on an unbounded lattice, and the selected policy does not skew --
-a cheap-control-type singularity, flagged in a new remark. At c = 0 the
-admissible policy's throughput is unchanged by imbalance.
+makes one side's floor bind earlier); uniqueness for the steady-state
+relative-value solution on the finite lattice (the state space is now stated
+as a finite MDP with one-sided boundaries, and the full average-reward
+equation rho = -c + (s/tau)H precedes the centered form). The zero-carry
+equation is nonidentifying: every interior tilt solves it, so the theorem
+excludes c = 0, and which policy is then selected depends on boundary or
+transversality conditions (on the finite lattice the boundary rows select --
+numerically they select the tilted branch, S(0) = delta). No claim is made
+about zero-carry policy or throughput beyond M(q) x 0 = 0.
 
 One localized independent inconsistency. The paper had already recognized the
 Bellman incompatibility of quadratic CWLS with generic carrying costs ("solve
@@ -55,13 +58,17 @@ reparameterization remark with the quote remapping m_q = m_over + delta -
 gamma (buy side). New corollaries: parity without cost symmetry
 (S_q - S_{1-q} = 2 delta, C_q = C_{1-q}) and the exact width identity
 W_q - W_{1/2,c} = 2[C_Mc - C_c], with the closed small-skew approximation
-Delta C(0) ~ gamma hC0/(2 - hC0) on the branch hC0 < 2 (C0 the balanced
+Delta C(0) ~ gamma hC0/(2 - hC0), eq. (10), on the branch hC0 < 2 (C0 the balanced
 baseline; full-width response ~ 2 C0 (q - 1/2)^2 for small hC0).
 
 ## Verification
 
-verify_all_claims.py: a claim-by-claim certificate, 33 labeled checks keyed to
-paper sections, covering every quantitative claim in the corrected manuscript
+verify_all_claims.py: 38 labeled finite-lattice implementation checks of the
+principal identities and approximations, keyed to paper sections -- checks
+corroborate identities and implementations; they do not establish existence,
+uniqueness, or asymptotic assumptions. Every test configuration now satisfies
+the interior-quote assumption by explicit assertion, with a separate
+piecewise-G check showing exactness fails once clipping occurs. Covered
 -- the FOC and piecewise G, the quote identities, average-reward optimality of
 the consistency solution (gain = s H_q(0) at 6e-17), the theorem map in both
 directions, gain scaling, quote map, time change, stationary-distribution
@@ -76,8 +83,9 @@ configurations for eq. 9); verify_local_exponentiality.py unchanged.
 
 ## Editor framing (draft in editor_note.txt)
 
-The nu-level reduction to a balanced problem at carrying cost M(q)c is
-unchanged. The revision corrects an overinterpretation in which the equivalent
+The core algebraic reduction in the proof remains valid; the theorem now
+carries explicit scope assumptions, the average-reward scaling, and the quote
+map. The revision corrects an overinterpretation in which the equivalent
 overhead representation was treated as an additional physical widening, and
 correspondingly revises the width and zero-carry consequences; it makes the
 interiority, symmetry, and uniqueness assumptions explicit; and it clarifies
