@@ -18,7 +18,7 @@
 \maketitle
 
 \begin{abstract}
-We consider a market maker who can only obtain and dispose of inventory by responding to a sequence of sealed-bid enquiries, and whose customers arrive with imbalanced intent: sellers more often than buyers, or the reverse. Under the assumption that the best competing response is exponentially distributed around a commonly discerned fair price, we observe a symmetry in the steady state solution that compresses the imbalanced problem onto the perfectly balanced one. Order imbalance is absorbed, exactly, by a translation of the market maker's skew, a widening of her quotes, and a multiplication of her effective cost of carry. The adjustment is simple even though the solution it adjusts is not, and it involves no free parameter beyond the observable market width. The exponential assumption is needed only locally, at the quotes actually made, and the width that enters is the locally observed one. Among the consequences: a market maker with zero inventory should still skew; skew responds to imbalance at first order whereas width responds only at second order; and the popular ``constant width, linear skew'' heuristic is recovered as the small-skew solution in the special case of balanced flow and quadratic holding cost.
+We consider a market maker who can only obtain and dispose of inventory by responding to a sequence of sealed-bid enquiries, and whose customers arrive with imbalanced intent: sellers more often than buyers, or the reverse. Under the assumption that the best competing response is exponentially distributed around a commonly discerned fair price, we observe a symmetry in the steady state solution that compresses the imbalanced problem onto the perfectly balanced one. Order imbalance is absorbed, exactly, by a translation of the market maker's skew together with a multiplication of her effective cost of carry --- equivalently, at unchanged cost, a widening of the non-discretionary overhead: one correction read in two frames. The adjustment is simple even though the solution it adjusts is not, and it involves no free parameter beyond the observable market width. The exponential assumption is needed only locally, at the quotes actually made, and the width that enters is the locally observed one. Among the consequences: a market maker with zero inventory should still skew; skew responds to imbalance at first order whereas width responds only at second order; and the popular ``constant width, linear skew'' heuristic is recovered as the small-skew solution in the special case of balanced flow and quadratic holding cost.
 \end{abstract}
 
 \medskip
@@ -32,7 +32,7 @@ The facilitation of trade by intermediaries often takes the form of a sequence o
 
 We have in mind fungible goods for which this description is apt (dealer markets in physical commodities, corporate and municipal bonds, blocks of securities, or for that matter rare baseball cards) and one empirical regularity of such markets that the standard theory does not deliver. Dealers shade their quotes with the direction of the flow. A dealer who expects the next call to be a seller quotes differently from one who expects a buyer, and does so even when her book is flat. Practitioners regard this as too obvious to remark upon. The optimal market making literature has meanwhile concentrated on the other lever: the benchmark policies descending from Avellaneda and Stoikov \cite{avellaneda2008} hold width constant and skew linearly in inventory, with buy and sell arrivals assumed symmetric.
 
-The purpose of this paper is to show that flow-shading is not a heuristic layered on top of inventory management but an exact feature of optimal behavior, and that it follows from a symmetry. In the steady state, the market making problem facing imbalanced flow compresses onto the perfectly balanced problem: the imbalance is absorbed, without approximation, by a translation of the skew, a widening of the quotes, and a multiplication of the effective cost of carry. The three adjustments are explicit constants involving nothing but the imbalance itself and the market width.
+The purpose of this paper is to show that flow-shading is not a heuristic layered on top of inventory management but an exact feature of optimal behavior, and that it follows from a symmetry. In the steady state, the market making problem facing imbalanced flow compresses onto the perfectly balanced problem: the imbalance is absorbed, without approximation, by a translation of the skew together with a multiplication of the effective cost of carry, the latter equivalently expressible, at unchanged cost, as a widening of the non-discretionary overhead. The adjustments are explicit constants involving nothing but the imbalance itself and the market width.
 
 The solution being adjusted is not simple. The indifference cost that characterizes optimal behavior must in general be computed numerically, and its shape depends on the entire cost of carry function. The imbalance correction nevertheless rides on top of any such solution unchanged, so a single balanced solve covers every level of imbalance. Nor is the exponential assumption load-bearing in its global form: only the hazard at the quotes actually made enters, a point Remark~\ref{rem:local} makes precise.
 
@@ -133,7 +133,7 @@ The steady state market making problem with arrival imbalance $q$ and carrying c
 M(q) \;=\; e^{h\gamma} \;=\; \frac{1}{2\sqrt{q\,(1-q)}} \;\ge\; 1,
 \label{eq:multiplier}
 \end{equation}
-under the correspondence: skew translated by $\delta$, and non-discretionary width $\Delta$ widened to $\Delta + \gamma$.
+under the correspondence: skew translated by $\delta$. Equivalently, at unchanged carrying cost, it is the balanced problem with non-discretionary width $\Delta$ widened to $\Delta + \gamma$: the widening and the multiplier are the same factor $e^{h\gamma}$ read in the overhead and cost frames respectively, not simultaneous corrections.
 \end{theorem}
 
 \begin{proof}
@@ -146,7 +146,7 @@ which is the balanced consistency equation in the pair $(C, S_\delta)$, with the
 \end{proof}
 
 \begin{remark}[The adjustment is simple; the solution is not]
-The theorem neither requires nor provides a closed form. In general $\nu$ must be computed numerically, and everything about its shape depends on $c$. What the symmetry provides is the correction: whatever the balanced solution is, the imbalanced one is that same object translated by $\delta$, widened by $\gamma$, and evaluated at carrying cost $M(q)\,c$. One balanced solve serves every imbalance.
+The theorem neither requires nor provides a closed form. In general $\nu$ must be computed numerically, and everything about its shape depends on $c$. What the symmetry provides is the correction: whatever the balanced solution is, the imbalanced one is that same object translated by $\delta$ and evaluated at carrying cost $M(q)\,c$ --- equivalently, at overhead widened by $\gamma$. One balanced solve serves every imbalance.
 \end{remark}
 
 \begin{remark}[Exponentiality is needed only locally]\label{rem:local}
@@ -178,7 +178,7 @@ Expanding about $q = \tfrac12$,
 \gamma \approx 2w\Big(q-\tfrac12\Big)^{2}, \qquad
 M(q) \approx 1 + 2\Big(q-\tfrac12\Big)^{2}.
 \]
-A mild imbalance moves the midpoint linearly and the width only quadratically. This accords with the practitioner's instinct to skew into flow and widen only when the market becomes seriously one-sided. Both responses involve no parameter beyond the observable width $w$; the skew flips sign between net-selling and net-buying regimes while the widening, being even in $q - \tfrac12$, does not.
+A mild imbalance moves the midpoint linearly and the width only quadratically, and the width response flows entirely through the multiplied carry: the imbalanced dealer's quotes are those of the balanced dealer at cost $M(q)c$, so her width response is that problem's convexity response to a proportional increase of carry, for which Section~\ref{sec:closed} gives the closed leading-order form \eqref{eq:widthresponse}. This accords with the practitioner's instinct to skew into flow and widen only when the market becomes seriously one-sided. The skew response involves no parameter beyond the observable width $w$ and flips sign between net-selling and net-buying regimes; the width response is even in $q - \tfrac12$ and involves one further observable, the discretionary width.
 \end{corollary}
 
 \begin{corollary}[Imbalance acts as a carrying cost]\label{cor:carry}
@@ -202,6 +202,13 @@ Where, then, is CWLS exactly optimal? Requiring $C(x) \equiv C_0$ together with 
 \end{equation}
 with the imbalance appearing as the \emph{linear term of the indifference cost}, and feeding \eqref{eq:nuquad} back through \eqref{eq:bellman} pins the cost of carry to the shape $c(x) \propto \cosh(2hC_0 x/s) - 1$. The quadratic term prices inventory risk; the linear term prices the flow; and the skew $S(x) = 2\tfrac{C_0}{s}\,x + \delta$ is linear with an intercept.
 
+The corner also prices the width response to imbalance. By Theorem~\ref{thm:main} the imbalanced dealer's quotes are those of the balanced dealer at carrying cost $M(q)c$, so her width response is the balanced convexity's response to a proportional increase of carry. In the small-skew quadratic-cost regime, the small-$x$ expansion of the quadratic family gives $e^{-hC_0}C_0^2$ proportional to the cost scale, hence $dC_0/d\log(\mathrm{scale}) = C_0/(2 - hC_0)$ and
+\begin{equation}
+\Delta C(0) \;=\; \gamma\,\frac{hC(0)}{2 - hC(0)} \;+\; O\big((q-\tfrac12)^4\big):
+\label{eq:widthresponse}
+\end{equation}
+the even, sign-definite $\gamma$-shape in the imbalance survives, scaled by roughly half the ratio of discretionary to market width. The accompanying script \texttt{verify\_width\_response.py} confirms the formula within about one percent across $q \in [0.55, 0.7]$ on the lattice, and confirms that the imbalanced width equals the balanced-at-$M(q)c$ width to machine precision.
+
 CWLS is therefore exactly correct in one corner: balanced flow and a cosh-shaped cost of carry, a shape that is quadratic up to a relative error of $(hS_\delta(x))^{2}/12$. For a genuinely quadratic cost, CWLS is accurate while the skew is small relative to the width, with error quadratic in that ratio. The symmetry supplies the benchmark's missing column: under imbalance, keep the linear response to inventory, add the intercept $\delta$, and widen by $\gamma$. The moral for anyone outside the corner is procedural: solve for $\nu(x)$ rather than pretend $\nu \propto x^2$ works, since the quadratic ansatz is internally inconsistent for any other cost of carry.
 
 \section{Uses}\label{sec:uses}
@@ -210,7 +217,7 @@ The equivalence was stated as a fact about optimal policy, but its practical con
 
 \emph{Fill ratios.} At the optimum, profitability factors cleanly. By \eqref{eq:foc} the optimal response sits the distance $w$ beyond its strike, so the expected net gain on a won trade is $s\,w$ at every level of inventory, and all variation in expected profit per enquiry is variation in the fill ratio. Under the constant hazard the fill ratio on a quote at markup $m$ is $e^{-m/w}$, log-linear in the markup with slope $-1/w$, which is how $w$ is estimated from a quote archive; at the optimal response to strike $K$ it equals $e^{-1-K/w}$. In particular a dealer facing zero adverse selection and zero marginal inventory cost should, if she quotes optimally, win $e^{-1} \approx 37\%$ of her enquiries, and persistent departures from that ratio measure her effective strike.
 
-\emph{Testing the symmetry.} Request-for-quote archives record direction, quotes, and fills. Direction counts estimate $q$, the win curve estimates $w$, with Remark~\ref{rem:local} indicating that the local estimate is the appropriate one, and the theorem then predicts the zero-inventory skew $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ and the widening $\gamma$ with no free parameter. Cross-sectionally, instruments with more one-sided flow should show mids shifted at first order in the imbalance and quotes widened at second order, per Corollary~\ref{cor:orders}.
+\emph{Testing the symmetry.} Request-for-quote archives record direction, quotes, and fills. Direction counts estimate $q$, the win curve estimates $w$, with Remark~\ref{rem:local} indicating that the local estimate is the appropriate one, and the theorem then predicts the zero-inventory skew $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ with no free parameter, and the width response \eqref{eq:widthresponse} with the quoted discretionary width $C(0)$ as the one further observable. Cross-sectionally, instruments with more one-sided flow should show mids shifted at first order in the imbalance and quotes widened at second order through the carry channel, the widening proportional to the discretionary width rather than the market width.
 
 \emph{Reading a dealer's book.} The identities \eqref{eq:quotes} run both ways: skew and discretionary width are the first two differences of the indifference cost, so a counterparty's quoting reveals her inventory cost function, and a shift in her zero-inventory skew reveals her view of the flow.
 

@@ -1,0 +1,23 @@
+Subject: Corrected manuscript for [MS number] — On a Simple Relationship
+Between Order Imbalance, Skew and Width in Over-The-Counter Trading
+
+Dear Editors,
+
+In follow-up work we found that the statement of Theorem 1 in our submission
+conflates two equivalent representations of a single correction: the widening
+of the non-discretionary width by gamma and the multiplication of the carrying
+cost by M(q) = e^{h gamma} are the same factor read in two frames, not
+simultaneous adjustments. The proof and the accompanying numerical certificate
+are unaffected, as are all results concerning the skew; what changes is the
+interpretation of the width response in Corollary 2 and Section 6, which is in
+fact the balanced problem's convexity response to the multiplied carry. The
+attached corrected manuscript amends the statement accordingly and adds the
+closed leading-order form of the width response, Delta C(0) = gamma h C(0) /
+(2 - h C(0)), together with a short numerical certificate verifying both the
+corrected statement and the new formula.
+
+We preferred to correct this now rather than during review, and apologize for
+any inconvenience.
+
+Sincerely,
+Peter Cotton
