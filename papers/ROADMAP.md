@@ -136,6 +136,25 @@ Weibull psi-perp comment made precise (raw psi is the fixed-scale path tangent);
 identification remark localized to the visited strike range; rigid-manifold
 remark gains the tangent-space observation span{1, K, e^{hK}} explaining the
 null direction; directional-Taylor framing of the hierarchy added to the setup.
+**Round-5 revision applied 2026-08-12** (fresh-reader review). Retitled
+"Exponential Rigidity and a Log-Value Normal Form for Imbalanced Market Making"
+(coordinate canonical, path a convention). MAJOR FINDING: the gamma/M
+double-count — widening the overhead and multiplying the carry are alternative
+frames of ONE transformation; the imbalanced dealer's physical width equals the
+balanced-at-Mc dealer's exactly (certificate check 15), so the width response is
+the cost-dependent second-order convexity response, not gamma. This propagates
+to the SUBMITTED skew paper's Theorem 1 wording, its Corollary 2, the width
+tests in data_scout, and H7 — recorded in skew_width_imbalance/revision_notes.md
+§5 for the SIFIN revision. Also: sensitivity corollary extended to submitted
+quotes (D L0^-1 term + direct psi'/h^2 term, certified); resolvent factor
+renamed inventory-feedback amplification; null direction qualified (null for
+the centered potential only); Theorem 3 now concludes gamma(q), delta(q) and
+requires a common interval; blunt canonical/convention statement in Section 2;
+Prop 2 restated in G-coordinates (G>0, -1<G'<0, G''>0); parity extended to
+submitted quotes (corollary); envelope identity proved in place; m Fbar -> 0
+one-liner; nu_j convention; Thm 4 uniformity; osculating anchor needs G''>0;
+numerics section carries full configuration and independence statement; "To our
+knowledge" hedge. Certificate at 15 checks.
 **Remaining.** Editorial pass; decide venue; optionally derive the companion Remark's
 ≈0.25 constant in closed form from the ψ of the linear-hazard experiment; the
 finite-horizon instance (P1's concluding problem) is now posed as this hierarchy with

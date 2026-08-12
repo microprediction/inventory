@@ -133,3 +133,30 @@ rather than an analogy.
   reproducible from the tag.
 - When the arXiv ID issues, arXiv v2 can carry §2 citations + any referee-driven
   changes; keep v1 as the record of the submitted text.
+
+## 5. CRITICAL for the revision — Theorem 1's wording double-counts (found 2026-08-12)
+
+The submitted theorem states the correspondence as "skew translated by δ AND
+non-discretionary width Δ widened to Δ+γ" for the balanced problem at cost
+M(q)c. The widening and the multiplier are ALTERNATIVE representations of the
+same factor e^{hγ} — overhead frame versus cost frame — not simultaneous
+corrections; the submitted proof itself moves e^{−hγ} to the cost side, after
+which nothing remains to widen. Numerical demonstration (normal-form paper
+certificate, check 15): the imbalanced dealer's physical half-width equals the
+balanced-at-Mc dealer's to machine precision, and exceeds the balanced-at-c
+dealer's only by the convexity response C_{Mc}(x) − C_c(x) — 6.5e-4 in the test
+configuration, an order of magnitude below γ ≈ 0.020.
+
+Fixes needed in the SIFIN revision:
+- Restate Theorem 1 as one transformation with two equivalent frames (subtract
+  δ from skew and add γ to overhead; or tilt by δx and multiply carry by M).
+- Corollary 2: "width responds at second order" survives, but the widening is
+  NOT the parameter-free γ; it is the cost-dependent convexity response to the
+  multiplied carry. The parameter-free second-order object is M(q) as a carry
+  statement, not a width statement.
+- §6 "testing the symmetry": the widening-γ prediction and the data-scout
+  "width multiplier 1/(2√(p(1−p)))" tests must be recast accordingly. The skew
+  predictions (δ, zero-inventory skew, sign flip at q = ½) are unaffected.
+- Downstream: `notes/spread_as_endogenous_carry.tex` H7 ("one-sided flow widens
+  quotes by M(p)") inherits the same correction; the multiplier's carry reading
+  (Proposition, M as effective-carry inflation) is untouched.

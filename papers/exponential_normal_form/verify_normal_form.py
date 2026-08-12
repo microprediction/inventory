@@ -101,9 +101,20 @@ Checks, numbered as in the paper:
    endpoint has tangent -log(1 + kappa/G_0) with nonzero forcing and
    nonzero nu_1. Path dependence begins at first order.
 
-14. POLICY-SENSITIVITY BOUND. With psi normalized to vanish to first
+14. POLICY-SENSITIVITY BOUNDS. With psi normalized to vanish to first
    order at the mid-strike, the chain ||nu_1|| <= ||L_0^{-1}|| ||R_psi||
-   <= ||L_0^{-1}|| G_max R^2 ||psi''|| holds on the test problem.
+   <= ||L_0^{-1}|| G_max R^2 ||psi''|| holds on the test problem, and so
+   does the submitted-quote version with the direct psi'/h^2 term.
+
+15. ONE TRANSFORMATION, TWO REPRESENTATIONS (not both at once). The
+   imbalanced dealer's physical half-width equals that of the balanced
+   dealer at cost M(q) c EXACTLY; it does NOT exceed the balanced-at-c
+   dealer's width by gamma. Widening the overhead by gamma and
+   multiplying the carry by M(q) = e^{h gamma} are alternative
+   representations of the same transformation; the physical width
+   response to imbalance is the endogenous convexity response
+   C_{Mc}(x) - C_c(x), second order but cost-dependent, not the
+   universal gamma.
 """
 
 import numpy as np
@@ -644,5 +655,77 @@ if __name__ == "__main__":
     print(f"14. policy bound: ||nu_1|| = {n1_c:.4f} <= ||L0^-1|| ||R|| = "
           f"{amp * Rn:.4f} <= ||L0^-1|| Gmax R^2 ||psi''|| = {bound_n:.4f}")
     assert n1_c <= amp * Rn * (1 + 1e-12) <= bound_n * (1 + 1e-12)
+
+    # submitted-quote version: m1 = D nu_1 - psi'(K0)/h^2, bounded by
+    # (||D L0^-1|| Gmax R^2 + R/h^2) ||psi''||
+    nu1_c = np.zeros(2 * N + 1)
+    u_c = np.linalg.solve(L_c, -R_c)
+    for x, j in idx_c.items():
+        nu1_c[x + N] = u_c[j]
+    psip_c = lambda K: psip(K) - psip(Kmid)
+    Dp = np.zeros((2 * N - 1, 2 * N))
+    Dm = np.zeros((2 * N - 1, 2 * N))
+    for r_i, x in enumerate(range(-(N - 1), N)):
+        if x + 1 != 0:
+            Dp[r_i, idx_c[x + 1]] += 1.0 / S_LOT
+        if x != 0:
+            Dp[r_i, idx_c[x]] -= 1.0 / S_LOT
+        if x - 1 != 0:
+            Dm[r_i, idx_c[x - 1]] += 1.0 / S_LOT
+        if x != 0:
+            Dm[r_i, idx_c[x]] -= 1.0 / S_LOT
+    Li = np.linalg.inv(L_c)
+    opDp = np.linalg.norm(Dp @ Li, np.inf)
+    opDm = np.linalg.norm(Dm @ Li, np.inf)
+    m1_max = 0.0
+    for x in range(-(N - 1), N):
+        i = I0 + x
+        Kdn0 = EPS + (nu0[i + 1] - nu0[i]) / S_LOT
+        Kup0 = EPS + (nu0[i - 1] - nu0[i]) / S_LOT
+        m1dn = (nu1_c[i + 1] - nu1_c[i]) / S_LOT - psip_c(Kdn0) / H0 ** 2
+        m1up = (nu1_c[i - 1] - nu1_c[i]) / S_LOT - psip_c(Kup0) / H0 ** 2
+        m1_max = max(m1_max, abs(m1dn), abs(m1up))
+    q_bound = (max(opDp, opDm) * Gmax * Rad ** 2 + Rad / H0 ** 2) * pp_max
+    print(f"    quote bound : ||m_1|| = {m1_max:.4f} <= "
+          f"(||D L0^-1|| Gmax R^2 + R/h^2) ||psi''|| = {q_bound:.4f}")
+    assert m1_max <= q_bound * (1 + 1e-12)
+
+    # --- Check 15: one transformation, two representations ---------------
+    def solve_balanced_cost(cst):
+        def nu_of(u):
+            return np.concatenate([u[::-1], [0.0], u])
+
+        def res15(u):
+            nu = nu_of(u)
+            v0 = enquiry_value(G0, 0.5, nu, I0)
+            r = [TAU * cst(x) / S_LOT
+                 - (enquiry_value(G0, 0.5, nu, I0 + x) - v0)
+                 for x in range(1, N)]
+            r.append((nu[-1] - 2 * nu[-2] + nu[-3])
+                     - (nu[-2] - 2 * nu[-3] + nu[-4]))
+            return r
+
+        sol = root(res15, 0.05 * np.arange(1, N + 1) ** 2, method="lm",
+                   options={"maxiter": 60000, "xtol": 1e-15})
+        return nu_of(sol.x)
+
+    nu_c15 = solve_balanced_cost(cost)
+    nu_imb15 = solve_imbalanced(G0, q, cost, nu_bal + delta * XS)
+
+    def half_width15(nu, x):
+        i = I0 + x
+        mup = 1 / H0 + EPS + (nu[i - 1] - nu[i]) / S_LOT
+        mdn = 1 / H0 + EPS + (nu[i + 1] - nu[i]) / S_LOT
+        return 0.5 * (mup + mdn)
+
+    w_imb = half_width15(nu_imb15, 0)
+    w_Mc = half_width15(nu_bal, 0)
+    w_c = half_width15(nu_c15, 0)
+    print(f"15. two reps    : half-width imb {w_imb:.6f} = bal(Mc) "
+          f"{w_Mc:.6f} (diff {abs(w_imb - w_Mc):.1e}); response over "
+          f"bal(c) = {w_imb - w_c:.6f}, NOT gamma = {gamma:.6f}")
+    assert abs(w_imb - w_Mc) < 1e-10, "imbalanced width != balanced-Mc width"
+    assert abs(w_imb - w_c) < 0.2 * gamma, \
+        "width response should be far below gamma here"
 
     print("all checks passed")
