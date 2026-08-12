@@ -129,8 +129,13 @@ configuration and its balanced image, that exactly one solution exists in
 a box of radius 1e-7 around the reported solution (enclosure width
 2.4e-12), that every available quote of both proven solutions is interior
 (rigorous lower bounds 0.0226 and 0.2254), and that the proven enclosures
-satisfy the tilt map to 2.4e-12. Assumptions 2 (locally) and 3 are
-theorems at this configuration, not instances. 4/4.
+satisfy the tilt map to 2.4e-12. A continuation stage then tiles
+q in [0.55, 0.605] into 220 slabs and reruns Krawczyk with q as an
+INTERVAL parameter (mean-value form in the parameter, monotone-hull
+enclosure of the cost scale), proving existence, local uniqueness, and
+interiority for EVERY q in that range and for every corresponding
+balanced image -- a continuum of configurations, not samples.
+Assumptions 2 (locally) and 3 are theorems on that q-interval. 6/6.
 
 Scope finding from the sweep, now a remark after the theorem: in the
 convex cost families tested, interiority binds first at the one-sided
