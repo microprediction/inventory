@@ -201,12 +201,22 @@ def run_battery(q, cost, nu, label):
     neg = lambda v: -gain_of_policy(q, cost, *unpack(np.asarray(v)))[0]
     best_v, best_J, engine = None, -np.inf, "humpday"
     try:
-        from humpday import minimize as hd_min
-        for x0 in (None, np.full(4 * N, W + EPS)):
-            res = hd_min(neg, x0=x0, bounds=[(lo, hi)] * (4 * N),
-                         options={"n_trials": 600})
-            if -res.fun > best_J:
-                best_J, best_v = -res.fun, np.asarray(res.x)
+        # race the whole humpday roster on the unit cube; best result wins
+        from humpday import OPTIMIZERS
+        cube = lambda u: neg(lo + (hi - lo) * np.asarray(u))
+        ran = 0
+        for opt in OPTIMIZERS:
+            try:
+                val, u, _ = opt(cube, n_dim=4 * N, n_trials=400,
+                                with_count=True)
+                ran += 1
+            except Exception:
+                continue
+            if -val > best_J:
+                best_J = -val
+                best_v = lo + (hi - lo) * np.asarray(u)
+                engine = f"humpday:{opt.__name__}"
+        assert ran >= 5, f"only {ran} humpday optimizers ran"
     except ImportError:
         from scipy.optimize import differential_evolution
         engine = "scipy DE"
