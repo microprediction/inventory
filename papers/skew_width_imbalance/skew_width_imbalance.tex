@@ -64,6 +64,12 @@ which we call the \emph{market width}. Every won trade concedes a fixed amount $
 
 The model deliberately leaves two things out: arrivals may cluster, and the imbalance $q$ may itself fluctuate. The symmetry is exact in the stationary core, which is what we isolate here.
 
+\begin{remark}[The fixed fair price is a frame, not a restriction]\label{rem:frame}
+Suppose instead that the fair price $F_t$ is a martingale independent of the enquiry process, and quotes are made relative to it. Cash profit then decomposes pathwise into the model's margin flow plus the inventory-weighted price increment $\int x\,dF$. That term has zero conditional expectation given any state and action, so it alters no Bellman comparison and selects the same policy; on the bounded lattice its time average vanishes, and the gain is unchanged.
+
+A risk-averse dealer is not indifferent to the term's variance, which by the It\^o isometry is $\sigma^{2}\,\mathbb{E}[x^{2}]$ per unit time, with $\sigma^{2}$ the price-increment variance. For a mean--variance dealer with risk aversion $\lambda$, the entire price risk of the moving frame is therefore the quadratic inventory charge $(\lambda\sigma^{2}/2)\,x^{2}$: a carrying cost $c$ of exactly the canonical form, arising as an identity rather than an assumption. The reduction requires price increments independent of fills; flow that moves the price is adverse selection, entering here only through the constant $\epsilon$. The accompanying \texttt{verify\_moving\_price.py} checks the decomposition, the vanishing rate, the gain invariance for optimal and suboptimal policies, and the isometry.
+\end{remark}
+
 \subsection{Indifference liquidation markup}\label{sec:nu}
 
 Let $-\nu$ denote the average-reward relative value of inventory, normalized by $\nu(0) = 0$; only differences of $\nu$ enter the policy, and under the normalization $\nu$ may take either sign. An additively shifted version of $\nu$ has a concrete reading: a liquidation cost the market maker could pay at any time to unload her inventory, she being indifferent between paying it and carrying on --- the dealer-to-dealer ``haircut'' at which she would clear her book. The function $\nu$ characterizes her policy, and two discrete derivatives of it will do all the work:

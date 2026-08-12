@@ -158,6 +158,16 @@ the CWLS corner (constant width, affine mid, geometrically decaying
 boundary layer) and the flat-book skew delta are certified as optimality
 statements the same way. 6/6.
 
+A new remark in Section 2 records the moving-price equivalence: quoting
+relative to a martingale fair price adds only the mean-zero term int x dF
+(no Bellman comparison changes; time average vanishes on the bounded
+lattice), and by Ito isometry a mean-variance dealer's price risk in that
+frame is exactly the quadratic carrying cost -- the fixed-price frame is
+lossless and the canonical c(x) is derived rather than assumed.
+verify_moving_price.py (4 checks) accompanies it. State-dependent adverse
+selection (fill-correlated price moves) is explicitly outside and is
+follow-on work.
+
 ## Editor framing (draft in editor_note.txt)
 
 The core algebraic reduction in the proof remains valid; the theorem now
