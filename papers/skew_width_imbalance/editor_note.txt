@@ -14,8 +14,9 @@ The attached corrected manuscript restates the theorem in the cost frame as
 an equivalence of relative values and policies, with the quote map making
 the physical-width conclusion explicit; replaces the width and zero-carry
 consequences with the correct ones, including a closed small-skew formula
-for the width response through the carry channel; makes the interiority,
-symmetry, and uniqueness assumptions explicit; and clarifies that the
+for the width response through the carry channel; makes explicit the
+finite-inventory-lattice state space and the interiority, symmetry, and
+uniqueness conditions under which the policy equivalence holds; and clarifies that the
 constant-width inversion of Section 4 is reduced-form unless its
 integrability condition holds. The central symmetry emerges more cleanly in
 the revision, as a skew translation composed with a uniform time change of
