@@ -37,7 +37,7 @@ provably optimal (one-sided Hamiltonians at the inventory bounds).
     C6  small argument: S_delta proportional to sqrt(c)
     C7  linear cost component gives a square-root kink at the origin
     C8  cosh cost + constant C: solved nu is quadratic + delta x
-    C9  width response: dC0/dlog(scale) = C0/(2 - hC0); eq. (9) to ~1%
+    C9  width response: dC0/dlog(scale) = C0/(2 - hC0); eq. (10) to ~1%
     C10 the branch condition: sensitivity sign flips at hC0 = 2
 
   Section 5 (uses)
@@ -250,7 +250,7 @@ cost_asym = lambda x: 0.0008 * x ** 2 + 0.0003 * x ** 2 * (x > 0) + 0.0002 * abs
 nu_qa = solve_bounded(Q, cost_asym, nu_q.copy())
 assert_interior(nu_qa)
 S0_a, _ = slope_conv(nu_qa, 0)
-check("B8 S_q(0) = delta iff cost symmetric",
+check("B8 S_q(0) = delta under even cost; asymmetric example differs",
       abs(S0_q - DELTA) < 1e-10 and abs(S0_a - DELTA) > 1e-3,
       f"even: {S0_q:.5f} = {DELTA:.5f}; asym: {S0_a:.5f}")
 

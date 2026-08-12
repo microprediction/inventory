@@ -1,8 +1,11 @@
 # Correction package v2: skew_width_imbalance (2026-08-12)
 
 Supersedes the seven-edit patch. The revision is structural at the statement
-layer; the nu-level algebra, the proof, and the original certificate are
-unchanged and correct.
+layer; the core algebraic reduction in the proof remains valid, and the proof
+now derives the theorem from the full average-reward equation via the
+termwise Hamiltonian scaling H_q = D(q) H_bal, which covers the one-sided
+boundary rows explicitly (the cosh identity remains as the two-sided scalar
+manifestation).
 
 ## The error ledger
 
@@ -21,7 +24,7 @@ sentence, which is incompatible with M(q) x 0 = 0.
 
 Missing hypotheses, now explicit (substantive, not stylistic): even carrying
 cost, symmetric domain, and solution uniqueness for the flat-book skew
-S_q(0) = delta (numerically, an asymmetric cost gives S_q(0) = 0.254 vs
+S_q(0) = delta (numerically, an asymmetric cost gives S_q(0) = 0.221 vs
 delta = 0.203); interior quotes in BOTH members of the equivalence (the tilt
 makes one side's floor bind earlier); uniqueness for the steady-state
 relative-value solution on the finite lattice (the state space is now stated
@@ -69,8 +72,9 @@ corroborate identities and implementations; they do not establish existence,
 uniqueness, or asymptotic assumptions. Every test configuration now satisfies
 the interior-quote assumption by explicit assertion, with a separate
 piecewise-G check showing exactness fails once clipping occurs. Covered
--- the FOC and piecewise G, the quote identities, average-reward optimality of
-the consistency solution (gain = s H_q(0) at 6e-17), the theorem map in both
+-- the FOC and piecewise G, the quote identities, the policy-evaluation
+identity gain = s H_q(0) (6e-17; optimality itself is established separately
+in verify_optimality.py via the Howard fixed-point certificate), the theorem map in both
 directions, gain scaling, quote map, time change, stationary-distribution
 equality, the overhead remapping, flat-book skew (and its failure under
 asymmetric cost), parity, Taylor orders, the exact width identity, zero-carry
@@ -102,15 +106,21 @@ pure tilt policies peaks at b = delta to 3e-4 -- on the finite lattice it
 is OPTIMALITY that selects the tilted branch; (vi) in the floor-binding
 regime policy iteration converges to a clipped optimum and the quote map
 +-delta FAILS between the clipped optima (deviation 1.2), confirming
-interiority as a substantive hypothesis. 12/12 pass.
+interiority as a substantive hypothesis; (vii) an interior carrying-cost
+spike clips that interior state first, so boundary-first clipping is a
+property of the convex families tested, not universal -- the manuscript's
+interiority remark is worded accordingly. The humpday search is optional
+(scipy differential evolution is the fallback), so the certificate is
+portable. 13/13 pass.
 
-Scope finding from the sweep, now one sentence in the standing
-assumptions: interiority binds first AT THE BOUNDARY STATE, and at strong
-imbalance it binds at every cost level including c -> 0, because the
-value of escaping the one-sided state (its Hamiltonian is halved) exceeds
-w + eps - delta. At eps = 0.15 the frontier passes near (q = 0.6, N = 8,
-a = 0.002); the certificate configurations sit just inside it and now
-assert membership.
+Scope finding from the sweep, now a remark after the theorem: in the
+convex cost families tested, interiority binds first at the one-sided
+boundary state, and at strong imbalance it binds at every cost level
+including c -> 0, because the value of escaping the one-sided state (its
+Hamiltonian is halved) exceeds w + eps - delta; an interior cost spike can
+instead clip that interior state first. At eps = 0.15 the frontier passes
+near (q = 0.6, N = 8, a = 0.002); the certificate configurations sit just
+inside it and assert membership.
 
 ## Editor framing (draft in editor_note.txt)
 

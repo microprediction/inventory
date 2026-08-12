@@ -40,7 +40,7 @@ We note three consequences. A market maker with zero inventory and symmetric car
 
 \subsection{The CWLS benchmark. Making constant width markets with skew linear in inventory.}\label{sec:cwlsintro}
 
-To fix terminology, a dealer's \emph{width} is the difference between where she is prepared to bid and where she is prepared to offer, and her \emph{skew} is the difference between the average of the two and her estimate of fair value. The Constant Width Linear Skew heuristic maintains a fixed width and sets skew proportional to signed inventory, with a sign that leans the dealer towards a neutral position. Motivations for CWLS range from its prima facie reasonableness to formal justification as an approximate solution of a stochastic control problem \cite{avellaneda2008,glft2012}. These justifications require some approximation, however, and they assume symmetric flow throughout. From a practical perspective CWLS is not a straw man, because it is simple, and because it sometimes \emph{is} the solution. Section~\ref{sec:closed} makes the second point precise, and the symmetry of Section~\ref{sec:theorem} supplies the benchmark's missing column: what to do about imbalance.
+To fix terminology, a dealer's \emph{width} is the difference between where she is prepared to bid and where she is prepared to offer, and her \emph{skew} is the difference between the average of the two and her estimate of fair value. The Constant Width Linear Skew heuristic maintains a fixed width and sets skew proportional to signed inventory, with a sign that leans the dealer towards a neutral position. Motivations for CWLS range from its prima facie reasonableness to formal justification as an approximate solution of a stochastic control problem \cite{avellaneda2008,glft2012}. These justifications require some approximation, however, and they assume symmetric flow throughout. From a practical perspective CWLS is not a straw man, because it is simple, and because it exactly solves the interior equations in a particular compatible family. Section~\ref{sec:closed} makes the second point precise, and the symmetry of Section~\ref{sec:theorem} supplies the benchmark's missing column: what to do about imbalance.
 
 \subsection{Literature}\label{sec:literature}
 
@@ -62,11 +62,11 @@ w = 1/h ,
 \]
 which we call the \emph{market width}. Every won trade concedes a fixed amount $\epsilon$ to adverse selection: when we mark up an item by $m$ we assume we make only $m - \epsilon$. Holding inventory $x$ (a real number; negative values accommodate short positions) costs $c(x)$ per unit time with $c(0) = 0$, and the game is played forever: we study the ergodic, steady state policy.
 
-The model deliberately leaves two things out, and the companion paper extends it in exactly these directions: arrivals may cluster, and the imbalance $q$ may itself fluctuate. The symmetry is exact in the stationary core, which is what we isolate here.
+The model deliberately leaves two things out: arrivals may cluster, and the imbalance $q$ may itself fluctuate. The symmetry is exact in the stationary core, which is what we isolate here.
 
 \subsection{Indifference liquidation markup}\label{sec:nu}
 
-Suppose there is a liquidation cost $\nu(x) \ge 0$ that the market maker can pay at any time to unload her inventory, and suppose she is indifferent between paying it and carrying on. The function $\nu$ can be thought of as the dealer-to-dealer ``haircut'' at which she would clear her book. It characterizes her policy, and two discrete derivatives of it will do all the work:
+Let $-\nu$ denote the average-reward relative value of inventory, normalized by $\nu(0) = 0$; only differences of $\nu$ enter the policy, and under the normalization $\nu$ may take either sign. An additively shifted version of $\nu$ has a concrete reading: a liquidation cost the market maker could pay at any time to unload her inventory, she being indifferent between paying it and carrying on --- the dealer-to-dealer ``haircut'' at which she would clear her book. The function $\nu$ characterizes her policy, and two discrete derivatives of it will do all the work:
 \[
 S(x) = \frac{\nu(x+s) - \nu(x-s)}{2s}, \qquad
 C(x) = \frac{\nu(x+s) - 2\nu(x) + \nu(x-s)}{2s},
@@ -106,7 +106,17 @@ Slope of the inventory cost is the skew; convexity of the inventory cost is the 
 
 \subsection{The consistency equation}\label{sec:bellman}
 
-The market maker can remain indifferent in two ways: liquidate now and re-enter, or carry to the next opportunity. Comparing the two yields a functional equation for $\nu$. With exponential markups, $\sup_m (m-K)e^{-hm} = \tfrac{1}{h}e^{-1-hK}$, In average-reward form, with $-\nu$ the relative value normalized by $\nu(0) = 0$ and $\rho_q$ the gain, the equation is $\rho_q = -c(x) + \tfrac{s}{\tau}\big[q\,G(K^{\downarrow}(x)) + (1-q)\,G(K^{\uparrow}(x))\big]$; subtracting its value at $x = 0$ gives the centered form used below. The enquiry value is $we^{-1-hK}$ on the interior branch $K \ge -w$ only (below it the floor gives $G(K) = -K$), so the steady state condition takes the form: for every interior state under consideration,
+The market maker can remain indifferent in two ways: liquidate now and re-enter, or carry to the next opportunity. Comparing the two yields a functional equation for $\nu$. Write $G(K)$ for the value of the next enquiry to a dealer whose strike is $K$: with exponential markups
+\[
+G(K) \;=\; \sup_m\,(m-K)\,e^{-hm} \;=\; \tfrac{1}{h}\,e^{-1-hK}
+\quad \text{on the interior branch } K \ge -w,
+\]
+with the floor $G(K) = -K$ below it. In average-reward form, with $\rho_q$ the gain, the equation is
+\[
+\rho_q \;=\; -\,c(x) \;+\; \tfrac{s}{\tau}\,H^{\nu}_q(x), \qquad
+H^{\nu}_q(x) \;=\; q\,G\big(K^{\downarrow}(x)\big) + (1-q)\,G\big(K^{\uparrow}(x)\big),
+\]
+the strikes computed from $\nu$, and an unavailable direction's term omitted from $H^{\nu}_q$ at a boundary state. Subtracting the equation's value at $x = 0$ gives the centered form used below; on the interior exponential branch it reads: for every interior state under consideration,
 \begin{equation}
 \frac{\tau\, c(x)}{s}
 \;=\; \frac{e^{-1-h\epsilon}}{h}\,
@@ -127,7 +137,13 @@ q\,e^{-hS} + (1-q)\,e^{hS}
 \end{equation}
 An imbalanced mixture of exponentials is a balanced one in disguise: translated by $\delta$, and rescaled by $2\sqrt{q(1-q)} \le 1$. Write $D(q) = 2\sqrt{q(1-q)}$ for the rescaling and $\gamma = \tfrac{1}{h}\log\tfrac{1}{D(q)} \ge 0$ for the same rescaling expressed in markup units.
 
-Three standing assumptions scope what follows. The inventory state space is the finite lattice $\{-Ns, \dots, Ns\}$ reached from the initial inventory, with no inventory-increasing trade offered at the corresponding boundary, so the average-reward problem is a finite-state MDP; the carrying cost is not identically zero (the zero-carry equation is degenerate, per the remark below) and the average-reward equation has a unique relative-value solution $\nu$ up to an additive constant, normalized by $\nu(0) = 0$ --- here $-\nu$ is a relative value that may take either sign, the liquidation-cost reading of Section~\ref{sec:nu} being the motivating interpretation; and every \emph{available} quote is interior, $m = w + K > 0$, in both the imbalanced problem and its balanced image, a restriction that genuinely binds at extreme inventories, where the floor in \eqref{eq:foc} clips, and which the tilt makes bind earlier on one side. It binds first at the boundary state itself: only one side trades there, so the relative value of escaping it can exceed $w + \epsilon - \delta$ once the imbalance is strong, clipping the optimal boundary sell quote to zero at \emph{every} cost level, including $c \to 0$. The admissible region of $(q, N, \epsilon, c)$ is accordingly small, and the accompanying certificates assert membership rather than assume it. The equivalence is between relative values and policies, with the average reward scaling accordingly.
+Three standing assumptions scope what follows.
+\begin{enumerate}
+\item \emph{Finite lattice.} The inventory state space is the finite lattice $\{-Ns, \dots, Ns\}$ reached from the initial inventory, with no inventory-increasing trade offered at the corresponding boundary, so the average-reward problem is a finite-state MDP.
+\item \emph{Existence and uniqueness.} The carrying cost is not identically zero (the zero-carry equation is degenerate, per Remark~\ref{rem:zerocarry}), and the average-reward equation has a unique relative-value solution $\nu$ up to an additive constant, normalized by $\nu(0) = 0$.
+\item \emph{Interiority.} Every \emph{available} quote is interior, $m = w + K > 0$, in both the imbalanced problem and its balanced image; the tilt makes the restriction bind earlier on one side (see Remark~\ref{rem:interiority}).
+\end{enumerate}
+The equivalence is between relative values and policies, with the average reward scaling accordingly.
 
 \begin{theorem}[The imbalanced problem compresses onto the balanced one]\label{thm:main}
 Under the standing assumptions, $(\rho_q, \nu_q)$ solves the steady state problem with arrival imbalance $q$ and carrying cost $c(\cdot)$ if and only if $\bar\nu(x) = \nu_q(x) - \delta x$ solves the perfectly balanced problem ($q = \tfrac12$) with carrying cost $M(q)\,c(\cdot)$ and average reward $M(q)\,\rho_q$, where
@@ -135,22 +151,40 @@ Under the standing assumptions, $(\rho_q, \nu_q)$ solves the steady state proble
 M(q) \;=\; e^{h\gamma} \;=\; \frac{1}{2\sqrt{q\,(1-q)}} \;\ge\; 1 .
 \label{eq:multiplier}
 \end{equation}
-Consequently $S_q(x) = \bar S(x) + \delta$ and $C_q(x) = \bar C(x)$, and on interior states the quotes map as
+Consequently $S_q(x) = \bar S(x) + \delta$ and $C_q(x) = \bar C(x)$, and for every available direction the quotes map as
 \[
 m^{\downarrow}_q(x) = \bar m^{\downarrow}(x) + \delta, \qquad
 m^{\uparrow}_q(x) = \bar m^{\uparrow}(x) - \delta :
 \]
-the physical width equals the balanced-at-$M(q)c$ width at every inventory, and the quote midpoint is translated by $-\delta$.
+at every two-sided inventory state the physical width equals the balanced-at-$M(q)c$ width and the quote midpoint is translated by $-\delta$.
 \end{theorem}
 
 \begin{proof}
-Substitute \eqref{eq:identity} into \eqref{eq:bellman} and write $S_\delta(x) = S(x) - \delta$:
+Let $\bar\nu(x) = \nu_q(x) - \delta x$. For every available direction the strikes translate: $K^{\downarrow}_q(x) = \bar K^{\downarrow}(x) + \delta$ and $K^{\uparrow}_q(x) = \bar K^{\uparrow}(x) - \delta$. On the interior exponential branch, using $e^{h\delta} = \sqrt{q/(1-q)}$,
+\[
+q\,G\big(\bar K^{\downarrow} + \delta\big) = q\,e^{-h\delta}\,G\big(\bar K^{\downarrow}\big) = \sqrt{q(1-q)}\;G\big(\bar K^{\downarrow}\big) = \tfrac{D(q)}{2}\,G\big(\bar K^{\downarrow}\big),
+\qquad
+(1-q)\,G\big(\bar K^{\uparrow} - \delta\big) = \tfrac{D(q)}{2}\,G\big(\bar K^{\uparrow}\big).
+\]
+At a boundary state the unavailable direction's term is omitted from both Hamiltonians, so the scaling holds termwise at \emph{every} state:
+\[
+H^{\nu_q}_q(x) \;=\; D(q)\,H^{\bar\nu}_{1/2}(x).
+\]
+Multiplying the full average-reward equation $\rho_q = -c(x) + \tfrac{s}{\tau} H^{\nu_q}_q(x)$ by $M(q) = 1/D(q)$ gives
+\[
+M(q)\,\rho_q \;=\; -\,M(q)\,c(x) \;+\; \tfrac{s}{\tau}\,H^{\bar\nu}_{1/2}(x)
+\]
+at every state: the balanced average-reward equation at carrying cost $M(q)c$, with gain $M(q)\rho_q$ and relative value $\bar\nu$. Each step is reversible, giving the equivalence, including the boundary rows. The quote map follows from the interior first-order condition $m = w + K$: the tilt adds $\delta$ to the buy-side strike and subtracts it from the sell side, and on two-sided states the shifts cancel in the width. On two-sided states the scalar manifestation of the termwise scaling is the cosh identity: substituting \eqref{eq:identity} into \eqref{eq:bellman} and writing $S_\delta(x) = S(x) - \delta$ gives
 \[
 \frac{\tau\,c(x)}{s} = \frac{e^{-1-h\epsilon-h\gamma}}{h}
 \Big[ e^{-hC(x)}\cosh\big(hS_\delta(x)\big) - e^{-hC(0)}\cosh\big(hS_\delta(0)\big) \Big],
 \]
-which is the balanced consistency equation in the pair $(C, S_\delta)$, with the cost side inflated by $e^{h\gamma} = M(q)$. The ergodic constant, eliminated in \eqref{eq:bellman} by differencing against $x = 0$, scales by the same factor, giving the average-reward statement. The quote map follows from the interior first-order condition $m = w + K$ and $K = \epsilon + $ marginal $\nu$: the tilt adds $\delta$ to the buy-side marginal cost and subtracts it from the sell side, and the two shifts cancel in the width.
+the balanced consistency equation in the pair $(C, S_\delta)$ with the cost side inflated by $e^{h\gamma} = M(q)$.
 \end{proof}
+
+\begin{remark}[Where interiority fails]\label{rem:interiority}
+Interiority can fail at extreme or locally expensive inventory states, where the floor in \eqref{eq:foc} clips. In the convex cost families examined in the accompanying certificates it fails first at a one-sided boundary state: only one side trades there, so the relative value of escaping can exceed $w + \epsilon - \delta$ once the imbalance is strong, clipping the optimal boundary sell quote to zero at every cost level, including $c \to 0$. A carrying cost with a spike at an interior state can instead clip that state first. The admissible region of $(q, N, \epsilon, c)$ can therefore be restrictive, and the certificates assert membership rather than assume it.
+\end{remark}
 
 \begin{corollary}[Imbalance is a time change of the inventory clock]\label{cor:carry}
 Under the quote map of Theorem~\ref{thm:main}, both fill rates scale by the single factor $D(q)$:
@@ -190,7 +224,7 @@ Expanding about $q = \tfrac12$,
 \gamma \approx 2w\Big(q-\tfrac12\Big)^{2}, \qquad
 M(q) \approx 1 + 2\Big(q-\tfrac12\Big)^{2}.
 \]
-A mild imbalance moves the midpoint linearly and the width only quadratically, and the width response flows entirely through the multiplied carry: exactly,
+Provided the balanced relative-value solution depends differentiably on the carrying-cost scale at scale one, a mild imbalance moves the midpoint linearly and the width only quadratically, and the width response flows entirely through the multiplied carry: at every two-sided state, exactly,
 \[
 W_q(x) - W_{1/2,c}(x) \;=\; 2\big[\,\bar C_{M(q)c}(x) - \bar C_{c}(x)\,\big],
 \]
@@ -246,7 +280,7 @@ The corner also prices the width response to imbalance. Exactly, by Theorem~\ref
 \end{equation}
 the approximation carrying the $O((q-\tfrac12)^4)$ error of linearizing the balanced convexity in $\log M$ (the relation $\log M = h\gamma$ itself is exact), together with the small-skew approximation error. The even, sign-definite $\gamma$-shape in the imbalance survives, scaled by roughly half the ratio of discretionary to market width when $hC_0 \ll 1$; in full-width terms $\Delta W(0) = 2\Delta C(0) \approx 2C_0(q - \tfrac12)^2$. The accompanying scripts confirm the formula within about one percent across $q \in [0.55, 0.7]$ at two cost configurations, and confirm that the imbalanced width equals the balanced-at-$M(q)c$ width to machine precision.
 
-CWLS is therefore exactly correct in one corner: balanced flow and a cosh-shaped cost of carry, a shape that is quadratic up to a relative error of $(hS_\delta(x))^{2}/12$. For a genuinely quadratic cost, CWLS is accurate while the skew is small relative to the width, with error quadratic in that ratio. On an unbounded lattice the linear skew eventually drives one quote into the floor of \eqref{eq:foc}, so the corner's exactness, like the theorem's, lives on the interior region. The symmetry supplies the benchmark's missing column: under imbalance, keep the linear response to inventory computed at cost $M(q)c$, and add the intercept $\delta$. The moral for anyone outside the corner is procedural: solve for $\nu(x)$ rather than pretend $\nu \propto x^2$ works, since the quadratic ansatz is internally inconsistent for any other cost of carry.
+The interior Bellman equations therefore admit exact CWLS in one corner --- balanced flow and a cosh-shaped cost of carry --- a shape that is quadratic up to a relative error of $(hS_\delta(x))^{2}/12$; on the finite capped lattice the one-sided boundaries generate a boundary layer, so the global optimum departs from CWLS near the caps. For a genuinely quadratic cost, CWLS is accurate while the skew is small relative to the width, with error quadratic in that ratio. On an unbounded lattice the linear skew eventually drives one quote into the floor of \eqref{eq:foc}, so the corner's exactness, like the theorem's, lives on the interior region. The symmetry supplies the benchmark's missing column: under imbalance, keep the linear response to inventory computed at cost $M(q)c$, and add the intercept $\delta$. The moral for anyone outside the corner is procedural: solve for $\nu(x)$ rather than pretend $\nu \propto x^2$ works, since the quadratic ansatz is internally inconsistent for any other cost of carry.
 
 \section{Uses}\label{sec:uses}
 

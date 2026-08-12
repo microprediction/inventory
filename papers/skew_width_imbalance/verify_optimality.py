@@ -193,19 +193,35 @@ def run_battery(q, cost, nu, label):
           dev < 1e-9 and abs(rho - Jstar) < 1e-12,
           f"greedy deviation {dev:.1e}, rho diff {abs(rho - Jstar):.1e}")
 
-    # derivative-free search over raw quote vectors
-    from humpday import minimize as hd_min
+    # derivative-free search over raw quote vectors (humpday if installed,
+    # scipy differential evolution otherwise -- the check is corroborative;
+    # optimality is established by the Howard certificate above)
     v0 = pack(md, mu)
     lo, hi = 0.05, 3.0
     neg = lambda v: -gain_of_policy(q, cost, *unpack(np.asarray(v)))[0]
-    best_v, best_J = None, -np.inf
-    for x0 in (None, np.full(4 * N, W + EPS)):
-        res = hd_min(neg, x0=x0, bounds=[(lo, hi)] * (4 * N),
-                     options={"n_trials": 600})
-        if -res.fun > best_J:
-            best_J, best_v = -res.fun, np.asarray(res.x)
+    best_v, best_J, engine = None, -np.inf, "humpday"
+    try:
+        from humpday import minimize as hd_min
+        for x0 in (None, np.full(4 * N, W + EPS)):
+            res = hd_min(neg, x0=x0, bounds=[(lo, hi)] * (4 * N),
+                         options={"n_trials": 600})
+            if -res.fun > best_J:
+                best_J, best_v = -res.fun, np.asarray(res.x)
+    except ImportError:
+        from scipy.optimize import differential_evolution
+        engine = "scipy DE"
+        res = differential_evolution(neg, [(lo, hi)] * (4 * N), seed=3,
+                                     maxiter=400, tol=1e-12, polish=True)
+        best_J, best_v = -res.fun, np.asarray(res.x)
+    # local polish of the DFO result (removes stochastic-search variance;
+    # the polished point can only have higher J, so "never beats" still binds)
+    from scipy.optimize import minimize as sp_min
+    pol = sp_min(neg, best_v, method="L-BFGS-B",
+                 bounds=[(lo, hi)] * (4 * N), options={"ftol": 1e-15})
+    if -pol.fun > best_J:
+        best_J, best_v = -pol.fun, pol.x
     qdev = np.max(np.abs(best_v - v0))
-    check(f"OPT3[{label}] humpday search never beats, argmax matches",
+    check(f"OPT3[{label}] {engine} search never beats, argmax matches",
           best_J <= Jstar + 1e-9 and qdev < 0.05,
           f"J* - J_search = {Jstar - best_J:.2e}, max quote dev {qdev:.1e}")
 
@@ -339,6 +355,17 @@ if __name__ == "__main__":
           f"map deviation {map_dev8:.3f}, gain-scaling deviation "
           f"{abs(rho_b - MQ * rho_i):.1e}")
     configure(4)
+
+    # OPT9: boundary-first clipping is NOT universal -- an interior cost
+    # spike clips that interior state first (cf. Remark on interiority)
+    configure(4)
+    spike = lambda x: 0.0005 * x ** 2 + (1.2 if x == 2 else 0.0)
+    md_s, mu_s, _, _ = pi_converge(Q, spike)
+    clip_at = [int(XS[i]) for i in range(NS)
+               if md_s[i] == 0.0 or mu_s[i] == 0.0]
+    check("OPT9 interior cost spike clips the interior state, not a boundary",
+          clip_at == [2],
+          f"clipped states {clip_at}")
 
     n_ok = sum(ok for _, ok in PASS)
     print(f"\n{n_ok}/{len(PASS)} optimality checks pass")
