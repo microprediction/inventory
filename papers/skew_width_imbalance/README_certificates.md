@@ -1,6 +1,6 @@
 # Certificate suite for "skew_width_imbalance"
 
-Seven scripts, layered by epistemic strength. Dependencies: numpy, scipy,
+Eight scripts, layered by epistemic strength. Dependencies: numpy, scipy,
 sympy, mpmath (all standard); humpday is optional (verify_optimality
 falls back to scipy differential evolution without it).
 
@@ -54,7 +54,16 @@ and exits nonzero on failure.
    width-response formula gamma hC0/(2 - hC0), verified to ~1 percent
    across q in [0.55, 0.7].
 
-7. **verify_local_exponentiality.py** (~10 s) -- the local-exponentiality
+7. **verify_moving_price.py** (~1 min) -- the moving-price equivalence
+   behind Remark 2: cash P&L decomposes pathwise into model P&L plus the
+   inventory-weighted price increment, whose time average vanishes at
+   the root-T rate and whose presence changes no policy comparison
+   (checked for optimal and suboptimal policies alike); by Ito isometry
+   its variance is sigma^2 T E[x^2], so a mean-variance dealer's price
+   risk in the moving frame is exactly the quadratic carrying cost.
+   4 checks.
+
+8. **verify_local_exponentiality.py** (~10 s) -- the local-exponentiality
    remark: skew error scales linearly with the hazard's relative
    variation across visited strikes.
 
