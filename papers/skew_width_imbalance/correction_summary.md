@@ -81,6 +81,19 @@ formula and its branch, the margin/fill-ratio facts, and the scoring table by
 Monte Carlo. All pass. verify_width_response.py retained (two cost
 configurations for eq. (10)); verify_local_exponentiality.py unchanged.
 
+verify_optimality.py: optimality attacked directly, with the competitor
+space raw quote vectors rather than nu-parameterized policies. (i) Exact
+policy-iteration fixed point: evaluate the consistency policy by linear
+solve, apply closed-form greedy improvement; the policy reproduces itself
+to 1e-15 -- by Howard's policy-improvement theorem for finite unichain
+average-reward MDPs this certifies optimality on the lattice up to floating
+point. (ii) Derivative-free search (humpday) over the full 16-dimensional
+raw quote vector from cold starts: no policy beats the consistency gain,
+and the search argmax reproduces the consistency quotes to 3e-8. (iii)
+4800 random policy perturbations across six scales: none improves. Run for
+both members of the equivalence; the two searched optima are related by
+the theorem's quote map (4e-16) and gains by M(q) (6e-17). 9/9 pass.
+
 ## Editor framing (draft in editor_note.txt)
 
 The core algebraic reduction in the proof remains valid; the theorem now
