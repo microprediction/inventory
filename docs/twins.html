@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Twin dealers &mdash; the commutative square, live</title>
+<link rel="stylesheet" href="./style.css" />
+<link rel="stylesheet" href="./demos.css" />
+<style>
+  .tiles { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+  .tile { flex: 1 1 140px; background: var(--panel); border: 1px solid var(--border);
+          border-radius: 8px; padding: 9px 13px; }
+  .tile .lbl { font-size: 0.76rem; color: var(--muted); }
+  .tile .val { font-size: 1.2rem; font-weight: 600; margin-top: 2px;
+               font-variant-numeric: tabular-nums; }
+  .tile .note { font-size: 0.72rem; color: var(--faint); }
+  .panes { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+  .pane { flex: 1 1 320px; background: var(--panel); border: 1px solid var(--border);
+          border-radius: 8px; padding: 10px 12px; }
+  .pane h3 { margin: 0 0 6px; font-size: 0.95rem; }
+  canvas { width: 100%; height: auto; display: block; }
+  .controls { display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+              margin: 12px 0; font-size: 0.9rem; }
+  .controls label { display: flex; align-items: center; gap: 8px; }
+  .cd { max-width: 660px; width: 100%; display: block; margin: 14px auto; }
+  .cd text { font: 13px Menlo, Consolas, monospace; fill: var(--ink, #222); }
+  .cd .edge { font-size: 11.5px; fill: #666; }
+  .cd rect { fill: var(--panel, #fafafa); stroke: #999; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-inner">
+    <a class="brand" href="./index.html">inventory</a>
+    <nav>
+      <a href="./papers.html">Papers</a>
+      <a href="./demos.html">Demos</a>
+      <a href="./index.html#bibliography">Bibliography</a>
+      <a href="./map.html">Literature map</a>
+      <a href="https://github.com/microprediction/inventory">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <p class="pagenav"><a href="./demos.html">&larr; Demos</a></p>
+  <h1>Twin dealers</h1>
+  <p class="subtitle">The commutative square of the imbalance symmetry, running live:
+    one inventory path, two clocks, quotes a constant apart.</p>
+
+  <svg class="cd" viewBox="0 0 660 210" role="img"
+       aria-label="Commutative square: imbalanced problem maps to balanced problem by the tilt; solving then mapping quotes equals mapping then solving">
+    <rect x="18"  y="18" width="252" height="40" rx="8"/>
+    <rect x="390" y="18" width="252" height="40" rx="8"/>
+    <rect x="18"  y="150" width="252" height="40" rx="8"/>
+    <rect x="390" y="150" width="252" height="40" rx="8"/>
+    <text x="144" y="43" text-anchor="middle">imbalanced problem (q, c)</text>
+    <text x="516" y="43" text-anchor="middle">balanced problem (&#189;, M(q)c)</text>
+    <text x="144" y="175" text-anchor="middle">imbalanced quotes</text>
+    <text x="516" y="175" text-anchor="middle">balanced quotes</text>
+    <line x1="274" y1="38" x2="386" y2="38" stroke="#888" marker-end="url(#arr)"/>
+    <line x1="386" y1="170" x2="274" y2="170" stroke="#888" marker-end="url(#arr)"/>
+    <line x1="144" y1="62" x2="144" y2="146" stroke="#888" marker-end="url(#arr)"/>
+    <line x1="516" y1="62" x2="516" y2="146" stroke="#888" marker-end="url(#arr)"/>
+    <text class="edge" x="330" y="28" text-anchor="middle">tilt &nu; &#8614; &nu; &minus; &delta;x</text>
+    <text class="edge" x="330" y="188" text-anchor="middle">m&#8595;+&delta;, m&#8593;&minus;&delta;; clock &times; D(q)</text>
+    <text class="edge" x="132" y="108" text-anchor="end">solve</text>
+    <text class="edge" x="528" y="108">solve</text>
+    <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#888"/></marker></defs>
+  </svg>
+
+  <p>Both problems below are solved numerically and <em>independently</em>; the square
+  commutes to solver precision (first tile). The two dealers then trade side by side,
+  <em>coupled</em>: they share one embedded jump chain &mdash; the same inventory path,
+  trade for trade &mdash; while the imbalanced dealer's calendar clock runs slower by
+  exactly D(q) = 2&radic;(q(1&minus;q)). Her quotes sit a constant &delta; nearer the
+  sellers at every moment; her width equals her twin's at every moment; and the carry
+  each pays per transition is identical &mdash; the multiplier M(q) = 1/D(q) is the
+  slowed clock seen from the cost side. That, and nothing else, is what one-sided flow
+  does after the skew is granted.</p>
+
+  <p class="lookfor">Look for: two mids a fixed distance apart with identical spreads;
+  the trades-per-time ratio settling on D(q); the carry-per-transition ratio pinned at
+  one; and the two occupancy histograms, one per clock, drawing the same shape.</p>
+
+  <div class="controls">
+    <label>q <input type="range" id="q" min="0.5" max="0.85" step="0.01" value="0.65">
+      <span id="qv"></span></label>
+    <label>cost scale <input type="range" id="a" min="-3" max="-1" step="0.1" value="-2">
+      <span id="av"></span></label>
+    <label>speed <input type="range" id="spd" min="1" max="60" step="1" value="12"></label>
+    <button id="pause">Pause</button> <button id="reset">Reset</button>
+  </div>
+
+  <div class="tiles">
+    <div class="tile"><div class="lbl">square commutes</div><div class="val" id="t_comm"></div>
+      <div class="note">max |&nu;<sub>q</sub> &minus; (&nu;&#772; + &delta;x)|, independent solves</div></div>
+    <div class="tile"><div class="lbl">width difference</div><div class="val" id="t_w"></div>
+      <div class="note">sup over inventories; the theorem says 0</div></div>
+    <div class="tile"><div class="lbl">mid displacement</div><div class="val" id="t_mid"></div>
+      <div class="note">measured, vs &minus;&delta; = <span id="t_delta"></span></div></div>
+    <div class="tile"><div class="lbl">clock ratio</div><div class="val" id="t_clock"></div>
+      <div class="note">trades per unit time, vs D(q) = <span id="t_D"></span></div></div>
+    <div class="tile"><div class="lbl">carry per transition</div><div class="val" id="t_carry"></div>
+      <div class="note">imbalanced / balanced; the theorem says 1</div></div>
+  </div>
+
+  <div class="panes">
+    <div class="pane"><h3>Imbalanced dealer &mdash; q = <span id="p_q"></span>, cost c</h3>
+      <canvas id="cv_imb" width="640" height="240"></canvas></div>
+    <div class="pane"><h3>Balanced twin &mdash; q = &#189;, cost M(q)&thinsp;c</h3>
+      <canvas id="cv_bal" width="640" height="240"></canvas></div>
+  </div>
+
+  <p class="footnote">The coupling: at each shared jump the direction is drawn once from
+  the balanced chain's law (the embedded chains coincide), and one exponential draw sets
+  both sojourns, the imbalanced one stretched by 1/D(q). Quotes are the two solved
+  policies evaluated on the shared inventory. Everything on this page is computed in the
+  browser from <code>mm_core.js</code> and <code>twins_core.js</code>; the claim-by-claim
+  battery behind it is <code>verify_all_claims.py</code> in the repository.</p>
+</main>
+
+<script src="./mm_core.js"></script>
+<script src="./twins_core.js"></script>
+<script>
+(() => {
+  let S, sim, paused = false, acc = 0;
+  const $ = id => document.getElementById(id);
+
+  function rebuild() {
+    const q = parseFloat($('q').value), a = Math.pow(10, parseFloat($('a').value));
+    $('qv').textContent = q.toFixed(2); $('av').textContent = a.toExponential(1);
+    $('p_q').textContent = q.toFixed(2);
+    S = TWINS.setup({ q, a });
+    sim = TWINS.makeSim(S);
+    $('t_comm').textContent = S.devNu.toExponential(1);
+    $('t_w').textContent = S.devW.toExponential(1);
+    $('t_delta').textContent = S.delta.toFixed(3);
+    $('t_D').textContent = S.D.toFixed(3);
+    let mid = 0;
+    for (let i = 1; i < S.n - 1; i++)
+      mid = Math.max(mid, Math.abs((S.Qi.mu[i] - S.Qi.md[i]) / 2 - (S.Qb.mu[i] - S.Qb.md[i]) / 2 + S.delta));
+    $('t_mid').textContent = '-' + S.delta.toFixed(3) + ' ± ' + mid.toExponential(0);
+  }
+
+  function drawPane(cv, Qs, occ, clockT, isImb) {
+    const c = cv.getContext('2d'), Wd = cv.width, H = cv.height;
+    c.clearRect(0, 0, Wd, H);
+    const i = sim.i, fairY = 70, scale = 26;
+    const md = Qs.md[i], mu = Qs.mu[i];
+    // price ladder: fair, bid = fair - md, ask = fair + mu (price units -> px)
+    c.strokeStyle = '#bbb'; c.setLineDash([4, 3]);
+    c.beginPath(); c.moveTo(20, fairY); c.lineTo(Wd - 20, fairY); c.stroke(); c.setLineDash([]);
+    c.fillStyle = '#888'; c.font = '11px sans-serif';
+    c.fillText('fair', Wd - 46, fairY - 4);
+    const bidY = fairY + md * scale, askY = fairY - mu * scale;
+    c.strokeStyle = isImb ? '#eb6834' : '#2a78d6'; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(60, bidY); c.lineTo(Wd - 60, bidY); c.stroke();
+    c.beginPath(); c.moveTo(60, askY); c.lineTo(Wd - 60, askY); c.stroke();
+    const midY = (bidY + askY) / 2;
+    c.fillStyle = c.strokeStyle;
+    c.beginPath(); c.arc(Wd / 2, midY, 4, 0, 7); c.fill();
+    c.lineWidth = 1; c.fillStyle = '#666';
+    c.fillText('bid', 34, bidY + 4); c.fillText('ask', 34, askY + 4);
+    c.fillText('t = ' + clockT.toFixed(1), 20, 16);
+    c.fillText('x = ' + (i - S.i0), 90, 16);
+    // occupancy histogram (calendar-time weighted, own clock)
+    const tot = occ.reduce((p, v) => p + v, 0) || 1;
+    const bw = (Wd - 40) / S.n;
+    c.fillStyle = isImb ? 'rgba(235,104,52,0.45)' : 'rgba(42,120,214,0.45)';
+    for (let k = 0; k < S.n; k++) {
+      const h = 90 * occ[k] / tot;
+      c.fillRect(20 + k * bw, H - 18 - h, bw - 2, h);
+    }
+    c.fillStyle = '#888';
+    c.fillText('inventory occupancy (own clock)', 20, H - 4);
+  }
+
+  function frame() {
+    if (!paused) {
+      const steps = parseInt($('spd').value, 10);
+      for (let k = 0; k < steps; k++) sim.step();
+      drawPane($('cv_imb'), S.Qi, sim.occImb, sim.tImb, true);
+      drawPane($('cv_bal'), S.Qb, sim.occBal, sim.tBal, false);
+      const ratio = (sim.trades / sim.tImb) / (sim.trades / sim.tBal);
+      $('t_clock').textContent = ratio.toFixed(4);
+      $('t_carry').textContent = sim.carryBal > 0
+        ? (sim.carryImb / sim.carryBal).toFixed(6) : '—';
+    }
+    requestAnimationFrame(frame);
+  }
+
+  $('q').oninput = rebuild; $('a').oninput = rebuild;
+  $('pause').onclick = () => { paused = !paused; $('pause').textContent = paused ? 'Run' : 'Pause'; };
+  $('reset').onclick = () => { sim = TWINS.makeSim(S); };
+  rebuild(); frame();
+})();
+</script>
+</body>
+</html>

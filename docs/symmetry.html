@@ -65,9 +65,10 @@
     A dealer faces sealed-bid enquiries that are sellers with probability $q$ and buyers with
     probability $1-q$. The theorem states that the imbalanced problem is the balanced one in
     disguise: solve the balanced problem with carrying cost multiplied by
-    $M(q) = 1/(2\sqrt{q(1-q)})$, tilt the indifference cost by
-    $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ per unit, and widen the non-discretionary width by
-    $\gamma$. Below, both problems are solved numerically and <em>independently</em>.
+    $M(q) = 1/(2\sqrt{q(1-q)})$ and tilt the indifference cost by
+    $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ per unit. (The widening $\gamma$ is the same
+    factor as $M(q)$ read in the overhead frame, not a further correction.) Below, both
+    problems are solved numerically and <em>independently</em>.
   </p>
   <p class="lookfor">Look for: the dots landing on the line. That coincidence is the theorem,
   and the &ldquo;max deviation&rdquo; readout is its size &mdash; solver precision, not

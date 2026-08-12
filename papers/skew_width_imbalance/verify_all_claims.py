@@ -430,3 +430,105 @@ check("D5 [W_q(0) - W_half(0)]/C0 ~ 2 z^2",
 n_fail = sum(1 for _, ok in PASS if not ok)
 print(f"\n{len(PASS)} checks, {n_fail} failures")
 assert n_fail == 0
+
+# ==================================================== Section E: hardening
+# E1/E2: the interiority assumption is load-bearing. With the true piecewise
+# G (floor at m = 0), the tilt map holds where quotes are interior and FAILS
+# where the floor binds.
+G_piece = lambda K: G_exp(K) if K >= -W else -K
+
+
+def residuals_piece(q, cost, nu, eps):
+    h0v = hamiltonian(q, nu, I0, G=G_piece, eps=eps)
+    return np.array([TAU * cost(XS[i]) / S_LOT
+                     - (hamiltonian(q, nu, i, G=G_piece, eps=eps) - h0v)
+                     for i in range(2 * N + 1) if i != I0])
+
+
+def solve_piece(q, cost, init, eps):
+    def wrap(u):
+        nu = np.concatenate([u[:N], [0.0], u[N:]])
+        return residuals_piece(q, cost, nu, eps)
+    u0 = np.concatenate([init[:I0], init[I0 + 1:]])
+    sol = root(wrap, u0, method="lm", options={"maxiter": 80000, "xtol": 1e-15})
+    nu = np.concatenate([sol.x[:N], [0.0], sol.x[N:]])
+    assert np.max(np.abs(residuals_piece(q, cost, nu, eps))) < 1e-10
+    return nu
+
+# interior regime: a configuration whose quotes stay safely interior
+cost_small = lambda x: 0.002 * x ** 2
+eps_hi = 0.3
+nu_bal_s = solve_bounded(0.5, lambda x: MQ * cost_small(x),
+                         0.05 * XS.astype(float) ** 2, eps=eps_hi)
+min_quote = min(min(q_ for q_ in quotes(nu_bal_s, x, eps_hi) if q_ is not None)
+                for x in range(-N, N + 1)) - DELTA
+assert min_quote > 0, "config not interior; adjust"
+nu_p6 = solve_piece(Q, cost_small, nu_bal_s + DELTA * XS, eps_hi)
+dev_int = np.max(np.abs(nu_p6 - (nu_bal_s + DELTA * XS)))
+# clipped regime: q = 0.9 with eps = 0 puts sell quotes through the floor
+q9 = 0.9
+d9 = 0.5 * np.log(q9 / (1 - q9)) / H0
+M9 = 1.0 / (2 * np.sqrt(q9 * (1 - q9)))
+nu_b9 = solve_bounded(0.5, lambda x: M9 * COST(x),
+                      0.05 * XS.astype(float) ** 2, eps=0.0)
+m_up_min = min(quotes(nu_b9, x, eps=0.0)[1] - d9 for x in range(-N + 1, N + 1))
+nu_p9 = solve_piece(q9, COST, nu_b9 + d9 * XS, 0.0)
+dev_clip = np.max(np.abs(nu_p9 - (nu_b9 + d9 * XS)))
+check("E1 piecewise-G solver reproduces the tilt where interior",
+      dev_int < 1e-9, f"dev {dev_int:.1e}, min quote {min_quote:.3f}")
+check("E2 tilt FAILS where the floor binds (interiority is load-bearing)",
+      m_up_min < 0 and dev_clip > 1e-3,
+      f"min tilted sell quote {m_up_min:.3f} < 0; dev {dev_clip:.2e}")
+
+# E3: configuration sweep of the core identities (theorem map, quote map,
+# time change, width identity) across h, eps, q, N, and cost shapes
+for (hh, ee, qq, NN, cf, name) in [
+        (2.0, 0.25, 0.70, 6, lambda x: 0.004 * x ** 2, "h=2 quad"),
+        (0.5, 0.05, 0.58, 10, lambda x: 0.02 * x ** 2, "h=1/2 quad"),
+        (1.0, 0.30, 0.80, 8, lambda x: 0.001 * x ** 4 + 0.002 * x ** 2, "quartic")]:
+    ww = 1.0 / hh
+    dd = 0.5 * ww * np.log(qq / (1 - qq))
+    MM_ = 1.0 / (2 * np.sqrt(qq * (1 - qq)))
+    DD = 1.0 / MM_
+    n2 = 2 * NN + 1
+    xs2 = np.arange(-NN, NN + 1)
+    Gh = lambda K: ww * np.exp(-1.0 - K / ww)
+
+    def ham2(q_, nu, i):
+        v = 0.0
+        if xs2[i] < NN:
+            v += q_ * Gh(ee + nu[i + 1] - nu[i])
+        if xs2[i] > -NN:
+            v += (1 - q_) * Gh(ee + nu[i - 1] - nu[i])
+        return v
+
+    def res2(q_, cst, nu):
+        h0v = ham2(q_, nu, NN)
+        return np.array([TAU * cst(xs2[i]) - (ham2(q_, nu, i) - h0v)
+                         for i in range(n2) if i != NN])
+
+    def slv2(q_, cst, init):
+        wrap = lambda u: res2(q_, cst,
+                              np.concatenate([u[:NN], [0.0], u[NN:]]))
+        sol = root(wrap, np.concatenate([init[:NN], init[NN + 1:]]),
+                   method="lm", options={"maxiter": 80000, "xtol": 1e-15})
+        nu = np.concatenate([sol.x[:NN], [0.0], sol.x[NN:]])
+        assert np.max(np.abs(res2(q_, cst, nu))) < 1e-10
+        return nu
+
+    nb = slv2(0.5, lambda x: MM_ * cf(x), 0.05 * xs2.astype(float) ** 2)
+    r_map = np.max(np.abs(res2(qq, cf, nb + dd * xs2)))
+    okq = True
+    for i in range(1, n2 - 1):
+        mdq = ww + ee + (nb[i + 1] - nb[i]) + dd
+        muq = ww + ee + (nb[i - 1] - nb[i]) - dd
+        mdb = ww + ee + (nb[i + 1] - nb[i])
+        mub = ww + ee + (nb[i - 1] - nb[i])
+        okq &= abs((mdq + muq) - (mdb + mub)) < 1e-12
+        okq &= abs(qq * np.exp(-mdq / ww) - DD * 0.5 * np.exp(-mdb / ww)) < 1e-14
+    check(f"E3 core identities, config {name}", r_map < 1e-10 and okq,
+          f"map residual {r_map:.1e}")
+
+n_fail2 = sum(1 for _, ok in PASS if not ok)
+print(f"\nwith hardening: {len(PASS)} checks, {n_fail2} failures")
+assert n_fail2 == 0
