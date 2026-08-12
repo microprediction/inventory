@@ -40,8 +40,8 @@ kinematic identity S(x+s) - S(x) = C(x) + C(x+s), which shows the
 constant-width/nonlinear-skew inversion of eq. (7) cannot arise from ANY
 single nu, Bellman equation or no. Section 4 now leads with the identity,
 presents eq. (7) as a reduced-form pointwise inversion with the sign branch,
-and corrects the hypothesis behind the quadratic form (cost minimized at flat
-inventory, not nonnegative liquidation costs).
+and corrects the hypothesis behind the quadratic form (even carrying cost, not
+nonnegative liquidation costs).
 
 ## What replaces the width claim
 
@@ -79,7 +79,7 @@ non-exponential curves, the integrability identity, the CWLS corner (interior
 exactness and its boundary layer), the cosh family, the width-response
 formula and its branch, the margin/fill-ratio facts, and the scoring table by
 Monte Carlo. All pass. verify_width_response.py retained (two cost
-configurations for eq. 9); verify_local_exponentiality.py unchanged.
+configurations for eq. (10)); verify_local_exponentiality.py unchanged.
 
 ## Editor framing (draft in editor_note.txt)
 
