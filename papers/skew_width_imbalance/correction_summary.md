@@ -1,76 +1,95 @@
-# Correction package: skew_width_imbalance (2026-08-12)
+# Correction package v2: skew_width_imbalance (2026-08-12)
 
-## What was wrong
+Supersedes the seven-edit patch. The revision is structural at the statement
+layer; the nu-level algebra, the proof, and the original certificate are
+unchanged and correct.
 
-The submitted Theorem 1 stated the compression as: balanced problem at carrying
-cost M(q)c, "under the correspondence: skew translated by δ, AND
-non-discretionary width Δ widened to Δ + γ." The widening and the multiplier
-are the same factor e^{hγ} read in two frames (overhead frame vs cost frame),
-not simultaneous corrections; the submitted proof itself moves the factor to
-the cost side, after which nothing remains to widen. Corollary 2 and §6 then
-treated γ as the physical, parameter-free width response, which is incorrect.
+## The error ledger
 
-Numerical demonstration (verify_width_response.py, run at the submitted
-certificate's own configuration): the imbalanced dealer's half-width equals
-the balanced-at-M(q)c dealer's at every inventory to 4e-16; her width response
-over the balanced-at-c dealer is 1.3e-3 at q = 0.6, versus γ = 2.0e-2.
+One central interpretation error. The submitted Theorem 1 treated the
+carrying-cost multiplier M(q)c and the overhead displacement eps -> eps + gamma
+as simultaneous corrections. They are two representations of the same factor
+e^{h gamma}; the proof supports one at a time. The false consequence was that
+physical width increases directly by gamma.
 
-The proof of Theorem 1 and the submitted certificate
-(verify_local_exponentiality.py) are unaffected: both operate in the cost
-frame only, and the ν-level equivalence they establish is correct. All skew
-results (δ, zero-inventory skew, sign flip, first-order vs second-order) are
-unaffected. M(q) as an effective-carry multiplier is unaffected.
+Downstream false statements, all now removed: "widen by gamma" (Corollary 2,
+Section 4, Section 6); experience transfer through (delta, gamma, M(q)) in the
+RL paragraph (correct transfer: (delta, M(q))); the parameter-free
+physical-width prediction; "one balanced solve serves every imbalance" (one
+balanced SOLVER, one solve per multiplier); and the zero-carry "inventory tax"
+sentence, which is incompatible with M(q) x 0 = 0.
 
-## What replaces it
+Missing hypotheses, now explicit (substantive, not stylistic): even carrying
+cost, symmetric domain, and solution uniqueness for the flat-book skew
+S_q(0) = delta (numerically, an asymmetric cost gives S_q(0) = 0.254 vs
+delta = 0.203); interior quotes in BOTH members of the equivalence (the tilt
+makes one side's floor bind earlier); admissibility/uniqueness for the
+steady-state relative-value solution. The zero-carry edge c = 0 is degenerate:
+every linear tilt solves the centered interior equation, the tilted image is
+inadmissible on an unbounded lattice, and the selected policy does not skew --
+a cheap-control-type singularity, flagged in a new remark. At c = 0 the
+admissible policy's throughput is unchanged by imbalance.
 
-The width response flows entirely through the multiplied carry: the imbalanced
-quotes are those of the balanced dealer at cost M(q)c, so the response is that
-problem's convexity response to a proportional carry increase. In the
-small-skew quadratic-cost regime this has the closed leading-order form
+One localized independent inconsistency. The paper had already recognized the
+Bellman incompatibility of quadratic CWLS with generic carrying costs ("solve
+for nu rather than pretend nu ~ x^2 works"). What it had not stated is the
+kinematic identity S(x+s) - S(x) = C(x) + C(x+s), which shows the
+constant-width/nonlinear-skew inversion of eq. (7) cannot arise from ANY
+single nu, Bellman equation or no. Section 4 now leads with the identity,
+presents eq. (7) as a reduced-form pointwise inversion with the sign branch,
+and corrects the hypothesis behind the quadratic form (cost minimized at flat
+inventory, not nonnegative liquidation costs).
 
-    ΔC(0) = γ · hC(0) / (2 − hC(0)) + O((q − 1/2)^4),
+## What replaces the width claim
 
-from d C0 / d log(cost scale) = C0/(2 − hC0). The even, sign-definite γ-shape
-in the imbalance survives; the coefficient is roughly half the ratio of
-discretionary to market width, so the response involves one further observable,
-the quoted discretionary width C(0), rather than being pinned by w alone.
-Verified within ~1% across q ∈ [0.55, 0.70] on the lattice, at two different
-cost configurations.
+The theorem is restated in the cost frame as an equivalence of relative values
+and policies with gain scaling rho_bal,Mc = M(q) rho_q, plus the quote map
+m_q = m_bal +/- delta: physical width equals the balanced-at-M(q)c width
+exactly. The organizing interpretation is the inventory clock: after the skew
+translation both fill rates scale by D(q) = 2 sqrt(q(1-q)) (generator identity
+L_{q,c} = D(q) L_{1/2,Mc}; same embedded jump chain and stationary inventory
+distribution), so positive carry is amplified by M(q) = 1/D(q) per effective
+transition. gamma survives as the logarithmic clock slowdown in markup units
+(D e^{-hm} = e^{-h(m+gamma)}), the overhead frame as a scoped operator
+reparameterization remark with the quote remapping m_q = m_over + delta -
+gamma (buy side). New corollaries: parity without cost symmetry
+(S_q - S_{1-q} = 2 delta, C_q = C_{1-q}) and the exact width identity
+W_q - W_{1/2,c} = 2[C_Mc - C_c], with the closed small-skew approximation
+Delta C(0) ~ gamma hC0/(2 - hC0) on the branch hC0 < 2 (C0 the balanced
+baseline; full-width response ~ 2 C0 (q - 1/2)^2 for small hC0).
 
-For empirical work this sharpens rather than weakens the test: a regression of
-the width response on 2(q − 1/2)^2 should find slope ≈ C(0), not 2w — a more
-distinctive fingerprint of the carry channel.
+## Verification
 
-## Changes to the manuscript (7 edits)
+verify_all_claims.py: a claim-by-claim certificate, 33 labeled checks keyed to
+paper sections, covering every quantitative claim in the corrected manuscript
+-- the FOC and piecewise G, the quote identities, average-reward optimality of
+the consistency solution (gain = s H_q(0) at 6e-17), the theorem map in both
+directions, gain scaling, quote map, time change, stationary-distribution
+equality, the overhead remapping, flat-book skew (and its failure under
+asymmetric cost), parity, Taylor orders, the exact width identity, zero-carry
+degeneracy (interior) with boundary selection, the envelope identity for
+non-exponential curves, the integrability identity, the CWLS corner (interior
+exactness and its boundary layer), the cosh family, the width-response
+formula and its branch, the margin/fill-ratio facts, and the scoring table by
+Monte Carlo. All pass. verify_width_response.py retained (two cost
+configurations for eq. 9); verify_local_exponentiality.py unchanged.
 
-1. Abstract: "translation ... widening ... multiplication" list replaced by
-   "translation together with a multiplication of effective carry —
-   equivalently, at unchanged cost, a widening of the overhead: one correction
-   read in two frames."
-2. Introduction: same fix to the corresponding sentence.
-3. Theorem 1: correspondence is the skew translation; the widening stated as
-   the equivalent unchanged-cost frame, with the explicit warning that the two
-   are not simultaneous.
-4. Remark after Theorem 1: "translated by δ and evaluated at cost M(q)c —
-   equivalently, at overhead widened by γ."
-5. Corollary 2 (orders): interpretation rewritten; width response identified
-   as the convexity response with pointer to the new equation; "no parameter
-   beyond w" now claimed for the skew only.
-6. New paragraph + equation (widthresponse) in Section 5 deriving the closed
-   form, with the certificate reference.
-7. §6 Uses / testing: the width prediction restated via the new formula with
-   C(0) as the further observable; "widened ... through the carry channel,
-   proportional to the discretionary width rather than the market width."
+## Editor framing (draft in editor_note.txt)
 
-New file: verify_width_response.py (certificate for both corrected claims).
+The nu-level reduction to a balanced problem at carrying cost M(q)c is
+unchanged. The revision corrects an overinterpretation in which the equivalent
+overhead representation was treated as an additional physical widening, and
+correspondingly revises the width and zero-carry consequences; it makes the
+interiority, symmetry, and uniqueness assumptions explicit; and it clarifies
+that the constant-width inversion is reduced-form unless its integrability
+condition holds. The central symmetry emerges more cleanly, as a skew
+translation composed with a uniform time change of the inventory process.
 
-## Suggested venues for the correction
+## Venues
 
-- SIFIN: send corrected manuscript to the handling editor now (draft note in
-  editor_note.txt), or hold for the referee-response round.
-- arXiv: post v2 when convenient; keep v1 as the record of the submitted text.
-- SSRN: upload revision.
-
-Downstream repo items (not in this package): notes/spread_as_endogenous_carry
-H7 and papers/skew_width_imbalance/data_scout_imbalance.md width tests inherit
-the same correction; tracked in revision_notes.md §5.
+- SIFIN: send the replacement manuscript promptly (draft note ready); waiting
+  risks referees spending time on claims known to be incorrect.
+- arXiv v2 when the identifier allows; SSRN revision.
+- Downstream repo: notes/spread_as_endogenous_carry.tex (H7 and the
+  "manufactures its own carrying cost" reading at k = 0) and
+  data_scout_imbalance.md width tests tracked in revision_notes.md section 5.

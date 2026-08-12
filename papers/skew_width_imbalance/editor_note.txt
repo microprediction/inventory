@@ -4,20 +4,29 @@ Between Order Imbalance, Skew and Width in Over-The-Counter Trading
 Dear Editors,
 
 In follow-up work we found that the statement of Theorem 1 in our submission
-conflates two equivalent representations of a single correction: the widening
-of the non-discretionary width by gamma and the multiplication of the carrying
-cost by M(q) = e^{h gamma} are the same factor read in two frames, not
-simultaneous adjustments. The proof and the accompanying numerical certificate
-are unaffected, as are all results concerning the skew; what changes is the
-interpretation of the width response in Corollary 2 and Section 6, which is in
-fact the balanced problem's convexity response to the multiplied carry. The
-attached corrected manuscript amends the statement accordingly and adds the
-closed leading-order form of the width response, Delta C(0) = gamma h C(0) /
-(2 - h C(0)), together with a short numerical certificate verifying both the
-corrected statement and the new formula.
+treats two equivalent representations of a single factor — the carrying-cost
+multiplier M(q) and the overhead displacement gamma — as simultaneous
+corrections. The nu-level reduction to a balanced problem at carrying cost
+M(q)c, its proof, and the accompanying numerical certificate are unchanged
+and correct; what required revision is the interpretive layer built on the
+double-counted factor, most visibly the claim that the dealer's physical
+width widens by gamma.
 
-We preferred to correct this now rather than during review, and apologize for
-any inconvenience.
+The attached corrected manuscript restates the theorem in the cost frame as
+an equivalence of relative values and policies, with the quote map making
+the physical-width conclusion explicit; replaces the width and zero-carry
+consequences with the correct ones, including a closed small-skew formula
+for the width response through the carry channel; makes the interiority,
+symmetry, and uniqueness assumptions explicit; and clarifies that the
+constant-width inversion of Section 4 is reduced-form unless its
+integrability condition holds. The central symmetry emerges more cleanly in
+the revision, as a skew translation composed with a uniform time change of
+the inventory process. A new claim-by-claim numerical certificate
+accompanying the manuscript checks every quantitative statement.
+
+We preferred to send the corrected manuscript now rather than have referees
+spend time on statements we know to be wrong, and we apologize for the
+inconvenience.
 
 Sincerely,
 Peter Cotton
