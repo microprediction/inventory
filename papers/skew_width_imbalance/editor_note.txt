@@ -19,9 +19,14 @@ symmetry, and uniqueness assumptions explicit; and clarifies that the
 constant-width inversion of Section 4 is reduced-form unless its
 integrability condition holds. The central symmetry emerges more cleanly in
 the revision, as a skew translation composed with a uniform time change of
-the inventory process. A new certificate accompanying the manuscript provides finite-lattice
+the inventory process. A new certificate suite accompanying the manuscript provides finite-lattice
 implementation checks of the principal identities and approximations, with
-every test configuration satisfying the theorem's interior-quote assumption.
+every test configuration satisfying the theorem's interior-quote assumption;
+it further verifies the algebraic identities exactly in a computer algebra
+system, certifies finite-lattice optimality by an exact policy-iteration
+fixed point, and proves existence, local uniqueness, and interiority of the
+solution by interval-Newton methods, pointwise and for a continuum of
+imbalance values at the certificate cost.
 
 We preferred to send the corrected manuscript now rather than have referees
 spend time on statements we know to be wrong, and we apologize for the

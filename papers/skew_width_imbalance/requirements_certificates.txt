@@ -1,0 +1,5 @@
+numpy
+scipy
+sympy
+mpmath
+# optional: humpday (derivative-free optimizer roster for OPT3)

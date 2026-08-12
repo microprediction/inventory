@@ -146,6 +146,18 @@ instead clip that interior state first. At eps = 0.15 the frontier passes
 near (q = 0.6, N = 8, a = 0.002); the certificate configurations sit just
 inside it and assert membership.
 
+verify_diagrams.py: every commutative diagram certified from directly
+optimized strategies only -- all corners produced by policy iteration from
+flat cold starts, no consistency solver anywhere. The tilt square (quote
+map, width, mid, gain scaling), the time-change diagram (generator,
+embedded chain, stationary distribution, carry per transition), the
+overhead square (quote map with equal gain and overhead width = physical
+width + 2 gamma -- the gamma widening provably lives in that frame alone),
+and the parity square all commute between independent optima at 1e-15;
+the CWLS corner (constant width, affine mid, geometrically decaying
+boundary layer) and the flat-book skew delta are certified as optimality
+statements the same way. 6/6.
+
 ## Editor framing (draft in editor_note.txt)
 
 The core algebraic reduction in the proof remains valid; the theorem now
