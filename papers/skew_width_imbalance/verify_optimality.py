@@ -28,6 +28,31 @@ nu at all -- the competitor space is raw quote vectors:
 State space: x in {-N..N}, no inventory-increasing trade at the
 boundaries (one-sided rows), matching the paper's standing assumptions.
 Reward: margin (m - eps) per fill, carrying cost c(x) per unit time.
+
+    OPT6  Howard sweep: across q, cost shape (quadratic, asymmetric,
+          quartic, kinked), and lattice size, run policy iteration to
+          convergence (globally convergent, optimal by construction) and
+          verify the optimum is interior and satisfies the paper's
+          consistency equation. Scope finding from building this sweep:
+          interiority binds FIRST AT THE TOP BOUNDARY STATE and does so
+          at strong imbalance for every cost level, including c = 0 --
+          the value of escaping the one-sided state (whose Hamiltonian
+          is halved) exceeds w + eps - delta once q is large, so the
+          optimal boundary sell quote clips to zero. The interior-quote
+          hypothesis therefore carves out a genuinely small region of
+          (q, N, eps, cost): at eps = 0.15 the frontier passes near
+          (q = 0.6, N = 8, a = 0.002) -- the certificate configs sit
+          just inside it -- and larger eps relaxes it only slowly.
+          High-q sweep configs below raise eps accordingly.
+    OPT7  zero carry at the policy level: the boundary-selected c = 0
+          solution is itself a Howard fixed point, and the gain over pure
+          tilt policies is maximized at b = delta -- on the finite chain
+          it is OPTIMALITY that selects the tilted branch.
+    OPT8  floor binding: with an aggressive cost the exponential-branch
+          solution violates interiority; policy iteration with the m >= 0
+          floor converges to a clipped optimum, and the theorem's quote
+          map between the clipped optima FAILS -- interiority is a
+          substantive hypothesis, not bookkeeping.
 """
 
 import numpy as np
@@ -51,7 +76,9 @@ G_exp = lambda K: W * np.exp(-1.0 - H0 * K)
 
 
 # ------------------------------------------------- consistency solution
-def hamiltonian(q, nu, i, eps=EPS):
+def hamiltonian(q, nu, i, eps=None):
+    if eps is None:
+        eps = EPS
     v = 0.0
     if XS[i] < N:
         v += q * G_exp(eps + (nu[i + 1] - nu[i]) / S_LOT)
@@ -193,6 +220,63 @@ def run_battery(q, cost, nu, label):
     return Jstar, v0, best_v
 
 
+def configure(Nl):
+    global N, XS, NS, I0
+    N = Nl
+    XS = np.arange(-N, N + 1)
+    NS = 2 * N + 1
+    I0 = N
+
+
+def howard_dev(q, cost, md, mu):
+    md2, mu2, _, rho = policy_iteration_step(q, cost, md, mu)
+    return max(np.nanmax(np.abs(md2 - md)), np.nanmax(np.abs(mu2 - mu))), rho
+
+
+def pi_converge(q, cost):
+    """Policy iteration from flat quotes; optimal fixed point by Howard."""
+    md = np.where(XS < N, W + EPS, np.nan)
+    mu = np.where(XS > -N, W + EPS, np.nan)
+    for _ in range(400):
+        md2, mu2, h, rho = policy_iteration_step(q, cost, md, mu)
+        d = max(np.nanmax(np.abs(md2 - md)), np.nanmax(np.abs(mu2 - mu)))
+        md, mu = md2, mu2
+        if d < 1e-13:
+            return md, mu, h, rho
+    raise RuntimeError("policy iteration did not converge")
+
+
+def sweep_configs():
+    out = []
+    global EPS
+    for q, Nl, eps, cost, tag in [
+        (0.52, 4, 0.15, lambda x: 0.0025 * x ** 2, "q.52 quad"),
+        (0.60, 8, 0.15, lambda x: 0.0015 * x ** 2, "q.60 N8 quad"),
+        (0.70, 4, 0.50, lambda x: 0.002 * x ** 2, "q.70 quad"),
+        (0.80, 4, 0.90, lambda x: 0.001 * x ** 2, "q.80 quad"),
+        (0.60, 4, 0.15, lambda x: 0.0015 * x ** 2 + 0.0008 * x * x * (x > 0),
+         "q.60 asym"),
+        (0.60, 4, 0.15, lambda x: 0.0003 * x ** 4, "q.60 quartic"),
+        (0.60, 4, 0.15, lambda x: 0.004 * abs(x), "q.60 kinked"),
+        (0.65, 6, 0.50, lambda x: 0.0005 * x ** 2 + 0.00005 * x ** 4,
+         "q.65 mixed"),
+    ]:
+        configure(Nl)
+        EPS = eps
+        md, mu, h, rho = pi_converge(q, cost)
+        assert np.nanmin(np.concatenate([md, mu])) > 0, f"not interior: {tag}"
+        # the paper's consistency equation, evaluated at the PI optimum
+        nu = -h
+        h0v = hamiltonian(q, nu, I0)
+        res = max(abs(TAU * cost(XS[i]) / S_LOT
+                      - (hamiltonian(q, nu, i) - h0v))
+                  for i in range(NS) if i != I0)
+        out.append((tag, res))
+    configure(4)
+    EPS = 0.15
+    return out
+
+
 if __name__ == "__main__":
     nu_q = solve_bounded(Q, COST, 0.05 * XS.astype(float) ** 2 + DELTA * XS)
     nu_bal = solve_bounded(0.5, COST_M := (lambda x: MQ * COST(x)),
@@ -207,6 +291,54 @@ if __name__ == "__main__":
     check("OPT5 quote map m_q = m_bal +/- delta and gain scaling M rho_q",
           map_dev < 1e-9 and scale_dev < 1e-12,
           f"map dev {map_dev:.1e}, scaling dev {scale_dev:.1e}")
+
+    # OPT6: Howard certificate across configurations
+    sw = sweep_configs()
+    worst_cfg, worst_dev = max(sw, key=lambda t: t[1])
+    check("OPT6 PI optimum interior + satisfies consistency eq, 8 configs",
+          all(d < 1e-9 for _, d in sw),
+          f"worst consistency residual {worst_dev:.1e} ({worst_cfg})")
+
+    # OPT7: zero carry -- optimality itself selects the tilted branch
+    nu0 = solve_bounded(Q, lambda x: 0.0, DELTA * XS.astype(float))
+    md0, mu0 = quotes_of_nu(nu0)
+    dev0, rho0 = howard_dev(Q, lambda x: 0.0, md0, mu0)
+    S0 = (nu0[I0 + 1] - nu0[I0 - 1]) / (2 * S_LOT)
+    tilt_gain = lambda b: gain_of_policy(
+        Q, lambda x: 0.0,
+        np.where(XS < N, W + EPS + b, np.nan),
+        np.where(XS > -N, W + EPS - b, np.nan))[0]
+    bs = np.linspace(-0.1, 0.5, 601)
+    gb = np.array([tilt_gain(b) for b in bs])
+    b_star = bs[np.argmax(gb)]
+    check("OPT7 c = 0: boundary-selected solution is the Howard optimum, "
+          "pure-tilt gain peaks at b = delta",
+          dev0 < 1e-9 and abs(S0 - DELTA) < 1e-9
+          and abs(b_star - DELTA) < 1e-3 and rho0 >= gb.max() - 1e-12,
+          f"S(0) - delta = {S0 - DELTA:.1e}, argmax_b - delta = "
+          f"{b_star - DELTA:.1e}, gain(delta) - gain(0) = "
+          f"{tilt_gain(DELTA) - tilt_gain(0.0):.2e}")
+
+    # OPT8: floor binding breaks the quote map -- interiority is substantive
+    configure(6)
+    big = lambda x: 0.08 * x ** 2
+    md_i, mu_i, _, rho_i = pi_converge(Q, big)
+    md_b, mu_b, _, rho_b = pi_converge(0.5, lambda x: MQ * big(x))
+    clipped = min(np.nanmin(md_i), np.nanmin(mu_i))
+    v0 = pack(md_i, mu_i)
+    worst8 = max(gain_of_policy(Q, big, *unpack(
+        np.clip(v0 + s_ * rng.standard_normal(4 * N), 0.0, None)))[0] - rho_i
+        for s_ in (1e-3, 1e-2, 0.1) for _ in range(600))
+    map_dev8 = max(np.nanmax(np.abs(md_i - (md_b + DELTA))),
+                   np.nanmax(np.abs(mu_i - (mu_b - DELTA))))
+    check("OPT8 floor binds: clipped optimum exists (PI converges, "
+          "perturbations fail), quote map +-delta FAILS",
+          clipped == 0.0 and worst8 <= 1e-13 and map_dev8 > 0.01
+          and abs(rho_b - MQ * rho_i) > 1e-4,
+          f"min quote {clipped:.2f}, best perturbation {worst8:.1e}, "
+          f"map deviation {map_dev8:.3f}, gain-scaling deviation "
+          f"{abs(rho_b - MQ * rho_i):.1e}")
+    configure(4)
 
     n_ok = sum(ok for _, ok in PASS)
     print(f"\n{n_ok}/{len(PASS)} optimality checks pass")

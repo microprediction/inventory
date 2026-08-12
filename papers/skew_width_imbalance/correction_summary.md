@@ -92,7 +92,25 @@ raw quote vector from cold starts: no policy beats the consistency gain,
 and the search argmax reproduces the consistency quotes to 3e-8. (iii)
 4800 random policy perturbations across six scales: none improves. Run for
 both members of the equivalence; the two searched optima are related by
-the theorem's quote map (4e-16) and gains by M(q) (6e-17). 9/9 pass.
+the theorem's quote map (4e-16) and gains by M(q) (6e-17). Extended:
+(iv) the Howard/consistency correspondence swept across eight
+configurations (q up to 0.8, quadratic/asymmetric/quartic/kinked costs,
+N up to 8) -- the policy-iteration optimum is interior and satisfies the
+paper's consistency equation to 5e-16 in each; (v) at c = 0 the
+boundary-selected solution is itself the Howard optimum and the gain over
+pure tilt policies peaks at b = delta to 3e-4 -- on the finite lattice it
+is OPTIMALITY that selects the tilted branch; (vi) in the floor-binding
+regime policy iteration converges to a clipped optimum and the quote map
++-delta FAILS between the clipped optima (deviation 1.2), confirming
+interiority as a substantive hypothesis. 12/12 pass.
+
+Scope finding from the sweep, now one sentence in the standing
+assumptions: interiority binds first AT THE BOUNDARY STATE, and at strong
+imbalance it binds at every cost level including c -> 0, because the
+value of escaping the one-sided state (its Hamiltonian is halved) exceeds
+w + eps - delta. At eps = 0.15 the frontier passes near (q = 0.6, N = 8,
+a = 0.002); the certificate configurations sit just inside it and now
+assert membership.
 
 ## Editor framing (draft in editor_note.txt)
 
