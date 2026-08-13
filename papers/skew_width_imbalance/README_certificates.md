@@ -26,8 +26,9 @@ and exits nonzero on failure.
 3. **verify_optimality.py** (~2 min) -- the consistency solution is the
    average-reward OPTIMUM of the finite MDP, attacked with competitors
    that never see nu: an exact policy-iteration fixed point (Howard
-   certificate, proof-strength on the finite lattice), a derivative-free
-   search racing the full humpday roster over the raw 16-dimensional
+   certificate, proof-strength on the finite lattice), a corroborative derivative-free
+   search (not part of the certificate; Howard supplies the optimality
+   proof) racing the full humpday roster over the raw 16-dimensional
    quote vector, thousands of random perturbations, an 8-configuration
    sweep, the zero-carry selection question, the floor-binding regime
    where the theorem map fails, the interior-spike counterexample, and a
@@ -63,9 +64,11 @@ and exits nonzero on failure.
    risk in the moving frame is exactly the quadratic carrying cost.
    4 checks.
 
-8. **verify_local_exponentiality.py** (~10 s) -- the local-exponentiality
-   remark: skew error scales linearly with the hazard's relative
-   variation across visited strikes.
+8. **verify_local_exponentiality.py** (~10 s) -- an illustration rather
+   than a certificate (no asserted tolerance; artificial boundary
+   closure): the skew error scales linearly with the hazard's relative
+   variation across visited strikes, with Richardson ratios 1.6-1.9
+   under halving.
 
 ## Scope
 
