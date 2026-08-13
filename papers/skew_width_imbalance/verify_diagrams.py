@@ -169,9 +169,10 @@ if __name__ == "__main__":
 
     # D4: the parity square -- optimize (1-q, c) independently
     md_p, mu_p, rho_p = pi_optimize(1 - Q, COST, EPS)
-    S_q = [(mu_q[i] - md_q[i]) / 2 for i in two]
-    S_p = [(mu_p[i] - md_p[i]) / 2 for i in two]
-    par_dev = max(abs((S_q[k] - S_p[k]) - (-2 * DELTA))
+    # paper convention: S = fair - midpoint, so S = (md - mu)/2 here
+    S_q = [(md_q[i] - mu_q[i]) / 2 for i in two]
+    S_p = [(md_p[i] - mu_p[i]) / 2 for i in two]
+    par_dev = max(abs((S_q[k] - S_p[k]) - 2 * DELTA)
                   for k in range(len(two)))
     wpar_dev = max(abs((md_q[i] + mu_q[i]) - (md_p[i] + mu_p[i]))
                    for i in two)

@@ -51,8 +51,8 @@ and exits nonzero on failure.
 
 6. **verify_width_response.py** (~10 s) -- the two-frames statement
    (imbalanced width = balanced-at-Mc width, exactly) and the closed
-   width-response formula gamma hC0/(2 - hC0), verified to ~1 percent
-   across q in [0.55, 0.7].
+   width-response formula gamma hC0/(2 - hC0), verified to about two
+   percent in the tested configurations across q in [0.55, 0.7].
 
 7. **verify_moving_price.py** (~1 min) -- the moving-price equivalence
    behind Remark 2: cash P&L decomposes pathwise into model P&L plus the

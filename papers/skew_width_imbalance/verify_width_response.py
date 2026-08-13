@@ -14,8 +14,8 @@ Two claims:
    multiplied carry, with closed leading-order form
        Delta C(0) = gamma * h C(0) / (2 - h C(0)) + O((q - 1/2)^4),
    from d C_0 / d log(cost scale) = C_0 / (2 - h C_0) in the small-skew
-   quadratic-cost regime. Verified within about one percent for
-   q in [0.55, 0.7] on the lattice.
+   quadratic-cost regime. Verified within about two percent for
+   q in [0.55, 0.7] in the tested configurations.
 """
 
 import numpy as np
