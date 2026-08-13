@@ -110,7 +110,8 @@ if __name__ == "__main__":
     assert res < 1e-10, "exact certificate fails"
 
     # --- Check 2: slowly varying hazard h(m) = h0 (1 + beta m) ------------
-    for beta in (0.4, 0.2, 0.1):
+    errs = {}
+    for beta in (0.4, 0.2, 0.1, 0.05, 0.025, 0.0125):
         h0 = 1.0
         surv = lambda m: np.exp(-h0 * (m + 0.5 * beta * m * m)) if m > 0 else 1.0
         haz = lambda m: h0 * (1.0 + beta * m)
@@ -152,3 +153,14 @@ if __name__ == "__main__":
               f", rel. error = {100*err:.2f}%\n"
               f"   hazard variation across visited strikes = {100*var:.0f}%"
               f", error/variation = {err/var:.3f}")
+        errs[beta] = err
+
+    # Richardson-style ratios: halving beta should roughly halve the error
+    bs = [0.4, 0.2, 0.1, 0.05, 0.025, 0.0125]
+    ratios = [errs[bs[i]] / errs[bs[i + 1]] for i in range(len(bs) - 1)]
+    print("error ratios under halving beta:",
+          ", ".join(f"{r:.2f}" for r in ratios),
+          "(first-order scaling predicts 2)")
+    assert all(1.5 < r < 2.6 for r in ratios[1:]), "not first order"
+    print("PASS: error scales linearly with hazard variation "
+          f"(smallest case: {100*errs[0.0125]:.2f}% error)")

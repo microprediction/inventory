@@ -251,7 +251,7 @@ The constant hazard need not hold globally. The distribution of the best competi
 \[
 -\frac{d}{dK}\,\log G(K) \;=\; \frac{1}{m^{*}(K)-K} \;=\; h\big(m^{*}(K)\big).
 \]
-If the hazard varies slowly across the strikes the visited inventories generate, and the quotes remain interior, $\log G$ is approximately affine there, suggesting an $O(\eta)$ perturbation of the exponential symmetry with $\eta$ the hazard's relative variation; a stability estimate for the consistency equation, which we do not provide here, would be required to make this exact. We checked the scaling numerically in \texttt{verify\_local\_exponentiality.py}, which accompanies the paper: the error in the zero-inventory skew is about a quarter of the hazard's relative variation across the visited strikes, and shrinks linearly with it.
+If the hazard varies slowly across the strikes the visited inventories generate, and the quotes remain interior, $\log G$ is approximately affine there, suggesting an $O(\eta)$ perturbation of the exponential symmetry with $\eta$ the hazard's relative variation; a stability estimate for the consistency equation, which we do not provide here, would be required to make this exact. We checked the scaling numerically in \texttt{verify\_local\_exponentiality.py}, which accompanies the paper: the error in the zero-inventory skew is roughly a quarter to a third of the hazard's relative variation across the visited strikes, and halving the perturbation multiplies the error by $1.6$--$1.9$, consistent with first-order scaling.
 \end{remark}
 
 \begin{remark}[The algebra is old]
