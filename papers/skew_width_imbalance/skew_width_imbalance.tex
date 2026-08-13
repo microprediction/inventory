@@ -108,7 +108,7 @@ though of course the coupled quantities $\nu$ and the markups remain to be found
 \text{mid}(x) = \text{fair value} - S(x), \qquad \Delta = w + \epsilon .
 \label{eq:quotes}
 \end{equation}
-Slope of the inventory cost is the skew; convexity of the inventory cost is the discretionary width. These identities are exact, and the second runs both ways: a dealer's quoting reveals the first two derivatives of her inventory cost, whether or not she has ever written it down.
+Slope of the inventory cost is the skew; convexity of the inventory cost is the discretionary width. These identities are exact, and the second runs both ways: a dealer's quoting reveals the first two derivatives of her indifference value $\nu$, whether or not she has ever written it down. Recovering the primitive carrying cost $c$ from them requires, in addition, the consistency equation and the model's arrival and win-curve assumptions.
 
 \subsection{The consistency equation}\label{sec:bellman}
 
@@ -146,7 +146,7 @@ An imbalanced mixture of exponentials is a balanced one in disguise: translated 
 Three standing assumptions scope what follows.
 \begin{enumerate}
 \item \emph{Finite lattice.} The inventory state space is the finite lattice $\{-Ns, \dots, Ns\}$ reached from the initial inventory, with no inventory-increasing trade offered at the corresponding boundary, so the average-reward problem is a finite-state MDP.
-\item \emph{Existence and uniqueness.} The carrying cost is not identically zero (the zero-carry equation is degenerate, per Remark~\ref{rem:zerocarry}), and the average-reward equation has a unique relative-value solution $\nu$ up to an additive constant, normalized by $\nu(0) = 0$.
+\item \emph{Normalization.} Relative values are normalized by $\nu(0) = 0$. The theorem is a statement about solution sets and assumes no uniqueness; uniqueness of the balanced solution is invoked only where a corollary needs it (Corollaries~\ref{cor:zeroskew} and~\ref{cor:orders}), and the zero-carry equation's nonidentifiability is discussed in Remark~\ref{rem:zerocarry}.
 \item \emph{Interiority.} Every \emph{available} quote is interior, $m = w + K > 0$, in both the imbalanced problem and its balanced image; the tilt makes the restriction bind earlier on one side (see Remark~\ref{rem:interiority}).
 \end{enumerate}
 The equivalence is between relative values and policies, with the average reward scaling accordingly.
@@ -162,14 +162,15 @@ Consequently $S_q(x) = \bar S(x) + \delta$ and $C_q(x) = \bar C(x)$, and for eve
 m^{\downarrow}_q(x) = \bar m^{\downarrow}(x) + \delta, \qquad
 m^{\uparrow}_q(x) = \bar m^{\uparrow}(x) - \delta :
 \]
-at every two-sided inventory state the physical width equals the balanced-at-$M(q)c$ width and the quote midpoint is translated by $-\delta$.
+at every two-sided inventory state the physical width equals the balanced-at-$M(q)c$ width and the quote midpoint is translated by $-\delta$. The map $(\rho_q, \nu_q) \mapsto (M(q)\rho_q,\ \nu_q - \delta x)$ is thus a bijection between the normalized interior solution sets of the two problems; it assumes no uniqueness and remains valid at $c \equiv 0$, where $M(q)\,c = 0$.
 \end{theorem}
 
 \begin{proof}
 Let $\bar\nu(x) = \nu_q(x) - \delta x$. For every available direction the strikes translate: $K^{\downarrow}_q(x) = \bar K^{\downarrow}(x) + \delta$ and $K^{\uparrow}_q(x) = \bar K^{\uparrow}(x) - \delta$. On the interior exponential branch, using $e^{h\delta} = \sqrt{q/(1-q)}$,
 \[
 q\,G\big(\bar K^{\downarrow} + \delta\big) = q\,e^{-h\delta}\,G\big(\bar K^{\downarrow}\big) = \sqrt{q(1-q)}\;G\big(\bar K^{\downarrow}\big) = \tfrac{D(q)}{2}\,G\big(\bar K^{\downarrow}\big),
-\qquad
+\]
+\[
 (1-q)\,G\big(\bar K^{\uparrow} - \delta\big) = \tfrac{D(q)}{2}\,G\big(\bar K^{\uparrow}\big).
 \]
 At a boundary state the unavailable direction's term is omitted from both Hamiltonians, so the scaling holds termwise at \emph{every} state:
@@ -230,15 +231,15 @@ Expanding about $q = \tfrac12$,
 \gamma \approx 2w\Big(q-\tfrac12\Big)^{2}, \qquad
 M(q) \approx 1 + 2\Big(q-\tfrac12\Big)^{2}.
 \]
-Provided the balanced relative-value solution depends differentiably on the carrying-cost scale at scale one, a mild imbalance moves the midpoint linearly and the width only quadratically, and the width response flows entirely through the multiplied carry: at every two-sided state, exactly,
+Provided the balanced solution branch remains interior and locally unique for cost scales between $1$ and $M(q)$, and depends differentiably on the scale, a mild imbalance moves the midpoint linearly and the width only quadratically, and the width response flows entirely through the multiplied carry: at every two-sided state, exactly,
 \[
 W_q(x) - W_{1/2,c}(x) \;=\; 2\big[\,\bar C_{M(q)c}(x) - \bar C_{c}(x)\,\big],
 \]
-the balanced convexity's comparative static in the cost scale, for which Section~\ref{sec:closed} gives a closed small-skew approximation. This accords with the practitioner's instinct to skew into flow and widen only when the market becomes seriously one-sided. The skew response involves no parameter beyond the observable width $w$; the width response involves in addition the balanced policy's cost-scale sensitivity.
+the balanced convexity's comparative static in the cost scale, for which Section~\ref{sec:closed} gives a closed small-skew approximation. The sign of the response follows the balanced convexity's cost-scale sensitivity: positive on the small-skew branch $hC_0 < 2$ with $C_0 > 0$, second order in general. This accords with the practitioner's instinct to skew into flow first and adjust width only when the market becomes seriously one-sided. The skew response involves no parameter beyond the observable width $w$; the width response involves in addition the balanced policy's cost-scale sensitivity.
 \end{corollary}
 
-\begin{remark}[The zero-carry equation is nonidentifying]\label{rem:zerocarry}
-At $c \equiv 0$ the centered interior equation is solved by \emph{every} linear tilt $\nu = bx$ whose quotes remain interior, so it selects no policy, and the theorem excludes this degenerate case. In particular $M(q)\,c$ remains zero: imbalance does not manufacture carrying cost from nothing. Which zero-carry policy is selected depends on boundary or transversality conditions and lies outside the present result; on the finite lattice, for instance, the boundary rows do the selecting.
+\begin{remark}[Zero carry: the interior equations alone are nonidentifying]\label{rem:zerocarry}
+At $c \equiv 0$ the centered two-sided interior equations alone are nonidentifying: every linear tilt $\nu = bx$ whose quotes remain interior solves them. This does not invalidate Theorem~\ref{thm:main}, which concerns the full finite-lattice average-reward equation and maps zero-carry solutions to zero-carry solutions --- $M(q) \cdot 0 = 0$, so imbalance does not manufacture carrying cost from nothing. On the finite lattice the one-sided boundary rows select a branch; in the configurations studied numerically they select the optimal tilted branch, with $S_q(0) = \delta$. On an unbounded domain an additional recurrence or transversality condition would be required instead.
 \end{remark}
 
 \begin{remark}[The adjustment is simple; the solution is not]

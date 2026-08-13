@@ -54,6 +54,12 @@ Q = 0.6
 MQ = 1.0 / (2.0 * np.sqrt(Q * (1 - Q)))
 DELTA = 0.5 * np.log(Q / (1 - Q))
 COST_A = 0.0015
+# decimal-exact interval versions: the certificate then covers the exact
+# decimal parameters printed in the paper, not their nearest binary floats
+EPS_IV = iv.mpf("0.15")
+Q_IV = iv.mpf("0.6")
+COST_IV = iv.mpf("0.0015")
+MQ_IV = 1 / (2 * iv.sqrt(Q_IV * (1 - Q_IV)))
 
 
 # ---------------------------------------------------------------- floats
@@ -96,9 +102,9 @@ def F_iv(u, q, ca):
     def ham(i):
         v = iv.mpf(0)
         if i < NS - 1:
-            v += q * G_iv(iv.mpf(EPS) + nu[i + 1] - nu[i])
+            v += q * G_iv(EPS_IV + nu[i + 1] - nu[i])
         if i > 0:
-            v += (1 - q) * G_iv(iv.mpf(EPS) + nu[i - 1] - nu[i])
+            v += (1 - q) * G_iv(EPS_IV + nu[i - 1] - nu[i])
         return v
 
     h0 = ham(I0)
@@ -115,11 +121,11 @@ def J_iv(u, q, ca):
     def dham(i):  # dict: dH(i)/dnu_j over lattice index j
         d = {}
         if i < NS - 1:
-            g = q * G_iv(iv.mpf(EPS) + nu[i + 1] - nu[i])
+            g = q * G_iv(EPS_IV + nu[i + 1] - nu[i])
             d[i + 1] = d.get(i + 1, iv.mpf(0)) - g
             d[i] = d.get(i, iv.mpf(0)) + g
         if i > 0:
-            g = (1 - q) * G_iv(iv.mpf(EPS) + nu[i - 1] - nu[i])
+            g = (1 - q) * G_iv(EPS_IV + nu[i - 1] - nu[i])
             d[i - 1] = d.get(i - 1, iv.mpf(0)) - g
             d[i] = d.get(i, iv.mpf(0)) + g
         return d
@@ -140,9 +146,9 @@ def Fq_iv(u, q, ca):
     def dhq(i):
         v = iv.mpf(0)
         if i < NS - 1:
-            v += G_iv(iv.mpf(EPS) + nu[i + 1] - nu[i])
+            v += G_iv(EPS_IV + nu[i + 1] - nu[i])
         if i > 0:
-            v -= G_iv(iv.mpf(EPS) + nu[i - 1] - nu[i])
+            v -= G_iv(EPS_IV + nu[i - 1] - nu[i])
         return v
 
     d0 = dhq(I0)
@@ -231,10 +237,10 @@ def quote_bounds(K_box, q):
     lo = None
     for i in range(NS):
         if i < NS - 1:
-            v = iv.mpf(1) + iv.mpf(EPS) + nu[i + 1] - nu[i]
+            v = iv.mpf(1) + EPS_IV + nu[i + 1] - nu[i]
             lo = v.a if lo is None or v.a < lo else lo
         if i > 0:
-            v = iv.mpf(1) + iv.mpf(EPS) + nu[i - 1] - nu[i]
+            v = iv.mpf(1) + EPS_IV + nu[i - 1] - nu[i]
             lo = v.a if lo is None or v.a < lo else lo
     return lo
 
@@ -249,13 +255,14 @@ if __name__ == "__main__":
 
     r = 1e-7
     u_q = solve_float(Q, COST_A)
-    ok_q, K_q, X_q = krawczyk(u_q, Q, COST_A, r)
+    ok_q, K_q, X_q = krawczyk(u_q, Q, COST_A, r, q_iv=Q_IV, ca_iv=COST_IV)
     wid_q = max(float(k.b - k.a) for k in K_q)
     check("I1 Krawczyk: exactly one imbalanced solution in the box",
           ok_q, f"K(X) subset int(X); enclosure width {wid_q:.1e}")
 
     u_b = solve_float(0.5, MQ * COST_A)
-    ok_b, K_b, X_b = krawczyk(u_b, 0.5, MQ * COST_A, r)
+    ok_b, K_b, X_b = krawczyk(u_b, 0.5, MQ * COST_A, r,
+                              ca_iv=COST_IV * MQ_IV)
     wid_b = max(float(k.b - k.a) for k in K_b)
     check("I2 Krawczyk: exactly one balanced-at-Mc solution in the box",
           ok_b, f"K(X) subset int(X); enclosure width {wid_b:.1e}")
@@ -266,7 +273,7 @@ if __name__ == "__main__":
           float(lo_q) > 0 and float(lo_b) > 0,
           f"min lower bounds {float(lo_q):.4f} (imb), {float(lo_b):.4f} (bal)")
 
-    d_iv = iv.log(iv.mpf(Q) / (1 - iv.mpf(Q))) / 2
+    d_iv = iv.log(Q_IV / (1 - Q_IV)) / 2
     xs = [int(XS[i]) for i in range(NS) if i != I0]
     dev = max(float(abs(K_q[k] - (K_b[k] + d_iv * xs[k])).b)
               for k in range(len(xs)))
@@ -276,8 +283,10 @@ if __name__ == "__main__":
     # I5/I6: continuation -- prove the conclusions for EVERY q in
     # [0.55, 0.605] (the interiority frontier at this cost is near 0.610)
     # by tiling into slabs and running Krawczyk with q as an interval.
-    QLO, QHI, NSLAB = 0.55, 0.605, 220
-    edges = np.linspace(QLO, QHI, NSLAB + 1)
+    # slab edges are the exact rationals (2200 + k)/4000, k = 0..220,
+    # so the continuation covers exactly [0.55, 0.605]
+    NSLAB = 220
+    edges = np.array([(2200 + k) / 4000 for k in range(NSLAB + 1)])
     sol_i = {e: solve_float(e, COST_A) for e in edges}
     Mfun = lambda qq: 1.0 / (2.0 * np.sqrt(qq * (1 - qq)))
     sol_b = {e: solve_float(0.5, Mfun(e) * COST_A) for e in edges}
@@ -286,7 +295,7 @@ if __name__ == "__main__":
     for k in range(NSLAB):
         q1, q2 = edges[k], edges[k + 1]
         qm = 0.5 * (q1 + q2)
-        Qs = iv.mpf([q1, q2])
+        Qs = iv.mpf([iv.mpf(2200 + k) / 4000, iv.mpf(2201 + k) / 4000])
         # imbalanced member: radius covers the solution's motion in the slab
         r_i = 1.1 * np.abs(sol_i[q2] - sol_i[q1]) + 1e-6
         okk, Kk, _ = krawczyk(solve_float(qm, COST_A), qm, COST_A, r_i,
@@ -299,8 +308,10 @@ if __name__ == "__main__":
         # the hull of the endpoint values -- evaluating M(Qs) directly
         # would suffer the interval dependency problem (Qs appears twice)
         # and overestimate the width by a factor 1/|1-2q|.
-        c1 = iv.convert(COST_A) / (2 * iv.sqrt(iv.mpf(q1) * (1 - iv.mpf(q1))))
-        c2 = iv.convert(COST_A) / (2 * iv.sqrt(iv.mpf(q2) * (1 - iv.mpf(q2))))
+        e1 = iv.mpf(2200 + k) / 4000
+        e2 = iv.mpf(2201 + k) / 4000
+        c1 = COST_IV / (2 * iv.sqrt(e1 * (1 - e1)))
+        c2 = COST_IV / (2 * iv.sqrt(e2 * (1 - e2)))
         ca_slab = iv.mpf([min(c1.a, c2.a), max(c1.b, c2.b)])
         r_b = 1.1 * np.abs(sol_b[q2] - sol_b[q1]) + 1e-6
         okk, Kk, _ = krawczyk(solve_float(0.5, Mfun(qm) * COST_A), 0.5,

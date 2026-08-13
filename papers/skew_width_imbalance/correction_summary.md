@@ -26,15 +26,16 @@ Missing hypotheses, now explicit (substantive, not stylistic): even carrying
 cost, symmetric domain, and solution uniqueness for the flat-book skew
 S_q(0) = delta (numerically, an asymmetric cost gives S_q(0) = 0.221 vs
 delta = 0.203); interior quotes in BOTH members of the equivalence (the tilt
-makes one side's floor bind earlier); uniqueness for the steady-state
-relative-value solution on the finite lattice (the state space is now stated
-as a finite MDP with one-sided boundaries, and the full average-reward
-equation rho = -c + (s/tau)H precedes the centered form). The zero-carry
-equation is nonidentifying: every interior tilt solves it, so the theorem
-excludes c = 0, and which policy is then selected depends on boundary or
-transversality conditions (on the finite lattice the boundary rows select --
-numerically they select the tilted branch, S(0) = delta). No claim is made
-about zero-carry policy or throughput beyond M(q) x 0 = 0.
+makes one side's floor bind earlier); a finite-MDP state space with
+one-sided boundaries, with the full average-reward equation rho = -c +
+(s/tau)H preceding the centered form. The theorem is now stated as a
+BIJECTION of normalized interior solution sets, assuming no uniqueness and
+valid at c = 0 (M x 0 = 0); uniqueness is invoked only in the corollaries
+that need it. The zero-carry remark records that the centered two-sided
+interior equations alone are nonidentifying (every interior tilt solves
+them), that this does not affect the theorem, and that on the finite
+lattice the boundary rows select -- numerically, the optimal tilted branch
+with S(0) = delta.
 
 One localized independent inconsistency. The paper had already recognized the
 Bellman incompatibility of quadratic CWLS with generic carrying costs ("solve
@@ -93,10 +94,14 @@ to 1e-15 -- by Howard's policy-improvement theorem for finite unichain
 average-reward MDPs this certifies optimality on the lattice up to floating
 point. (ii) Derivative-free search (humpday) over the full 16-dimensional
 raw quote vector from cold starts: no policy beats the consistency gain,
-and the search argmax reproduces the consistency quotes to 3e-8. (iii)
+and the polished search argmax reproduces the consistency quotes to
+about 1e-7. (iii)
 4800 random policy perturbations across six scales: none improves. Run for
 both members of the equivalence; the two searched optima are related by
-the theorem's quote map (4e-16) and gains by M(q) (6e-17). Extended:
+the theorem's quote map and gains by M(q) -- at machine precision for the
+Howard optima (4e-16, 6e-17), with the derivative-free search outputs
+corroborating to about 1e-7 (humpday) or 1e-6 (scipy fallback) after local
+polish. Extended:
 (iv) the Howard/consistency correspondence swept across eight
 configurations (q up to 0.8, quadratic/asymmetric/quartic/kinked costs,
 N up to 8) -- the policy-iteration optimum is interior and satisfies the
@@ -134,8 +139,12 @@ q in [0.55, 0.605] into 220 slabs and reruns Krawczyk with q as an
 INTERVAL parameter (mean-value form in the parameter, monotone-hull
 enclosure of the cost scale), proving existence, local uniqueness, and
 interiority for EVERY q in that range and for every corresponding
-balanced image -- a continuum of configurations, not samples.
-Assumptions 2 (locally) and 3 are theorems on that q-interval. 6/6.
+balanced image -- a continuum of configurations, not samples. This proves
+existence, LOCAL uniqueness (exactly one solution in each stated box; not
+global uniqueness over the whole interior region), and interiority; the
+interval constants are built from exact decimal strings and the slab
+edges are exact rationals (2200+k)/4000, so the certificate covers the
+decimal parameters printed in the paper. 6/6.
 
 Scope finding from the sweep, now a remark after the theorem: in the
 convex cost families tested, interiority binds first at the one-sided
@@ -154,8 +163,8 @@ embedded chain, stationary distribution, carry per transition), the
 overhead square (quote map with equal gain and overhead width = physical
 width + 2 gamma -- the gamma widening provably lives in that frame alone),
 and the parity square all commute between independent optima at 1e-15;
-the CWLS corner (constant width, affine mid, geometrically decaying
-boundary layer) and the flat-book skew delta are certified as optimality
+the CWLS corner (constant width, affine mid, boundary layer shrinking
+sharply with N) and the flat-book skew delta are certified as optimality
 statements the same way. 6/6.
 
 A new remark in Section 2 records the moving-price equivalence: quoting

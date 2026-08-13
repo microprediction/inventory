@@ -30,8 +30,8 @@ checked between independently optimized corners:
     D5  the CWLS corner as an optimality statement: with the compatible
         cosh-shaped carrying cost, the directly optimized policy has
         constant width and affine mid displacement -2ax on central
-        states, with the boundary layer decaying geometrically as the
-        caps recede (deviations shrink ~600x from N = 8 to N = 12).
+        states, with the boundary-layer deviation shrinking sharply as the
+        caps recede (~600x from N = 8 to N = 12).
     D6  the flat-book corollary as an optimality statement: under an
         even cost the directly optimized imbalanced policy's mid at
         zero inventory sits exactly delta below fair.
@@ -198,7 +198,7 @@ if __name__ == "__main__":
                            for i in idx))
     configure(6)
     check("D5 CWLS corner: optimized policy is constant-width/affine-mid "
-          "on central states, boundary layer decays geometrically",
+          "on central states, boundary layer shrinks sharply with N",
           devs[12] < 5e-5 and devs[8] / devs[12] > 100,
           f"central deviation {devs[8]:.1e} (N=8) -> {devs[12]:.1e} (N=12), "
           f"ratio {devs[8] / devs[12]:.0f}")

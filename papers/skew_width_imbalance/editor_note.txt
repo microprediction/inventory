@@ -3,35 +3,36 @@ Between Order Imbalance, Skew and Width in Over-The-Counter Trading
 
 Dear Editors,
 
-In follow-up work we found that the statement of Theorem 1 in our submission
-treats two equivalent representations of a single factor — the carrying-cost
-multiplier M(q) and the overhead displacement gamma — as simultaneous
-corrections. The core algebraic reduction in the proof remains valid; what required revision is the interpretive layer built on the
-double-counted factor, most visibly the claim that the dealer's physical
-width widens by gamma.
+In follow-up work we found that Theorem 1 of our submission double-counted
+a single factor. The balanced-overhead representation (overhead shifted by
+gamma) and the fixed-overhead carrying-cost representation (cost multiplied
+by M(q)) are equivalent frames, not simultaneous physical adjustments.
+Consequently the submitted statement that physical quotes widen directly by
+gamma, together with several dependent corollaries, was incorrect. The
+underlying Hamiltonian scaling remains valid.
 
-The attached corrected manuscript restates the theorem in the cost frame as
-an equivalence of relative values and policies, with the quote map making
-the physical-width conclusion explicit; replaces the width and zero-carry
-consequences with the correct ones, including a closed small-skew formula
-for the width response through the carry channel; makes explicit the
-finite-inventory-lattice state space and the interiority, symmetry, and
-uniqueness conditions under which the policy equivalence holds; and clarifies that the
-constant-width inversion of Section 4 is reduced-form unless its
-integrability condition holds. The central symmetry emerges more cleanly in
-the revision, as a skew translation composed with a uniform time change of
-the inventory process. A new certificate suite accompanying the manuscript provides finite-lattice
-implementation checks of the principal identities and approximations, with
-every test configuration satisfying the theorem's interior-quote assumption;
-it further verifies the algebraic identities exactly in a computer algebra
-system, certifies finite-lattice optimality by an exact policy-iteration
-fixed point, and proves existence, local uniqueness, and interiority of the
-solution by interval-Newton methods, pointwise and for a continuum of
-imbalance values at the certificate cost.
+The attached corrected manuscript states the exact finite-lattice
+equivalence in the fixed-overhead frame, as a bijection of solution sets.
+After a skew translation, both directional fill rates are slowed by
+D(q) = 2 sqrt(q(1-q)); equivalently, the balanced comparison uses carrying
+cost M(q)c with M(q) = 1/D(q). The physical quote map is explicit, and
+physical width equals the width of the balanced-at-M(q)c policy rather
+than that width plus 2 gamma. The revision also makes explicit the
+finite-inventory-lattice state space and the interiority and symmetry
+conditions needed by the corollaries, and clarifies that the
+constant-width nonlinear-skew inversion is only reduced form unless its
+integrability condition holds.
 
-We preferred to send the corrected manuscript now rather than have referees
-spend time on statements we know to be wrong, and we apologize for the
-inconvenience.
+The accompanying verification suite checks the principal algebraic
+identities symbolically, confirms that the candidate policies are left
+unchanged by Howard policy improvement to machine precision with
+independent raw-quote searches corroborating, and uses interval-Newton
+calculations to prove existence, local uniqueness, and interiority in the
+stated certificate boxes and over a stated interval of imbalance values.
+
+We preferred to send the corrected manuscript now rather than have
+referees spend time on statements we know to be wrong, and we apologize
+for the inconvenience.
 
 Sincerely,
 Peter Cotton

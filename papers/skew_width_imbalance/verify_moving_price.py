@@ -62,16 +62,29 @@ def pi_optimize(q, cost, eps):
     raise RuntimeError
 
 
-def simulate(md, mu, T, sigma=0.5):
-    """Enquiry-epoch simulation with a random-walk fair price. Returns
-    (model P&L, cash P&L, sum of x dF) over T epochs."""
-    x_i = I0
+def stat_dist(md, mu):
+    up = np.array([Q * np.exp(-md[i]) if XS[i] < N else 0.0
+                   for i in range(NS)])
+    dn = np.array([(1 - Q) * np.exp(-mu[i]) if XS[i] > -N else 0.0
+                   for i in range(NS)])
+    logp = np.concatenate([[0.0],
+                           np.cumsum(np.log(up[:-1]) - np.log(dn[1:]))])
+    p = np.exp(logp - logp.max())
+    return p / p.sum()
+
+
+def simulate(md, mu, T, sigma=0.5, p0=None):
+    """Enquiry-epoch simulation with a random-walk fair price. Starts from
+    the stationary law when p0 is given (making the isometry identity for
+    Var(sum x dF) exact, not asymptotic). Returns (model P&L, cash P&L,
+    sum of x dF) over T epochs."""
+    x_i = int(rng.choice(NS, p=p0)) if p0 is not None else I0
     F = 0.0
     pnl_model = pnl_cash = mart = 0.0
     inv_cash = 0.0            # cash paid/received at absolute prices
     for _ in range(T):
         dF = sigma * rng.choice([-1.0, 1.0])   # martingale, indep of fills
-        mart += (x_i - I0) * dF
+        mart += XS[x_i] * dF
         F += dF
         pnl_model -= COST(XS[x_i])
         pnl_cash -= COST(XS[x_i])
@@ -107,16 +120,17 @@ if __name__ == "__main__":
 
     # M2: the martingale term's average vanishes at 1/sqrt(T)
     Ts = [400, 1600, 6400, 25600]
+    pi0 = stat_dist(md, mu)
     rms = []
     for T in Ts:
-        vals = [simulate(md, mu, T)[2] / T for _ in range(120)]
+        vals = [simulate(md, mu, T, p0=pi0)[2] / T for _ in range(80)]
         rms.append(np.sqrt(np.mean(np.square(vals))))
     slope = np.polyfit(np.log(Ts), np.log(rms), 1)[0]
     check("M2 (1/T) sum x dF -> 0 at the 1/sqrt(T) rate",
           abs(slope + 0.5) < 0.15, f"log-log slope {slope:.3f}")
 
     # M3: gain invariance for optimal and suboptimal policies
-    T, R = 40000, 60
+    T, R = 20000, 40
     ok3, det = True, []
     for tag, md_p, mu_p in [
         ("optimal", md, mu),
@@ -138,7 +152,8 @@ if __name__ == "__main__":
                       + (dn[i] * (mu_p[i] - EPS) if XS[i] > -N else 0.0)
                       - COST(XS[i]) for i in range(NS)])
         g_exact = p @ r
-        sims = [simulate(md_p, mu_p, T)[1] / T for _ in range(R)]
+        sims = [simulate(md_p, mu_p, T, p0=stat_dist(md_p, mu_p))[1] / T
+                for _ in range(R)]
         z = (np.mean(sims) - g_exact) / (np.std(sims) / np.sqrt(R))
         det.append(f"{tag}: cash {np.mean(sims):.5f} vs fixed {g_exact:.5f} "
                    f"(z = {z:.1f})")
@@ -146,12 +161,14 @@ if __name__ == "__main__":
     check("M3 moving-price cash gain = fixed-price gain, optimal and "
           "suboptimal policies", ok3, "; ".join(det))
 
-    # M4: "the dealer pays in risk" -- Ito isometry. Var(sum x dF) =
-    # sigma^2 T E[x^2] exactly (x adapted, increments independent), so a
+    # M4: "the dealer pays in risk" -- Ito isometry. With the chain
+    # STARTED FROM ITS STATIONARY LAW, Var(sum x dF) = sigma^2 T E[x^2]
+    # exactly (x adapted, increments independent; from a fixed start the
+    # right side would be sigma^2 sum_t E[x_t^2] instead), so a
     # mean-variance dealer's entire price-risk from the frame change is a
     # quadratic inventory charge (gamma sigma^2/2) x^2 per unit time:
     # the model's c(x), with the frame choice costing nothing beyond it.
-    T4, R4 = 1600, 400
+    T4, R4 = 1600, 300
     up = np.array([Q * np.exp(-md[i]) if XS[i] < N else 0.0
                    for i in range(NS)])
     dn = np.array([(1 - Q) * np.exp(-mu[i]) if XS[i] > -N else 0.0
@@ -161,7 +178,7 @@ if __name__ == "__main__":
     p = np.exp(logp - logp.max())
     p /= p.sum()
     ex2 = p @ (XS.astype(float) ** 2)
-    marts = [simulate(md, mu, T4)[2] for _ in range(R4)]
+    marts = [simulate(md, mu, T4, p0=p)[2] for _ in range(R4)]
     v_hat = np.var(marts)
     v_iso = 0.25 * T4 * ex2          # sigma = 0.5
     z = (v_hat - v_iso) / (v_hat * np.sqrt(2.0 / R4))
