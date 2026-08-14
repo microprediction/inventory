@@ -38,9 +38,11 @@ The solution being adjusted is not simple. The indifference cost that characteri
 
 We note three consequences. A market maker with zero inventory and symmetric carrying costs should still skew, by half the market width times the log-odds of the arrival direction, which is approximately twice the market width times the imbalance when the imbalance is mild. The width response is second order in the imbalance while the skew response is first order, which we believe is why practitioners skew before they widen. And the constant width, linear skew heuristic reappears in the special case of balanced flow and quadratic holding cost, which locates what that benchmark omits: the flow term. The skew magnitudes involve no free parameter beyond the observable width; the width response involves in addition the balanced policy's cost-scale sensitivity, for which we give a closed small-skew approximation. Both are falsifiable in principle; we make no empirical claims here.
 
-\subsection{The CWLS benchmark. Making constant width markets with skew linear in inventory.}\label{sec:cwlsintro}
+\subsection{The constant-width, linear-skew benchmark}\label{sec:cwlsintro}
 
-To fix terminology, a dealer's \emph{width} is the difference between where she is prepared to bid and where she is prepared to offer, and her \emph{skew} is her estimate of fair value minus the average of the two, so that positive skew means a downward lean. The Constant Width Linear Skew heuristic maintains a fixed width and sets skew proportional to signed inventory, with a sign that leans the dealer towards a neutral position. Motivations for CWLS range from its prima facie reasonableness to formal justification as an approximate solution of a stochastic control problem \cite{avellaneda2008,glft2012}. These justifications require some approximation, however, and they assume symmetric flow throughout. From a practical perspective CWLS is not a straw man, because it is simple, and because it exactly solves the interior equations in a particular compatible family. Section~\ref{sec:closed} makes the second point precise, and the symmetry of Section~\ref{sec:theorem} supplies the benchmark's missing column: what to do about imbalance.
+To fix terminology, a dealer's \emph{width} is the difference between where she is prepared to bid and where she is prepared to offer, and her \emph{skew} is her estimate of fair value minus the average of the two, so that positive skew means a downward lean. The Constant Width Linear Skew heuristic maintains a fixed width and sets skew proportional to signed inventory, with a sign that leans the dealer towards a neutral position.
+
+Motivations for CWLS range from its prima facie reasonableness to formal justification as an approximate solution of a stochastic control problem \cite{avellaneda2008,glft2012}. These justifications require some approximation, however, and they assume symmetric flow throughout. From a practical perspective CWLS is not a straw man, because it is simple, and because it exactly solves the interior equations in a particular compatible family. Section~\ref{sec:closed} makes the second point precise, and the symmetry of Section~\ref{sec:theorem} supplies the benchmark's missing column: what to do about imbalance.
 
 \subsection{Literature}\label{sec:literature}
 
@@ -56,11 +58,15 @@ The request-for-quote literature \cite{fgp2017,gueantmanziuk2019,barzykin2023} a
 
 \section{Model for an imbalanced dealer market}\label{sec:model}
 
-Trade opportunities arrive as a Poisson process with mean inter-arrival time $\tau$. Each arrival is a customer, met simultaneously by quotes from several market makers, and the trade is done at the winning quote. At each arrival there is a chance $q \in (0,1)$ that the customer is a seller (a \emph{buy opportunity} for our market maker) and chance $1-q$ that the customer is a buyer. All trades are of size $s$. There is a fair market price commonly discerned by all dealers; in the event of a buy opportunity our market maker submits a markdown $m^{\downarrow} > 0$ below it, and in the event of a sell opportunity a markup $m^{\uparrow} > 0$ above it. She wins if her response beats the best competing response, whose displacement beyond fair value has distribution function $F$, survival function $1 - F$, and hazard rate $h(z)$; we will shortly take the hazard constant, an assumption that Remark~\ref{rem:local} weakens to local constancy, so that the best competitor is exponentially distributed with mean
+Trade opportunities arrive as a Poisson process with mean inter-arrival time $\tau$. Each arrival is a customer, met simultaneously by quotes from several market makers, and the trade is done at the winning quote. At each arrival there is a chance $q \in (0,1)$ that the customer is a seller (a \emph{buy opportunity} for our market maker) and chance $1-q$ that the customer is a buyer. All trades are of size $s$. There is a fair market price commonly discerned by all dealers; in the event of a buy opportunity our market maker submits a markdown $m^{\downarrow} > 0$ below it, and in the event of a sell opportunity a markup $m^{\uparrow} > 0$ above it. She wins if her response beats the best competing response, whose displacement beyond fair value has distribution function $F$, survival function $1 - F$, and hazard rate $h(z)$.
+
+We take the hazard constant, so that the best competitor is exponentially distributed with mean
 \[
 w = 1/h ,
 \]
-which we call the \emph{market width} --- the reciprocal cover hazard estimated from the win curve, a one-sided competitive scale rather than the dealer's own quoted bid--offer width. Every won trade concedes a fixed amount $\epsilon$ to adverse selection: when we mark up an item by $m$ we assume we make only $m - \epsilon$. Holding inventory $x$ (a real number; negative values accommodate short positions) costs $c(x) \ge 0$ per unit time with $c(0) = 0$ --- the sign is an economic reading; the algebraic transformation below does not require it --- and the game is played forever: we study the ergodic, steady state policy.
+which we call the \emph{market width}.\footnote{Remark~\ref{rem:local} weakens the constancy to the strike range the transformation traverses. Note that $w$ is the reciprocal cover hazard estimated from the win curve --- a one-sided competitive scale, not the dealer's own quoted bid--offer width.} Every won trade concedes a fixed amount $\epsilon$ to adverse selection: when we mark up an item by $m$ we assume we make only $m - \epsilon$.
+
+Holding inventory $x$ costs $c(x) \ge 0$ per unit time with $c(0) = 0$.\footnote{Inventory is a real number, negative values accommodating short positions. The sign restriction on $c$ is an economic reading; the algebraic transformation below does not require it.} The game is played forever: we study the ergodic, steady state policy.
 
 The model deliberately leaves two things out: arrivals may cluster, and the imbalance $q$ may itself fluctuate. The symmetry is exact in the stationary core, which is what we isolate here.
 
@@ -86,7 +92,7 @@ Define break-even markups, which we call \emph{strikes}: the response levels at 
 K^{\downarrow}(x;s) = \epsilon + \frac{\nu(x+s)-\nu(x)}{s}, \qquad
 K^{\uparrow}(x;s) = \epsilon + \frac{\nu(x-s)-\nu(x)}{s},
 \]
-for buying and selling respectively. (Note that $K^{\uparrow}$ may well be negative for positive inventory: a loaded dealer will pay to get out.) The best response solves $\sup_m\, (m - K)\big(1-F(m)\big)$, and evidently the optimal choice of markup lies precisely where the increase in profit exactly offsets the possibility of losing the trade. For say we increased the markup by $\Delta m$; then
+for buying and selling respectively.\footnote{$K^{\uparrow}$ may well be negative for positive inventory: a loaded dealer will pay to get out.} The best response solves $\sup_m\, (m - K)\big(1-F(m)\big)$, and evidently the optimal choice of markup lies precisely where the increase in profit exactly offsets the possibility of losing the trade. For say we increased the markup by $\Delta m$; then
 \[
 \overbrace{\big(m^{\uparrow} - K^{\uparrow}(x;s)\big)}^{existing\ benefit}\;
 \overbrace{h(m^{\uparrow})\,\Delta m}^{chance\ of\ losing\ it}
@@ -108,7 +114,7 @@ though of course the coupled quantities $\nu$ and the markups remain to be found
 \text{mid}(x) = \text{fair value} - S(x), \qquad \Delta = w + \epsilon .
 \label{eq:quotes}
 \end{equation}
-Slope of the inventory cost is the skew; convexity of the inventory cost is the discretionary width. These identities are exact, and the second runs both ways: a dealer's quoting reveals the first two finite differences of her indifference value $\nu$, whether or not she has ever written it down --- and hence $\nu$ up to normalization when enough inventory states are observed. Recovering the primitive carrying cost $c$ from them requires, in addition, the consistency equation and the model's arrival and win-curve parameters.
+Slope of the inventory cost is the skew; convexity of the inventory cost is the discretionary width. These identities are exact, and the second runs both ways: a dealer's quoting reveals the first two finite differences of her indifference value $\nu$, whether or not she has ever written it down --- and hence $\nu$ up to normalization, when enough inventory states are observed.\footnote{Recovering the primitive carrying cost $c$ from $\nu$ requires, in addition, the consistency equation and the model's arrival and win-curve parameters.}
 
 \subsection{The consistency equation}\label{sec:bellman}
 
@@ -146,7 +152,7 @@ An imbalanced mixture of exponentials is a balanced one in disguise: translated 
 Three standing assumptions scope what follows.
 \begin{enumerate}
 \item \emph{Finite lattice.} The inventory state space is the finite lattice $\{-Ns, \dots, Ns\}$ reached from the initial inventory, with no inventory-increasing trade offered at the corresponding boundary, so the average-reward problem is a finite-state MDP.
-\item \emph{Normalization.} Relative values are normalized by $\nu(0) = 0$. The theorem is a statement about solution sets and assumes no uniqueness; uniqueness of the balanced solution is invoked only where a corollary needs it (Corollaries~\ref{cor:zeroskew} and~\ref{cor:orders}), and the zero-carry equation's nonidentifiability is discussed in Remark~\ref{rem:zerocarry}.
+\item \emph{Normalization.} Relative values are normalized by $\nu(0) = 0$. The theorem is a statement about solution sets and assumes no uniqueness.\footnote{Uniqueness of the balanced solution is invoked only where a corollary needs it (Corollaries~\ref{cor:zeroskew} and~\ref{cor:orders}); the zero-carry equation's nonidentifiability is Remark~\ref{rem:zerocarry}.}
 \item \emph{Interiority.} Every \emph{available} quote is interior, $m = w + K > 0$, in both the imbalanced problem and its balanced image; the tilt makes the restriction bind earlier on one side (see Remark~\ref{rem:interiority}).
 \end{enumerate}
 The equivalence is between relative values and policies, with the average reward scaling accordingly.
@@ -190,7 +196,9 @@ the balanced consistency equation in the pair $(C, S_\delta)$ with the cost side
 \end{proof}
 
 \begin{remark}[Where interiority fails]\label{rem:interiority}
-Interiority can fail at extreme or locally expensive inventory states, where the floor in \eqref{eq:foc} clips. In the convex cost families examined in the accompanying certificates it fails first at a one-sided boundary state: only one side trades there, so the relative value of escaping can exceed $w + \epsilon - \delta$ once the imbalance is strong, clipping the optimal boundary sell quote to zero at every cost level, including $c \to 0$. A carrying cost with a spike at an interior state can instead clip that state first. The admissible region of $(q, N, \epsilon, c)$ can therefore be restrictive, and the certificates assert membership rather than assume it. At the certificate configuration itself the assumptions are not merely asserted: an interval-Newton (Krawczyk) certificate accompanying the paper proves existence, local uniqueness, and interiority of the solution and of its balanced image, with outward-rounded arithmetic --- pointwise, and by interval continuation for every $q \in [0.55, 0.605]$ at the certificate cost.
+Interiority can fail at extreme or locally expensive inventory states, where the floor in \eqref{eq:foc} clips. In the convex cost families examined in the accompanying certificates it fails first at a one-sided boundary state: only one side trades there, so the relative value of escaping can exceed $w + \epsilon - \delta$ once the imbalance is strong, clipping the optimal boundary sell quote to zero at every cost level, including $c \to 0$. A carrying cost with a spike at an interior state can instead clip that state first. The admissible region of $(q, N, \epsilon, c)$ can therefore be restrictive, and the certificates assert membership rather than assume it.
+
+At the certificate configuration itself the assumptions are not merely asserted: an interval-Newton (Krawczyk) certificate accompanying the paper proves existence, local uniqueness, and interiority of the solution and of its balanced image, with outward-rounded arithmetic --- pointwise, and by interval continuation for every $q \in [0.55, 0.605]$ at the certificate cost.
 \end{remark}
 
 \begin{corollary}[Imbalance is a time change of the inventory clock]\label{cor:carry}
@@ -199,7 +207,7 @@ Under the quote map of Theorem~\ref{thm:main}, both fill rates scale by the sing
 q\,e^{-h m^{\downarrow}_q} = \sqrt{q(1-q)}\; e^{-h \bar m^{\downarrow}}, \qquad
 (1-q)\,e^{-h m^{\uparrow}_q} = \sqrt{q(1-q)}\; e^{-h \bar m^{\uparrow}} ,
 \]
-each balanced directional probability being $\tfrac12$. In generator form $\mathcal L_{q,c} = D(q)\,\mathcal L_{1/2,\,M(q)c}$ under the corresponding policies: the imbalanced inventory process has the same embedded jump chain, and (subject to positive recurrence) the same stationary inventory distribution, as the balanced-at-$M(q)c$ process, with its transition clock run at rate $D(q) \le 1$. In the well-posed positive-carry problem, any positive calendar-time carrying cost is therefore amplified by $M(q) = 1/D(q)$ per effective inventory transition; the formal multiplier diverges as $q \to 0$ or $1$, though the interior representation breaks down before the endpoints. Imbalance cannot create carrying cost when $c \equiv 0$; the zero-carry equation is itself degenerate (see the remark below). The comparison is with the balanced dealer at cost $M(q)c$; relative to the balanced dealer at cost $c$ the policy itself also changes, so observed throughput is not simply rescaled by $D(q)$ against that benchmark.
+each balanced directional probability being $\tfrac12$. In generator form $\mathcal L_{q,c} = D(q)\,\mathcal L_{1/2,\,M(q)c}$ under the corresponding policies: the imbalanced inventory process has the same embedded jump chain, and (subject to positive recurrence) the same stationary inventory distribution, as the balanced-at-$M(q)c$ process, with its transition clock run at rate $D(q) \le 1$. Any positive calendar-time carrying cost is therefore amplified by $M(q) = 1/D(q)$ per effective inventory transition. Imbalance cannot create carrying cost when $c \equiv 0$: $M(q) \cdot 0 = 0$.\footnote{The formal multiplier diverges as $q \to 0$ or $1$, though the interior representation breaks down before the endpoints. The comparison is with the balanced dealer at cost $M(q)c$; relative to the balanced dealer at cost $c$ the policy itself also changes, so observed throughput is not simply rescaled by $D(q)$ against that benchmark.}
 \end{corollary}
 
 \begin{remark}[The overhead frame, and what $\gamma$ is]\label{rem:overhead}
@@ -235,7 +243,7 @@ Provided the balanced solution branch remains interior and locally unique for co
 \[
 W_q(x) - W_{1/2,c}(x) \;=\; 2\big[\,\bar C_{M(q)c}(x) - \bar C_{c}(x)\,\big],
 \]
-the balanced convexity's comparative static in the cost scale, for which Section~\ref{sec:closed} gives a closed small-skew approximation. The sign of the response follows the balanced convexity's cost-scale sensitivity: positive on the small-skew branch $hC_0 < 2$ with $C_0 > 0$, second order in general. This accords with the practitioner's instinct to skew into flow first and adjust width only when the market becomes seriously one-sided. The skew response involves no parameter beyond the observable width $w$; the width response involves in addition the balanced policy's cost-scale sensitivity.
+the balanced convexity's comparative static in the cost scale, for which Section~\ref{sec:closed} gives a closed small-skew approximation. This accords with the practitioner's instinct to skew into flow first and adjust width only when the market becomes seriously one-sided.\footnote{The sign of the response follows the balanced convexity's cost-scale sensitivity: positive on the small-skew branch $hC_0 < 2$ with $C_0 > 0$, second order in general. The skew response involves no parameter beyond the observable width $w$; the width response involves in addition this cost-scale sensitivity.}
 \end{corollary}
 
 \begin{remark}[Zero carry: the interior equations alone are nonidentifying]\label{rem:zerocarry}
