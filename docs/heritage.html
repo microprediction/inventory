@@ -51,7 +51,8 @@
     <p>
       The strands cross more often than the textbooks admit. Rational expectations was born
       inside inventory control (Muth 1961). The earliest published temporal-difference rule
-      appeared in a control journal (Witten 1977). And the 1958 grain-storage equilibrium is
+      appeared in a control journal (Witten 1977). Mean&ndash;variance was in print twice before
+      Markowitz &mdash; once by his own thesis adviser. And the 1958 grain-storage equilibrium is
       now computed by reinforcement learning. Citation links below were chased backwards from
       the modern papers to their sources; each entry states what it built on.
     </p>
@@ -67,12 +68,64 @@
 
     <div class="timeline">
 
-    <h2 class="era">Deep background, 1738&ndash;1948</h2>
+    <h2 class="era">Deep background, 1654&ndash;1892</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1654</span><span class="dot">&middot;</span>Pascal &amp; Fermat<span class="strand">portfolio</span></div>
+      <p><span class="work">The problem-of-points correspondence</span>. Mathematical expectation invented to divide the stakes of an interrupted game &mdash; the first formal valuation of an uncertain claim. Pascal&rsquo;s wager (posthumous, 1670) extends it to decision under uncertainty.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1657</span><span class="dot">&middot;</span>Christiaan Huygens<span class="strand">portfolio</span></div>
+      <p><span class="work">De Ratiociniis in Ludo Aleae</span>. The first published treatise on expectation, systematizing what Huygens learned of the Pascal&ndash;Fermat exchange; the standard probability text for half a century, reprinted as Part I of <em>Ars Conjectandi</em>.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1696</span><span class="dot">&middot;</span>Johann Bernoulli<span class="strand">control</span></div>
+      <p><span class="work">The brachistochrone challenge</span> (Acta Eruditorum). Solved by Johann, Jacob, Leibniz, l&rsquo;H&ocirc;pital and Newton, it founds the calculus of variations (Euler 1744, Lagrange) &mdash; the variational root optimal control still cites (<a href="https://www.semanticscholar.org/paper/300-years-of-optimal-control:-From-the-to-the-Sussmann-Willems/8b65b531659ee69610ebbc4114a16d00d033e30a">Sussmann &amp; Willems, &ldquo;300 Years of Optimal Control&rdquo;</a>). The Bernoulli family anchors both branches of this page.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1713</span><span class="dot">&middot;</span>Jacob &amp; Nicolas Bernoulli<span class="strand">portfolio</span></div>
+      <p>Jacob&rsquo;s <span class="work">Ars Conjectandi</span> (posthumous) delivers the law of large numbers; the same year, <a href="https://probabilityandfinance.com/pulskamp/NBernoulli/correspondence_petersburg_game.pdf">Nicolas poses the St.&nbsp;Petersburg game</a> in a letter to Montmort &mdash; the problem that will break raw expectation as a decision criterion.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1728</span><span class="dot">&middot;</span>Gabriel Cramer<span class="strand">portfolio</span></div>
+      <p>A letter to Nicolas Bernoulli proposes concave (square-root) valuation of payoffs to defuse St.&nbsp;Petersburg &mdash; utility before the name. Daniel Bernoulli quotes the letter, in French, at the end of his 1738 paper.</p>
+    </div>
 
     <div class="tl-entry">
       <div class="tl-head"><span class="year">1738</span><span class="dot">&middot;</span>Daniel Bernoulli<span class="strand">portfolio</span></div>
-      <p><a href="https://www.jstor.org/stable/1909829" class="work">Specimen theoriae novae de mensura sortis</a>. Resolves the St.&nbsp;Petersburg paradox: gamblers maximize expected <em>log</em> wealth. The utility function returns as the growth-optimal criterion (Kelly, Breiman) and as the borderline CRRA case Merton flags in 1969.</p>
+      <p><a href="https://www.jstor.org/stable/1909829" class="work">Specimen theoriae novae de mensura sortis</a>. Answers the problem Nicolas posed in 1713: gamblers maximize expected <em>log</em> wealth. The utility function returns as the growth-optimal criterion (Kelly, Breiman) and as the borderline CRRA case Merton flags in 1969.</p>
     </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1763</span><span class="dot">&middot;</span>Bayes &amp; Laplace<span class="strand">control</span></div>
+      <p><span class="work">An Essay towards Solving a Problem in the Doctrine of Chances</span>, generalized by Laplace (1774). Inverse probability &mdash; belief updated by evidence. The forward link is state estimation: the Kalman filter is recursive Bayesian inference, made explicit by Ho &amp; Lee (1964).</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1834</span><span class="dot">&middot;</span>Hamilton &amp; Jacobi<span class="strand">control</span></div>
+      <p><span class="work">On a General Method in Dynamics</span> (Jacobi&rsquo;s generalization, 1837). Mechanics recast as a PDE for a characteristic function &mdash; the HJ of HJB. The route ran through Carath&eacute;odory&rsquo;s 1935 &ldquo;royal road&rdquo;; Bellman arrived independently, and it was Kalman who joined the names.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1868</span><span class="dot">&middot;</span>James Clerk Maxwell<span class="strand">control</span></div>
+      <p><a href="https://ieeexplore.ieee.org/document/7569049/" class="work">On Governors</a> (Proc. Royal Society). The first stability analysis of a feedback system &mdash; linearize Watt&rsquo;s governor, demand roots with negative real parts. Neglected for eighty years until Wiener&rsquo;s <em>Cybernetics</em> canonized it as the founding paper of control.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1888</span><span class="dot">&middot;</span>Francis Ysidro Edgeworth<span class="strand">control</span></div>
+      <p><a href="https://rss.onlinelibrary.wiley.com/doi/pdfdirect/10.1111/j.2397-2335.1888.tb02403.x" class="work">The Mathematical Theory of Banking</a>. A bank&rsquo;s cash reserve against stochastic withdrawals &mdash; the newsvendor problem avant la lettre, now recognized as the ancestor of stochastic inventory theory (Arrow&ndash;Harris&ndash;Marschak reinvented it without citation).</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1892</span><span class="dot">&middot;</span>Aleksandr Lyapunov<span class="strand">control</span></div>
+      <p><span class="work">The General Problem of the Stability of Motion</span>. Stability certificates without solving the dynamics; Kalman &amp; Bertram carried the &ldquo;second method&rdquo; into control design in 1960 &mdash; the bridge into the state-space era.</p>
+    </div>
+
+    <h2 class="era">Feedback, storage and expectation, 1900&ndash;1948</h2>
 
     <div class="tl-entry">
       <div class="tl-head"><span class="year">1900</span><span class="dot">&middot;</span>Louis Bachelier<span class="strand">portfolio</span></div>
@@ -85,13 +138,58 @@
     </div>
 
     <div class="tl-entry">
+      <div class="tl-head"><span class="year">1913</span><span class="dot">&middot;</span>Ford Whitman Harris<span class="strand">control</span></div>
+      <p><a href="https://pubsonline.informs.org/doi/10.1287/opre.38.6.937" class="work">How Many Parts to Make at Once</a> (Factory). The square-root economic order quantity &mdash; the founding formula of inventory theory, miscredited to Wilson for decades after a 1931 citation error and only restored to Harris by Erlenkotter in 1990.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1923</span><span class="dot">&middot;</span>Norbert Wiener<span class="strand">portfolio</span></div>
+      <p><span class="work">Differential-Space</span>. Brownian motion made rigorous as a measure on path space &mdash; the Wiener process, the state noise of everything continuous-time on this page, and the integrand of It&ocirc;&rsquo;s calculus.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1927</span><span class="dot">&middot;</span>Black, Nyquist &amp; Bode<span class="strand">control</span></div>
+      <p>Black&rsquo;s negative feedback amplifier (conceived 1927), Nyquist&rsquo;s <a href="https://ieeexplore.ieee.org/document/6771442" class="work">Regeneration Theory</a> (1932) and Bode&rsquo;s gain&ndash;phase analysis (1940). The Bell Labs feedback tradition that Wiener&rsquo;s <em>Cybernetics</em> would generalize and name.</p>
+    </div>
+
+    <div class="tl-entry">
       <div class="tl-head"><span class="year">1928</span><span class="dot">&middot;</span>Frank Ramsey<span class="strand">portfolio</span></div>
       <p><a href="https://www.jstor.org/stable/2224098" class="work">A Mathematical Theory of Saving</a>. Optimal national saving via the calculus of variations &mdash; the first economic control problem. Merton and Samuelson both later name their reduced consumption problem the &ldquo;Phelps&ndash;Ramsey problem.&rdquo;</p>
     </div>
 
     <div class="tl-entry">
+      <div class="tl-head"><span class="year">1928</span><span class="dot">&middot;</span>John von Neumann<span class="strand">equilibrium</span></div>
+      <p><a href="https://link.springer.com/article/10.1007/BF01448847" class="work">Zur Theorie der Gesellschaftsspiele</a>. Minimax and backward reasoning through the game tree &mdash; ancestor of both expected utility (1944) and Wald&rsquo;s minimax statistics.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1931</span><span class="dot">&middot;</span>Harold Hotelling<span class="strand">equilibrium</span></div>
+      <p><a href="https://www.journals.uchicago.edu/doi/10.1086/254195" class="work">The Economics of Exhaustible Resources</a>. The price of a stored exhaustible asset rises at the rate of interest &mdash; an equilibrium derived from the holder&rsquo;s intertemporal optimization, equilibrium-as-control two decades before Bellman.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1933</span><span class="dot">&middot;</span>William R. Thompson<span class="strand">rl</span></div>
+      <p><a href="https://academic.oup.com/biomet/article/25/3-4/285/176034" class="work">On the likelihood that one unknown probability exceeds another</a> (Biometrika). Sample actions from the posterior probability that they are best: the earliest bandit algorithm &mdash; and the one running live in Man AHL&rsquo;s order router eight decades later.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1933</span><span class="dot">&middot;</span>Working &amp; Kaldor<span class="strand">equilibrium</span></div>
+      <p>Working&rsquo;s wheat-futures empirics (1933) show spot&ndash;futures spreads pricing the service of storage; <a href="https://academic.oup.com/restud/article/7/1/1/1538784">Kaldor names the convenience yield</a> (1939); Working states the supply-of-storage theory (AER, 1949). With Brennan (1958), the line that feeds Gustafson and Deaton&ndash;Laroque.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1938</span><span class="dot">&middot;</span>Marschak &amp; de Finetti<span class="strand">portfolio</span></div>
+      <p>Marschak&rsquo;s <span class="work">Money and the Theory of Assets</span> orders risky positions by means and covariances; de Finetti&rsquo;s <span class="work">Il problema dei &ldquo;pieni&rdquo;</span> (1940) computes a mean&ndash;variance frontier for reinsurance. Mean&ndash;variance twice before Markowitz &mdash; Marschak supervised Markowitz&rsquo;s dissertation without ever mentioning his own paper, and Markowitz conceded the second in <a href="https://joim.com/article/de-finetti-scoops-markowitz/" class="work">de Finetti Scoops Markowitz</a> (2006).</p>
+    </div>
+
+    <div class="tl-entry">
       <div class="tl-head"><span class="year">1944</span><span class="dot">&middot;</span>von Neumann &amp; Morgenstern<span class="strand">portfolio</span></div>
       <p><span class="work">Theory of Games and Economic Behavior</span>. Axiomatizes expected utility &mdash; the objective function every stochastic-control formulation in finance maximizes.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1944</span><span class="dot">&middot;</span>Kiyosi It&ocirc;<span class="strand">portfolio</span></div>
+      <p><span class="work">Stochastic Integral</span> (1944) and <span class="work">On Stochastic Differential Equations</span> (Memoirs AMS, 1951). The calculus of controlled diffusions, built on Wiener&rsquo;s process; Merton&rsquo;s 1969 bibliography carries it as reference [4]. Doob&rsquo;s <em>Stochastic Processes</em> (1953) adds the martingale toolkit that measure-change pricing later rests on.</p>
     </div>
 
     <div class="tl-entry">
@@ -109,7 +207,12 @@
       <p><span class="work">Cybernetics</span>. Feedback control, communication, and learning unified across animals and machines &mdash; the manifesto that made &ldquo;a controller that learns&rdquo; a legitimate scientific object.</p>
     </div>
 
-    <h2 class="era">The dynamic-programming decade, 1951&ndash;1962</h2>
+    <h2 class="era">The dynamic-programming decade, 1949&ndash;1965</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1949</span><span class="dot">&middot;</span>Arrow, Blackwell &amp; Girshick<span class="strand">control</span></div>
+      <p><a href="https://www.jstor.org/stable/1905525" class="work">Bayes and Minimax Solutions of Sequential Decision Problems</a>. Wald&rsquo;s sequential analysis recast as backward-induction functional equations &mdash; the explicit bridge from statistical decision theory to dynamic programming, co-authored by two other principals of this page.</p>
+    </div>
 
     <div class="tl-entry">
       <div class="tl-head"><span class="year">1951</span><span class="dot">&middot;</span>Robbins &amp; Monro<span class="strand">rl</span></div>
@@ -117,8 +220,23 @@
     </div>
 
     <div class="tl-entry">
+      <div class="tl-head"><span class="year">1951</span><span class="dot">&middot;</span>Rufus Isaacs<span class="strand">control</span></div>
+      <p><a href="https://www.rand.org/pubs/papers/P257.html" class="work">Games of Pursuit</a> (RAND P-257). Differential games and the Hamilton&ndash;Jacobi&ndash;Isaacs equation, developed at RAND independently of Bellman down the hall; the memoranda followed in 1954&ndash;55, the book in 1965.</p>
+    </div>
+
+    <div class="tl-entry">
       <div class="tl-head"><span class="year">1952</span><span class="dot">&middot;</span>Harry Markowitz<span class="strand">portfolio</span></div>
       <p><a href="https://www.jstor.org/stable/2975974" class="work">Portfolio Selection</a>. The static mean&ndash;variance problem. Every dynamic theory below is an answer to &ldquo;what happens to Markowitz over time?&rdquo;</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1952</span><span class="dot">&middot;</span>Herbert Robbins<span class="strand">rl</span></div>
+      <p><a href="https://www.ams.org/journals/bull/1952-58-05/S0002-9904-1952-09620-8/" class="work">Some Aspects of the Sequential Design of Experiments</a>. The multi-armed bandit posed as the canonical exploration&ndash;exploitation problem, generalizing Thompson; resolved by dynamic programming in Gittins&rsquo; index theorem (1974, 1979).</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1953</span><span class="dot">&middot;</span>Lloyd Shapley<span class="strand">rl</span></div>
+      <p><a href="https://www.pnas.org/doi/10.1073/pnas.39.10.1095" class="work">Stochastic Games</a>. Value iteration on a discounted dynamic model, four years before Bellman&rsquo;s book &mdash; restricted to one player it <em>is</em> value iteration, and the two-player frame returns in multi-agent RL and market games.</p>
     </div>
 
     <div class="tl-entry">
@@ -166,11 +284,21 @@
       <p><a href="https://www.econometricsociety.org/publications/econometrica/1962/10/01/accumulation-risky-capital-sequential-utility-analysis" class="work">The Accumulation of Risky Capital</a>. Ramsey&rsquo;s control problem made stochastic and sequential by dynamic programming. The verified, directly cited parent of both 1969 lifetime-portfolio papers.</p>
     </div>
 
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1965</span><span class="dot">&middot;</span>David Blackwell<span class="strand">control</span></div>
+      <p><a href="https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-36/issue-1/Discounted-Dynamic-Programming/10.1214/aoms/1177700285.full" class="work">Discounted Dynamic Programming</a>. The discounted MDP of Bellman and Howard put on rigorous measure-theoretic footing, with Blackwell optimality &mdash; the theorem base under every convergence guarantee later claimed in RL.</p>
+    </div>
+
     <h2 class="era">Control enters finance, 1965&ndash;1990</h2>
 
     <div class="tl-entry">
       <div class="tl-head"><span class="year">1965</span><span class="dot">&middot;</span>Karl &Aring;str&ouml;m<span class="strand">control</span></div>
       <p><a href="https://www.sciencedirect.com/science/article/pii/0022247X6590154X" class="work">Optimal Control of Markov Processes with Incomplete State Information</a>. The POMDP: the belief state is a sufficient statistic, and dynamic programming runs over it. His adaptive-control program is the control-side twin of RL &mdash; Sutton, Barto &amp; Williams later call RL &ldquo;direct adaptive optimal control.&rdquo;</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1968</span><span class="dot">&middot;</span>Harold Demsetz<span class="strand">dealers</span></div>
+      <p><a href="https://academic.oup.com/qje/article-abstract/82/1/33/1849310" class="work">The Cost of Transacting</a>. Immediacy is a costly service and the bid&ndash;ask spread is its price &mdash; the founding paper of market microstructure economics, in the reference lists of Stoll (1978) and Grossman&ndash;Miller (1988).</p>
     </div>
 
     <div class="tl-entry">
@@ -194,13 +322,18 @@
     </div>
 
     <div class="tl-entry">
+      <div class="tl-head"><span class="year">1971</span><span class="dot">&middot;</span>Bagehot &amp; Smidt<span class="strand">dealers</span></div>
+      <p>Two <em>Financial Analysts Journal</em> pieces stake out the field&rsquo;s two mechanisms: <a href="https://www.tandfonline.com/doi/abs/10.2469/faj.v27.n2.12" class="work">The Only Game in Town</a> &mdash; &ldquo;Walter Bagehot,&rdquo; pseudonym of Jack Treynor &mdash; has dealers losing to informed traders and recouping from liquidity traders; Smidt has the dealer as an active price-setter managing inventory. The two lines meet in 1985.</p>
+    </div>
+
+    <div class="tl-entry">
       <div class="tl-head"><span class="year">1973</span><span class="dot">&middot;</span>Black, Scholes &amp; Merton<span class="strand">portfolio</span></div>
       <p><a href="https://www.jstor.org/stable/1831029" class="work">The Pricing of Options and Corporate Liabilities</a> and <span class="work">Theory of Rational Option Pricing</span>. Dynamic replication: the delta hedge is a feedback control law that renders the payoff attainable, collapsing pricing to a PDE. Harrison&ndash;Kreps (1979) and Harrison&ndash;Pliska (1981) then recast it by duality: no-arbitrage means a martingale measure exists.</p>
     </div>
 
     <div class="tl-entry">
       <div class="tl-head"><span class="year">1976</span><span class="dot">&middot;</span>Mark Garman<span class="strand">dealers</span></div>
-      <p><a href="https://doi.org/10.1016/0304-405X(76)90006-4" class="work">Market Microstructure</a>. Coins the term; a dealer facing Poisson order arrivals sets quotes to avoid gambler&rsquo;s ruin &mdash; inventory first enters as a viability constraint. The origin point of the quoting strand.</p>
+      <p><a href="https://doi.org/10.1016/0304-405X(76)90006-4" class="work">Market Microstructure</a>. Coins the term; a dealer facing Poisson order arrivals sets quotes to avoid gambler&rsquo;s ruin &mdash; inventory first enters as a viability constraint. The origin point of the quoting strand; Benston &amp; Hagerman (1974) had supplied the OTC spread empirics.</p>
     </div>
 
     <div class="tl-entry">
@@ -241,6 +374,16 @@
     <div class="tl-entry">
       <div class="tl-head"><span class="year">1983</span><span class="dot">&middot;</span>Barto, Sutton &amp; Anderson<span class="strand">rl</span></div>
       <p><a href="https://doi.org/10.1109/TSMC.1983.6313077" class="work">Neuronlike Adaptive Elements That Can Solve Difficult Learning Control Problems</a>. The actor-critic architecture &mdash; a TD critic training a trial-and-error actor &mdash; balancing a pole. Develops Klopf&rsquo;s (1972) hedonistic-neuron program.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1985</span><span class="dot">&middot;</span>Glosten &amp; Milgrom; Kyle<span class="strand">dealers</span></div>
+      <p><a href="https://www.sciencedirect.com/science/article/pii/0304405X85900443" class="work">Bid, Ask and Transaction Prices in a Specialist Market</a> and <a href="https://people.duke.edu/~qc2/BA532/1985%20EMA%20Kyle.pdf" class="work">Continuous Auctions and Insider Trading</a>. The adverse-selection alternative made formal: Glosten&ndash;Milgrom&rsquo;s spread exists at zero inventory, explicitly naming Ho&ndash;Stoll, Amihud&ndash;Mendelson and Garman as the contrast; Kyle&rsquo;s insider solves a dynamic control problem while the market maker filters order flow &mdash; control plus filtering inside one equilibrium.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1988</span><span class="dot">&middot;</span>Grossman &amp; Miller<span class="strand">dealers</span></div>
+      <p><a href="https://doi.org/10.1111/j.1540-6261.1988.tb04594.x" class="work">Liquidity and Market Structure</a>. Demsetz&rsquo;s immediacy made equilibrium: the number of market makers set by the cost of continuous presence against the value of immediacy to outside investors; among its cited antecedents, Cohen&ndash;Maier&ndash;Schwartz&ndash;Whitcomb&rsquo;s proof (1981) that transaction costs alone sustain a spread.</p>
     </div>
 
     <div class="tl-entry">
