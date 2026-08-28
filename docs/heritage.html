@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Heritage &mdash; Control Theory and Reinforcement Learning in Finance</title>
+  <link rel="stylesheet" href="./style.css" />
+  <style>
+    .timeline { margin: 30px 0; }
+    .tl-entry { margin: 0 0 20px; padding-left: 18px; border-left: 2px solid var(--border); }
+    .tl-entry:hover { border-left-color: var(--accent); }
+    .tl-head { font-weight: 600; color: var(--ink); }
+    .tl-head .year { color: var(--accent); font-variant-numeric: tabular-nums; }
+    .tl-head .dot { color: var(--faint); margin: 0 6px; }
+    .tl-entry p { margin: 4px 0 0; color: var(--text); }
+    .tl-entry .work { font-style: italic; }
+    .strand { display: inline-block; font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--muted); background: var(--accent-soft);
+      border-radius: 3px; padding: 0 6px; margin-left: 8px; vertical-align: middle; }
+    .strand.jpm { background: var(--ink); color: #fff; }
+    .legend { font-size: 0.92rem; color: var(--muted); margin: 14px 0 0; }
+    .legend .strand { margin-left: 0; margin-right: 4px; }
+    .seed { font-size: 0.9rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="brand" href="./index.html">inventory</a>
+      <nav>
+        <a href="./papers.html">Papers</a>
+        <a href="./demos.html">Demos</a>
+        <a href="./index.html#bibliography">Bibliography</a>
+        <a href="./map.html">Literature map</a>
+        <a href="./heritage.html">Heritage</a>
+        <a href="https://github.com/microprediction/inventory">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h1>Heritage</h1>
+    <p class="subtitle">Control theory and reinforcement learning in finance, traced backwards.</p>
+
+    <p class="lead">
+      Five strands braid through this history: optimal control and dynamic programming;
+      the portfolio and hedging problems of mathematical finance; equilibrium models that
+      are secretly control problems; dealer quoting and order execution; and the
+      trial-and-error line that became reinforcement learning.
+    </p>
+    <p>
+      The strands cross more often than the textbooks admit. Rational expectations was born
+      inside inventory control (Muth 1961). The earliest published temporal-difference rule
+      appeared in a control journal (Witten 1977). And the 1958 grain-storage equilibrium is
+      now computed by reinforcement learning. Citation links below were chased backwards from
+      the modern papers to their sources; each entry states what it built on.
+    </p>
+    <p class="legend">
+      <span class="strand">control</span> <span class="strand">portfolio</span>
+      <span class="strand">equilibrium</span> <span class="strand">dealers</span>
+      <span class="strand">execution</span> <span class="strand">rl</span>
+      <span class="strand">industry</span> <span class="strand jpm">jpm</span> &mdash; the last marks
+      the thread through J.P.&nbsp;Morgan, where several of these ideas first ran in production.
+    </p>
+
+    <div class="timeline">
+
+    <h2 class="era">Deep background, 1738&ndash;1948</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1738</span><span class="dot">&middot;</span>Daniel Bernoulli<span class="strand">portfolio</span></div>
+      <p><a href="https://www.jstor.org/stable/1909829" class="work">Specimen theoriae novae de mensura sortis</a>. Resolves the St.&nbsp;Petersburg paradox: gamblers maximize expected <em>log</em> wealth. The utility function returns as the growth-optimal criterion (Kelly, Breiman) and as the borderline CRRA case Merton flags in 1969.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1900</span><span class="dot">&middot;</span>Louis Bachelier<span class="strand">portfolio</span></div>
+      <p><a href="http://www.numdam.org/item/ASENS_1900_3_17__21_0/" class="work">Th&eacute;orie de la sp&eacute;culation</a>. Prices as Brownian motion, five years before Einstein &mdash; the state dynamics that continuous-time control in finance would later steer. Rediscovered via Savage and Samuelson in the 1950s.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1911</span><span class="dot">&middot;</span>Edward Thorndike<span class="strand">rl</span></div>
+      <p><a href="https://archive.org/details/animalintelligen00thor" class="work">Animal Intelligence</a>. The law of effect: actions followed by satisfaction are strengthened. The psychological root of the &ldquo;reinforcement&rdquo; in reinforcement learning.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1928</span><span class="dot">&middot;</span>Frank Ramsey<span class="strand">portfolio</span></div>
+      <p><a href="https://www.jstor.org/stable/2224098" class="work">A Mathematical Theory of Saving</a>. Optimal national saving via the calculus of variations &mdash; the first economic control problem. Merton and Samuelson both later name their reduced consumption problem the &ldquo;Phelps&ndash;Ramsey problem.&rdquo;</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1944</span><span class="dot">&middot;</span>von Neumann &amp; Morgenstern<span class="strand">portfolio</span></div>
+      <p><span class="work">Theory of Games and Economic Behavior</span>. Axiomatizes expected utility &mdash; the objective function every stochastic-control formulation in finance maximizes.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1946</span><span class="dot">&middot;</span>Pierre Mass&eacute;<span class="strand">control</span></div>
+      <p><a href="https://catalogue.bnf.fr/ark:/12148/cb324277816" class="work">Les r&eacute;serves et la r&eacute;gulation de l&rsquo;avenir</a>. Hydroelectric reservoirs managed as sequential decisions under uncertainty &mdash; storage control, and a recursion anticipating dynamic programming, a decade before Bellman named it.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1947</span><span class="dot">&middot;</span>Abraham Wald<span class="strand">control</span></div>
+      <p><a href="https://archive.org/details/sequentialanalys0000wald" class="work">Sequential Analysis</a>. Decisions made as data arrive, with a cost of continuing to sample. Ancestor of both Bellman&rsquo;s dynamic programming and the optimal-stopping problem that American-option pricing lives in.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1948</span><span class="dot">&middot;</span>Norbert Wiener<span class="strand">control</span></div>
+      <p><span class="work">Cybernetics</span>. Feedback control, communication, and learning unified across animals and machines &mdash; the manifesto that made &ldquo;a controller that learns&rdquo; a legitimate scientific object.</p>
+    </div>
+
+    <h2 class="era">The dynamic-programming decade, 1951&ndash;1962</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1951</span><span class="dot">&middot;</span>Robbins &amp; Monro<span class="strand">rl</span></div>
+      <p><a href="https://projecteuclid.org/journals/annals-of-mathematical-statistics/volume-22/issue-3/A-Stochastic-Approximation-Method/10.1214/aoms/1177729586.full" class="work">A Stochastic Approximation Method</a>. Root-finding through noise with decaying step sizes. The mathematical engine of temporal-difference and Q-learning: the 1994 convergence proofs rest on it, and its step-size conditions appear verbatim in Q-learning&rsquo;s.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1952</span><span class="dot">&middot;</span>Harry Markowitz<span class="strand">portfolio</span></div>
+      <p><a href="https://www.jstor.org/stable/2975974" class="work">Portfolio Selection</a>. The static mean&ndash;variance problem. Every dynamic theory below is an answer to &ldquo;what happens to Markowitz over time?&rdquo;</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1956</span><span class="dot">&middot;</span>John Kelly<span class="strand">portfolio</span></div>
+      <p><a href="https://www.princeton.edu/~wbialek/rome/refs/kelly_56.pdf" class="work">A New Interpretation of Information Rate</a>. A gambler with a private noisy channel maximizes the exponential growth rate of capital, and that rate equals Shannon&rsquo;s information rate &mdash; Bernoulli&rsquo;s log utility meets information theory. Breiman (1961) proves the log-optimal strategy asymptotically optimal.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1957</span><span class="dot">&middot;</span>Richard Bellman<span class="strand">control</span></div>
+      <p><span class="work">Dynamic Programming</span> and <a href="http://www.iumj.indiana.edu/IUMJ/FULLTEXT/1957/6/56038" class="work">A Markovian Decision Process</a>. The principle of optimality, the Bellman equation, and the MDP. Everything on the algorithmic side of this page reduces to solving his equation.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1958</span><span class="dot">&middot;</span>Robert Gustafson<span class="strand">equilibrium</span></div>
+      <p><a href="https://ideas.repec.org/p/ags/uerstb/157231.html" class="work">Carryover Levels for Grains</a> (USDA). Competitive commodity storage as a Bellman recursion, with the crucial non-negativity constraint on inventories &mdash; the first equilibrium computed as a dynamic program, solved (per Deaton&ndash;Laroque) under rational expectations before Muth&rsquo;s paper existed.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1959</span><span class="dot">&middot;</span>Arthur Samuel<span class="strand">rl</span></div>
+      <p><a href="https://doi.org/10.1147/rd.33.0210" class="work">Some Studies in Machine Learning Using the Game of Checkers</a>. An evaluation function updated toward the value of later positions &mdash; temporal-difference learning avant la lettre.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1960</span><span class="dot">&middot;</span>Ronald Howard<span class="strand">control</span></div>
+      <p><span class="work">Dynamic Programming and Markov Processes</span>. Policy iteration: alternate evaluation and greedy improvement. Modern actor-critic methods are its sampled, incremental descendants.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1960</span><span class="dot">&middot;</span>Rudolf Kalman<span class="strand">control</span></div>
+      <p><a href="https://doi.org/10.1115/1.3662552" class="work">A New Approach to Linear Filtering and Prediction Problems</a>, with the linear-quadratic regulator alongside &mdash; the exactly solvable case of Bellman&rsquo;s problem and the benchmark learning controllers are measured against. Pontryagin&rsquo;s maximum principle (English translation 1962) supplies the continuous-time counterpart, developed independently in the USSR.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1960</span><span class="dot">&middot;</span>Holt, Modigliani, Muth &amp; Simon<span class="strand">control</span></div>
+      <p><span class="work">Planning Production, Inventories, and Work Force</span>. The Carnegie project: quadratic costs give linear decision rules for production and inventory &mdash; LQ control before the name, estimated on factory data. The incubator of the next entry.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1961</span><span class="dot">&middot;</span>John Muth<span class="strand">equilibrium</span></div>
+      <p><a href="https://extranet.parisschoolofeconomics.eu/docs/guesnerie-roger/muth61.pdf" class="work">Rational Expectations and the Theory of Price Movements</a>. Expectations &ldquo;are essentially the same as the predictions of the relevant economic theory.&rdquo; Verified in the text: Muth cites HMMS chapters 2&ndash;4 and 19, and his centerpiece example is a commodity market with inventory speculation. Rational expectations was born inside inventory control.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1962</span><span class="dot">&middot;</span>Edmund Phelps<span class="strand">portfolio</span></div>
+      <p><a href="https://www.econometricsociety.org/publications/econometrica/1962/10/01/accumulation-risky-capital-sequential-utility-analysis" class="work">The Accumulation of Risky Capital</a>. Ramsey&rsquo;s control problem made stochastic and sequential by dynamic programming. The verified, directly cited parent of both 1969 lifetime-portfolio papers.</p>
+    </div>
+
+    <h2 class="era">Control enters finance, 1965&ndash;1990</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1965</span><span class="dot">&middot;</span>Karl &Aring;str&ouml;m<span class="strand">control</span></div>
+      <p><a href="https://www.sciencedirect.com/science/article/pii/0022247X6590154X" class="work">Optimal Control of Markov Processes with Incomplete State Information</a>. The POMDP: the belief state is a sufficient statistic, and dynamic programming runs over it. His adaptive-control program is the control-side twin of RL &mdash; Sutton, Barto &amp; Williams later call RL &ldquo;direct adaptive optimal control.&rdquo;</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1969</span><span class="dot">&middot;</span>Paul Samuelson &amp; Robert Merton<span class="strand">portfolio</span></div>
+      <p><a href="https://www.jstor.org/stable/1926559" class="work">Lifetime Portfolio Selection by Dynamic Stochastic Programming</a> and <a href="https://www.sfu.ca/~kkasa/Merton_69.pdf" class="work">Lifetime Portfolio Selection under Uncertainty: The Continuous-Time Case</a>, back to back in <em>REStat</em> 51(3). Samuelson solves lifetime consumption and portfolio choice by discrete-time DP, building on Phelps and Mossin (1968); Merton brings It&ocirc; calculus and the Hamilton&ndash;Jacobi&ndash;Bellman equation into finance, yielding the Merton fraction.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1971</span><span class="dot">&middot;</span>Robert Merton<span class="strand">portfolio</span></div>
+      <p><a href="https://doi.org/10.1016/0022-0531(71)90038-X" class="work">Optimum Consumption and Portfolio Rules in a Continuous-Time Model</a>. The general many-asset theory; the 1973 ICAPM turns the same machinery into equilibrium asset pricing with intertemporal hedging demands.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1971</span><span class="dot">&middot;</span>Lucas &amp; Prescott<span class="strand">equilibrium</span></div>
+      <p><a href="https://www.econometricsociety.org/publications/econometrica/1971/09/01/investment-under-uncertainty" class="work">Investment Under Uncertainty</a>. Rational-expectations industry equilibrium shown to <em>be</em> the solution of a planner&rsquo;s dynamic program &mdash; the template &ldquo;equilibrium = value function of a control problem,&rdquo; built explicitly on Muth.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1971</span><span class="dot">&middot;</span>Paul Samuelson<span class="strand">equilibrium</span></div>
+      <p><a href="https://www.pnas.org/doi/10.1073/pnas.68.2.335" class="work">Stochastic Speculative Price</a>. The price of a storable commodity &ldquo;determined as the solution to a stochastic-dynamic-programming problem&rdquo;; proves the competitive speculative equilibrium coincides with the planner&rsquo;s optimum, in Gustafson&rsquo;s setting.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1973</span><span class="dot">&middot;</span>Black, Scholes &amp; Merton<span class="strand">portfolio</span></div>
+      <p><a href="https://www.jstor.org/stable/1831029" class="work">The Pricing of Options and Corporate Liabilities</a> and <span class="work">Theory of Rational Option Pricing</span>. Dynamic replication: the delta hedge is a feedback control law that renders the payoff attainable, collapsing pricing to a PDE. Harrison&ndash;Kreps (1979) and Harrison&ndash;Pliska (1981) then recast it by duality: no-arbitrage means a martingale measure exists.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1976</span><span class="dot">&middot;</span>Mark Garman<span class="strand">dealers</span></div>
+      <p><a href="https://doi.org/10.1016/0304-405X(76)90006-4" class="work">Market Microstructure</a>. Coins the term; a dealer facing Poisson order arrivals sets quotes to avoid gambler&rsquo;s ruin &mdash; inventory first enters as a viability constraint. The origin point of the quoting strand.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1976</span><span class="dot">&middot;</span>Magill &amp; Constantinides<span class="strand">portfolio</span></div>
+      <p><a href="https://doi.org/10.1086/261410" class="work">Portfolio Selection with Transactions Costs</a>. Proportional costs added to Merton&rsquo;s problem and the no-trade cone conjectured; Constantinides (1986) shows investors optimally tolerate wide drift from target.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1977</span><span class="dot">&middot;</span>Ian Witten<span class="strand">rl</span></div>
+      <p><a href="https://www.sciencedirect.com/science/article/pii/S0019995877903540" class="work">An Adaptive Optimal Controller for Discrete-Time Markov Environments</a>. Contains the earliest known published temporal-difference rule &mdash; in a control journal. Sutton and Barto discovered it only in 1981, while finishing the actor-critic work.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1977</span><span class="dot">&middot;</span>Kydland &amp; Prescott<span class="strand">equilibrium</span></div>
+      <p><span class="work">Rules Rather than Discretion</span>. Optimal control of policy fails when the controlled agents solve their own forward-looking problems: the policymaker&rsquo;s problem carries the private sector&rsquo;s equilibrium response as a constraint, making discretionary plans time-inconsistent.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1978</span><span class="dot">&middot;</span>Hans Stoll<span class="strand">dealers</span></div>
+      <p><a href="https://doi.org/10.1111/j.1540-6261.1978.tb02053.x" class="work">The Supply of Dealer Services in Securities Markets</a>. The spread as compensation for a risk-averse dealer&rsquo;s displacement from his desired portfolio &mdash; risk-bearing cost, not market power.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1978</span><span class="dot">&middot;</span>Robert Lucas<span class="strand">equilibrium</span></div>
+      <p><span class="work">Asset Prices in an Exchange Economy</span>. A representative agent&rsquo;s Bellman equation prices all assets. Cox, Ingersoll &amp; Ross (1985) supply the continuous-time counterpart: an HJB equation generating the equilibrium term structure.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1980</span><span class="dot">&middot;</span>Amihud &amp; Mendelson<span class="strand">dealers</span></div>
+      <p><a href="https://doi.org/10.1016/0304-405X(80)90020-3" class="work">Dealership Market: Market-Making with Inventory</a>. Builds on Garman: bounded inventory, quotes adjusted dynamically as functions of the inventory state, a preferred inventory position.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1981</span><span class="dot">&middot;</span>Ho &amp; Stoll<span class="strand">dealers</span></div>
+      <p><a href="https://doi.org/10.1016/0304-405X(81)90020-9" class="work">Optimal Dealer Pricing Under Transactions and Return Uncertainty</a>. The canonical stochastic-DP dealer: price-sensitive Poisson arrivals (adopted from Garman), return diffusion, risk aversion; inventory shifts quote levels, not spread. The paper the entire modern quoting literature descends from &mdash; then a 27-year gap in the line.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1983</span><span class="dot">&middot;</span>Barto, Sutton &amp; Anderson<span class="strand">rl</span></div>
+      <p><a href="https://doi.org/10.1109/TSMC.1983.6313077" class="work">Neuronlike Adaptive Elements That Can Solve Difficult Learning Control Problems</a>. The actor-critic architecture &mdash; a TD critic training a trial-and-error actor &mdash; balancing a pole. Develops Klopf&rsquo;s (1972) hedonistic-neuron program.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1988</span><span class="dot">&middot;</span>Richard Sutton<span class="strand">rl</span></div>
+      <p><a href="http://incompleteideas.net/papers/sutton-88.pdf" class="work">Learning to Predict by the Methods of Temporal Differences</a>. TD(&lambda;) defined and named, with convergence in mean for linear features; credits Samuel, Witten, and the Widrow&ndash;Hoff rule as antecedents.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1989</span><span class="dot">&middot;</span>Christopher Watkins<span class="strand">rl</span></div>
+      <p><a href="https://cml.rhul.ac.uk/qlearning.html" class="work">Learning from Delayed Rewards</a>. The thesis that married trial-and-error learning to Bellman&ndash;Howard dynamic programming, introducing Q-learning. Watkins &amp; Dayan (1992) prove convergence under exactly the Robbins&ndash;Monro step-size conditions. Stokey &amp; Lucas&rsquo;s <em>Recursive Methods</em> (1989), the same year, codifies DP as the language of economic equilibrium.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1990</span><span class="dot">&middot;</span>Davis &amp; Norman<span class="strand">portfolio</span></div>
+      <p><a href="https://doi.org/10.1287/moor.15.4.676" class="work">Portfolio Selection with Transaction Costs</a>. The Magill&ndash;Constantinides problem solved rigorously as singular stochastic control: reflect the portfolio at the boundary of the no-trade wedge. Shreve&ndash;Soner (1994) redo it with viscosity solutions.</p>
+    </div>
+
+    <h2 class="era">Learning meets markets, 1992&ndash;2001</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1992</span><span class="dot">&middot;</span>Williams; Tesauro<span class="strand">rl</span></div>
+      <p><a href="https://doi.org/10.1007/BF00992696" class="work">REINFORCE</a>: unbiased Monte-Carlo policy gradients &mdash; optimize the policy directly, not through a value function. And <a href="https://www.bkgm.com/articles/tesauro/tdl.html" class="work">TD-Gammon</a>: TD(&lambda;) plus a neural network plus self-play reaches master-level backgammon, the existence proof cited by both the DQN and AlphaGo papers.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1992</span><span class="dot">&middot;</span>Deaton &amp; Laroque<span class="strand">equilibrium</span></div>
+      <p><a href="https://www.princeton.edu/~deaton/downloads/On_The_Behaviour_of_Commodity_Prices.pdf" class="work">On the Behaviour of Commodity Prices</a> (and <em>JPE</em> 1996). The Gustafson&ndash;Samuelson storage equilibrium estimated on thirteen commodity series, via the numerical revival by Wright &amp; Williams (1982) and Scheinkman &amp; Schechtman (1983). The DP-generated price function explains spikes and skewness; autocorrelation less well.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1994</span><span class="dot">&middot;</span>Jaakkola, Jordan &amp; Singh; Tsitsiklis<span class="strand">rl</span></div>
+      <p><a href="https://direct.mit.edu/neco/article/6/6/1185/5826/" class="work">On the Convergence of Stochastic Iterative Dynamic Programming Algorithms</a> and <a href="https://link.springer.com/article/10.1007/BF00993306" class="work">Asynchronous Stochastic Approximation and Q-learning</a>. Q-learning and TD proved convergent by embedding them in Robbins&ndash;Monro stochastic approximation &mdash; the 1951 foundation made load-bearing.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1996</span><span class="dot">&middot;</span>Bertsekas &amp; Tsitsiklis<span class="strand">rl</span></div>
+      <p><a href="http://www.athenasc.com/ndpbook.html" class="work">Neuro-Dynamic Programming</a>. RL systematized as approximate dynamic programming for the control and OR communities &mdash; the idiom through which it entered financial engineering. Tsitsiklis &amp; Van Roy (1997) delimit convergence with function approximation.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1997</span><span class="dot">&middot;</span>Moody &amp; Wu<span class="strand">rl</span></div>
+      <p><span class="work">Optimization of Trading Systems and Portfolios</span>, then Moody &amp; Saffell, <a href="https://dl.acm.org/doi/abs/10.1109/72.935097" class="work">Learning to Trade via Direct Reinforcement</a> (2001). Recurrent RL learns the trading policy directly, maximizing a differential Sharpe ratio rather than forecasting prices &mdash; the founding direct-RL trading papers.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">1998</span><span class="dot">&middot;</span>Bertsimas &amp; Lo<span class="strand">execution</span></div>
+      <p><a href="https://doi.org/10.1016/S1386-4181(97)00012-8" class="work">Optimal Control of Execution Costs</a>. Dynamic programming for buying a block over a fixed horizon under linear impact; the risk-neutral answer is the even split. Opens the execution branch.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2000</span><span class="dot">&middot;</span>Almgren &amp; Chriss<span class="strand">execution</span></div>
+      <p><a href="https://www.math.nyu.edu/~almgren/papers/optliq.pdf" class="work">Optimal Execution of Portfolio Transactions</a>. Risk aversion added to Bertsimas&ndash;Lo (cited directly): an efficient frontier of liquidation schedules trading impact cost against volatility risk, with permanent versus temporary impact. Obizhaeva &amp; Wang (working paper 2005) later add order-book resilience.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2000</span><span class="dot">&middot;</span>Routledge, Seppi &amp; Spatt<span class="strand">equilibrium</span></div>
+      <p><a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/0022-1082.00248" class="work">Equilibrium Forward Curves for Commodities</a>. The storage DP enters mainstream finance: forward curves from a Deaton&ndash;Laroque-style equilibrium, with the inventory non-negativity constraint creating an embedded timing option and endogenous convenience yield.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2001</span><span class="dot">&middot;</span>Chan &amp; Shelton<span class="strand">dealers</span></div>
+      <p><a href="https://dspace.mit.edu/handle/1721.1/7220" class="work">An Electronic Market-Maker</a> (MIT AI Memo). The first reinforcement-learning market maker: policy-gradient and TD agents quoting in a simulated Garman-style order-flow market, balancing profit and inventory. Cited by both Nevmyvaka&ndash;Feng&ndash;Kearns and Spooner et&nbsp;al.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2001</span><span class="dot">&middot;</span>Longstaff &amp; Schwartz; Tsitsiklis &amp; Van Roy<span class="strand">portfolio</span></div>
+      <p><a href="https://academic.oup.com/rfs/article-abstract/14/1/113/1587472" class="work">Valuing American Options by Simulation</a> and <span class="work">Regression Methods for Pricing Complex American-Style Options</span>. Approximate dynamic programming arrives in finance proper: regress continuation values along simulated paths &mdash; approximate value iteration for the Wald-lineage stopping problem. Rogers (2002) supplies the martingale dual. Hansen &amp; Sargent (2001, book 2008) meanwhile import H&infin; robust control into economics.</p>
+    </div>
+
+    <h2 class="era">Convergence, 2004&ndash;2013</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2004</span><span class="dot">&middot;</span>Kakade, Kearns, Mansour &amp; Ortiz<span class="strand">execution</span></div>
+      <p><a href="https://www.cis.upenn.edu/~mkearns/papers/vwap.pdf" class="work">Competitive Algorithms for VWAP and Limit Order Trading</a>. Worst-case guarantees from online algorithms &mdash; a genuinely separate computer-science tradition (its reference list contains no Bertsimas&ndash;Lo, no Almgren&ndash;Chriss), merged with the control tradition only by the next entry.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2006</span><span class="dot">&middot;</span>Nevmyvaka, Feng &amp; Kearns<span class="strand">execution</span></div>
+      <p><a href="https://www.cis.upenn.edu/~mkearns/papers/rlexec.pdf" class="work">Reinforcement Learning for Optimized Trade Execution</a>. The first large-scale empirical RL for execution &mdash; Q-learning over millisecond order-book states on NASDAQ data &mdash; and the verified bridge: it cites Bertsimas&ndash;Lo, Almgren&ndash;Chriss, the VWAP line, and Chan&ndash;Shelton. The lead in Halperin&rsquo;s Quora answer that seeded this page; Nevmyvaka went on to head machine-learning research at Morgan Stanley.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2006</span><span class="dot">&middot;</span>Huang, Malham&eacute; &amp; Caines; Lasry &amp; Lions<span class="strand">equilibrium</span></div>
+      <p><a href="https://people.math.carleton.ca/~mhuang/MFGcaines.pdf" class="work">Nash Certainty Equivalence</a> (2006) and <span class="work">Mean Field Games</span> (2007), independently. A continuum of agents each solving a control problem against the population distribution; equilibrium is a coupled backward-HJB / forward-Kolmogorov system &mdash; equilibrium-as-control made literal. Carmona &amp; Delarue (2018) give the probabilistic codification.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2008</span><span class="dot">&middot;</span>Avellaneda &amp; Stoikov<span class="strand">dealers</span></div>
+      <p><a href="https://www.math.nyu.edu/~avellane/HighFrequencyTrading.pdf" class="work">High-Frequency Trading in a Limit Order Book</a>. Ho&ndash;Stoll 1981 revived for electronic books &mdash; the paper says so itself (&ldquo;closely related to a paper by Ho and Stoll&rdquo;) &mdash; with exponential-utility reservation prices and fill intensities &lambda;(&delta;)&nbsp;=&nbsp;Ae<sup>&minus;k&delta;</sup>. Ends the 27-year gap in the quoting line.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2013</span><span class="dot">&middot;</span>Gu&eacute;ant, Lehalle &amp; Fernandez-Tapia<span class="strand">dealers</span></div>
+      <p><a href="https://arxiv.org/abs/1105.3115" class="work">Dealing with the Inventory Risk</a>. Inventory bounds turn the Avellaneda&ndash;Stoikov HJB into linear ODEs: the first verification theorem and closed-form quotes as functions of inventory. Guilbaud &amp; Pham (2013) add market orders; Cartea, Jaimungal &amp; Penalva&rsquo;s 2015 textbook makes it the standard curriculum.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2013</span><span class="dot">&middot;</span>G&acirc;rleanu &amp; Pedersen<span class="strand">portfolio</span></div>
+      <p><a href="https://onlinelibrary.wiley.com/doi/abs/10.1111/jofi.12080" class="work">Dynamic Trading with Predictable Returns and Transaction Costs</a>. The synthesis in closed form: Markowitz&rsquo;s statics, Merton&rsquo;s dynamics, and transaction costs resolved with the LQ regulator &mdash; aim in front of the target.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2013</span><span class="dot">&middot;</span>Mnih et&nbsp;al.<span class="strand">rl</span></div>
+      <p><a href="https://arxiv.org/abs/1312.5602" class="work">Playing Atari with Deep Reinforcement Learning</a> (Nature version 2015; AlphaGo 2016). Watkins&rsquo; Q-learning stabilized with deep networks, experience replay and target networks &mdash; citing Watkins&ndash;Dayan and Tesauro. The enabling technology for everything below; DDPG (2015) and PPO (2017) supply the continuous-action line finance mostly uses.</p>
+    </div>
+
+    <h2 class="era">Into production, 2014&ndash;2026</h2>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2014</span><span class="dot">&middot;</span>Peter Cotton<span class="strand jpm">jpm</span></div>
+      <p>Inventory-based quote skewing in production at J.P.&nbsp;Morgan &mdash; begun on arrival in 2013, live the following year: automated market making for corporate bonds, with skew and width read off the slope and convexity of an inventory indifference cost &mdash; control theory applied to over-the-counter trading, in the field years before the academic RL market-making wave. The theory circulated as Cotton &amp; Papanicolaou, <span class="work">Trading Illiquid Goods</span> (working paper; presented at NYU, 2018); the arXiv record of the mid-2010s work is the final entry on this page.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2017</span><span class="dot">&middot;</span>LOXM<span class="strand jpm">jpm</span></div>
+      <p>J.P.&nbsp;Morgan&rsquo;s deep-RL execution engine, <a href="https://www.technologyreview.com/2017/07/31/150246/jpmorgan-will-use-ai-to-carry-out-trades-across-the-world/">reported July 2017</a> as live in European equities since Q1 &mdash; the first bank-announced RL execution system in production, trained on billions of historic and simulated transactions.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2017</span><span class="dot">&middot;</span>Man AHL<span class="strand">industry</span></div>
+      <p>A learning order router in live production, <a href="https://www.risk.net/awards/5368836/quant-hedge-fund-of-the-year-man-ahl">per Risk.net&rsquo;s fund-of-the-year citation</a>: trades allocated across internal algos, dealer algos and the human desk by Thompson sampling &mdash; a 1933 bandit algorithm running money. Bloomberg had reported Man Group&rsquo;s machine-learning models live across $12.7bn of funds that July.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2017</span><span class="dot">&middot;</span>Ritter; Halperin<span class="strand">rl</span></div>
+      <p><a href="https://cims.nyu.edu/~ritter/ritter2017machine.pdf" class="work">Machine Learning for Trading</a>: Q-learning with a mean&ndash;variance reward discovers statistical arbitrage under costs &mdash; the paper that made RL respectable in the practitioner quant literature. And <a href="https://arxiv.org/abs/1712.04609" class="work">QLBS</a>: option price and hedge emerge as the optimal Q-function of a risk-adjusted MDP &mdash; Black&ndash;Scholes done by Q-learning. Kolm &amp; Ritter&rsquo;s 2019 survey maps the field onto the RL formalism.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2018</span><span class="dot">&middot;</span>Buehler, Gonon, Teichmann &amp; Wood<span class="strand jpm">jpm</span></div>
+      <p><a href="https://arxiv.org/abs/1802.03042" class="work">Deep Hedging</a> (<em>Quantitative Finance</em> 2019). A derivatives book hedged by deep RL under transaction costs and risk limits, sidestepping complete-market pricing &mdash; written inside J.P.&nbsp;Morgan&rsquo;s equities QR. In production hedging vanilla index flow from 2018; by 2022, <a href="https://www.risk.net/awards/7926411/quant-of-the-year-hans-buehler">per Risk.net</a>, 70% of the bank&rsquo;s Euro Stoxx flow options were quoted and hedged by machine, with <a href="https://arxiv.org/abs/2207.00932" class="work">Deep Bellman Hedging</a> (2022) the actor-critic sequel. Buehler left for the market maker XTX in 2022.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2018</span><span class="dot">&middot;</span>Bacoyannis, Glukhov, Jin, Kochems &amp; Song<span class="strand jpm">jpm</span></div>
+      <p><a href="https://arxiv.org/abs/1811.09549" class="work">Idiosyncrasies and Challenges of Data Driven Learning in Electronic Trading</a>. The bank&rsquo;s own candid account of RL in production trading: thousands of micro-decisions, reward-shaping difficulties, regulatory constraints &mdash; &ldquo;we backtest, therefore we overfit.&rdquo; The same year, Manuela Veloso founds J.P.&nbsp;Morgan AI Research, whose <a href="https://arxiv.org/abs/1904.12066">ABIDES</a> simulator (2019) and <a href="https://arxiv.org/abs/1911.05892">multi-agent RL dealer markets</a> (2019) carry the simulation line forward.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2018</span><span class="dot">&middot;</span>Spooner, Fearnley, Savani &amp; Koukorinis<span class="strand">dealers</span></div>
+      <p><a href="https://arxiv.org/abs/1804.04216" class="work">Market Making via Reinforcement Learning</a>. TD agents with an asymmetrically dampened inventory reward recover skewing behavior on high-frequency order-book data &mdash; citing both lineages: Ho&ndash;Stoll and Avellaneda&ndash;Stoikov on one side, Chan&ndash;Shelton and Nevmyvaka&ndash;Feng&ndash;Kearns on the other. Cardaliaguet &amp; Lehalle&rsquo;s <a href="https://link.springer.com/article/10.1007/s11579-017-0206-z" class="work">mean field game of controls</a> lands MFGs in microstructure the same year.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2019</span><span class="dot">&middot;</span>Gu&eacute;ant &amp; Manziuk<span class="strand">dealers</span></div>
+      <p><a href="https://arxiv.org/abs/1910.13205" class="work">Deep Reinforcement Learning for Market Making in Corporate Bonds</a>. Actor-critic networks replace finite-difference HJB solvers for multi-asset OTC quoting &mdash; the point where the Ho&ndash;Stoll control lineage and the RL lineage formally merge, on exactly the asset class of the 2014 entry.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2019</span><span class="dot">&middot;</span>Guo, Hu, Xu &amp; Zhang<span class="strand">equilibrium</span></div>
+      <p><a href="https://proceedings.neurips.cc/paper/2019/hash/030e65da2b1c944090548d36b244b28d-Abstract.html" class="work">Learning Mean-Field Games</a>. MFG equilibrium computed by model-free Q-learning, with guarantees; fictitious play (Perrin et&nbsp;al. 2020) and scalable deep RL (Lauri&egrave;re et&nbsp;al. 2022) follow. With Gomes &amp; Sa&uacute;de&rsquo;s price-formation MFG (2021) &mdash; the price as a Lagrange multiplier on flow balance for a stored commodity &mdash; the loop closes: Gustafson&rsquo;s 1958 storage equilibrium, solved by reinforcement learning.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2020</span><span class="dot">&middot;</span>RBC Aiden<span class="strand">industry</span></div>
+      <p><a href="https://www.prnewswire.com/news-releases/rbc-capital-markets-launches-aiden--a-new-ai-powered-electronic-trading-platform-301151453.html" class="work">Aiden</a>, built with Borealis AI &mdash; whose RL program RBC launched in 2017 with Richard Sutton as head academic advisor &mdash; goes live: a client-facing deep-RL VWAP execution agent, the clearest non-JPM production deep-RL claim on record, followed by Aiden Arrival (2022) and a deep-hedging stress-testing pilot (2021). Beyond the banks, public production claims stay rare: the proprietary market makers publish almost nothing, and XTX frames its billion-euro ML build-out as supervised forecasting.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2020</span><span class="dot">&middot;</span>Tooling and textbooks<span class="strand">rl</span></div>
+      <p>Dixon, Halperin &amp; Bilokon&rsquo;s <span class="work">Machine Learning in Finance</span> (Springer), the first graduate text with a full part on RL; and <a href="https://arxiv.org/abs/2011.09607" class="work">FinRL</a>, the open-source library that became the field&rsquo;s dominant experimental ecosystem.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2023</span><span class="dot">&middot;</span>Hambly, Xu &amp; Yang<span class="strand">rl</span></div>
+      <p><a href="https://arxiv.org/abs/2112.04553" class="work">Recent Advances in Reinforcement Learning in Finance</a> (<em>Mathematical Finance</em> 33(3)). The standard mathematical survey, connecting RL back to the stochastic-control formulations of execution, market making and portfolio choice; the <em>Annual Review of Statistics</em> survey (2025) closes the period, naming explainability and robustness as the barriers to adoption.</p>
+    </div>
+
+    <div class="tl-entry">
+      <div class="tl-head"><span class="year">2026</span><span class="dot">&middot;</span>Peter Cotton<span class="strand">dealers</span></div>
+      <p><a href="https://arxiv.org/abs/2608.07690" class="work">On a Simple Relationship Between Order Imbalance, Skew and Width in Over-The-Counter Trading</a>. The imbalance&ndash;skew&ndash;width symmetry isolated from the mid-2010s market-making work &mdash; this project. The dealer strand of this page, begun with Garman&rsquo;s viability constraint, restated as a symmetry.</p>
+    </div>
+
+    </div>
+
+    <p class="seed">
+      Seeded by Igor Halperin&rsquo;s 2018 <a href="https://engineering.nyu.edu/news/what-are-latest-works-reinforcement-learning-financial-field">Quora answer</a>
+      (republished by Forbes). Citation links were verified against primary sources where linked;
+      the companion <a href="./map.html">literature map</a> covers the inventory-and-pricing control strand in depth.
+    </p>
+  </main>
+
+  <footer>
+    Part of the <a href="./index.html">inventory</a> project.
+  </footer>
+</body>
+</html>
