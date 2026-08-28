@@ -38,10 +38,12 @@
 
 <div id="map-wrap">
     <h1>The Imbalance Symmetry: Literature Map</h1>
-    <p>Each node is a paper (or the hub concept). Colors are literatures; solid edges are real
+    <p>This is not a general map of market microstructure. Each node is a paper chosen for its
+    bearing on the current focus of this repo &mdash; the imbalance&ndash;skew&ndash;width symmetry
+    at the hub &mdash; and every edge records that bearing. Colors are literatures; solid edges are real
     connections; <b style="color:#c0392b">dashed red edges are connections that do not yet exist</b> &mdash;
-    verified absences as of mid-2026, i.e. the research agenda. Click a node to open the paper;
-    drag to rearrange; hover for the one-line story.</p>
+    verified absences as of mid-2026, i.e. the research agenda around the symmetry. Click a node to
+    open the paper; drag to rearrange; hover for the one-line story.</p>
     <div class="legend" id="cluster-legend"></div>
     <div class="legend">
         <span><span class="line" style="border-color:#888"></span> builds on / descends from</span>
@@ -72,7 +74,7 @@ const CLUSTERS = {
 const NODES = [
  {id:"hub", label:"THE IMBALANCE SYMMETRY", year:"", c:"hub", r:16, url:"./index.html", note:"Arrival imbalance q is absorbed exactly by a skew shift δ=(w/2)log(q/(1−q)), a quote widening γ, and a carry multiplier 1/(2√(q(1−q))). One balanced solve serves every q."},
  {id:"cotton", label:"Cotton (paper)", year:2026, c:"hub", url:"./skew_width_imbalance.pdf", note:"On a Simple Relationship Between Order Imbalance, Skew and Width in OTC Trading. Work completed around 2015; a flat book still skews; skew first order, width second; CWLS a corner case."},
- {id:"cp", label:"Cotton–Papanicolaou", year:"", c:"hub", url:"https://github.com/microprediction/inventory/blob/main/literature/trading_illiquid.pdf", note:"Trading Illiquid Goods: the companion, extending to clustered arrivals and stochastically varying imbalance."},
+ {id:"cp", label:"Cotton–Papanicolaou", year:"", c:"hub", url:"https://github.com/microprediction/inventory/blob/main/literature/trading_illiquid.pdf", note:"Trading Illiquid Goods: extends Cotton (2026a) to clustered arrivals and stochastically varying imbalance."},
 
  {id:"garman1976", label:"Garman 1976", year:1976, c:"classics", url:"https://doi.org/10.1016/0304-405X(76)90006-4", note:"Asymmetric Poisson buy/sell rates, one static price pair — the oldest imbalanced-flow dealer model; ruin, not policy."},
  {id:"stoll1978", label:"Stoll 1978", year:1978, c:"classics", url:"https://doi.org/10.1111/j.1540-6261.1978.tb02053.x", note:"The spread as compensation for the dealer's inventory holding cost — the object whose slope and convexity the paper's identities isolate."},
