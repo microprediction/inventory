@@ -29,6 +29,10 @@ unchanged by Howard policy improvement to machine precision with
 independent raw-quote searches corroborating, and uses interval-Newton
 calculations to prove existence, local uniqueness, and interiority in the
 stated certificate boxes and over a stated interval of imbalance values.
+The scripts, the LaTeX source and a README are archived at
+https://github.com/microprediction/inventory/tree/sifin-correction-2026-10-12/papers/skew_width_imbalance
+(tag sifin-correction-2026-10-12); I can supply them by other means if
+preferred.
 
 The corrected manuscript runs to thirteen pages, one over the Short
 Communication guideline, because the scope conditions and the quote map
