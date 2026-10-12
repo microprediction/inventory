@@ -1,0 +1,497 @@
+\documentclass[10pt]{beamer}
+% Order imbalance is just a change of coordinates
+% STAC Summit New York, Quant Track, October 2026. 20-25 minutes.
+% Styled after pga_and_trading.pdf / who_ya_gonna_call.pdf (own decks).
+
+\usepackage{amsmath,amssymb,booktabs}
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\definecolor{pcgreen}{RGB}{44,82,16}
+\definecolor{pcblue}{RGB}{40,40,220}
+\setbeamercolor{structure}{fg=pcgreen}
+\setbeamercolor{headline}{bg=pcgreen,fg=white}
+\setbeamercolor{frametitle}{fg=black}
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
+\setbeamerfont{framesubtitle}{series=\bfseries,size=\normalsize}
+\setbeamercolor{framesubtitle}{fg=black}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.6ex,dp=1.8ex,leftskip=0.5cm]{headline}%
+    \raisebox{-0.4ex}{\usebeamerfont{frametitle}\normalsize\mdseries\insertshorttitle}
+  \end{beamercolorbox}}
+\setbeamertemplate{footline}{%
+  \vskip1pt{\color{pcgreen}\rule{\paperwidth}{0.8pt}}\vskip1pt
+  \hbox to \paperwidth{\hspace{0.5cm}\footnotesize Peter Cotton \textbar\ STAC Summit New York, October 2026\hfill
+        \footnotesize\insertframenumber/\inserttotalframenumber\hspace{0.5cm}}\vskip3pt}
+\setbeamertemplate{frametitle}{\vskip1ex\usebeamerfont{frametitle}\insertframetitle\par
+  \ifx\insertframesubtitle\empty\else\vskip0.6ex\usebeamerfont{framesubtitle}\insertframesubtitle\par\fi\vskip0.5ex}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+\setbeamertemplate{footnote}{\insertfootnotemark\footnotesize\insertfootnotetext\par}
+\newcommand{\blue}[1]{\textcolor{pcblue}{#1}}
+\newcommand{\band}[1]{%
+  \begin{frame}[plain]\vspace{2.2cm}
+  \noindent\makebox[\textwidth][c]{\colorbox{pcgreen}{\parbox[t][3.2cm][t]{\dimexpr\paperwidth-2\fboxsep}{\vspace{0.5cm}\raggedleft\color{white}#1\hspace{0.5cm}}}}
+  \end{frame}}
+
+\title[Order imbalance is just a change of coordinates]{Order imbalance is just a change of coordinates}
+\author{Peter Cotton}
+
+\begin{document}
+
+\band{{\Large\bfseries Order imbalance is just a change of coordinates}\\[1ex]
+  {\large An elegant trading symmetry}\\[3ex]
+  Peter Cotton\\[1ex] STAC Summit New York, October 2026\\[0.5ex]}
+
+\begin{frame}[plain]
+\vspace{0.8cm}{\Large\bfseries Overview}\vspace{1em}
+\tableofcontents
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{The market}
+
+\begin{frame}{The market}
+Over the counter markets modeled as sealed bid auctions
+\begin{enumerate}
+\item Customer inquiry is sent to multiple dealers
+\item Dealers respond, not knowing others' responses
+\item The customer takes the best price
+\end{enumerate}
+\vspace{1em}
+Of relevance to corporate bonds, physical commodities, blocks of securities, and for that matter rare baseball cards.
+\end{frame}
+
+\begin{frame}{The thing everyone does and nobody models}
+Dealers shade their quotes with the direction of the flow. A dealer who expects the next call to be a seller quotes differently from one who expects a buyer, \blue{and does so even when her book is flat.}
+\vspace{1em}
+
+Practitioners regard this as too obvious to remark upon.
+\vspace{1em}
+
+The optimal market making literature descending from Avellaneda and Stoikov holds width constant, skews linearly in inventory, and assumes buy and sell arrivals are symmetric. Asymmetric arrivals are handled numerically.
+\vspace{1em}
+
+This talk: flow-shading is not a heuristic on top of inventory management. It is an exact feature of optimal behaviour, and it follows from a symmetry.
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{The dealer's problem}
+
+\begin{frame}{The dealer's problem}{Hazard rate of the inside market}
+If $F(z)$ is the distribution of the most competitive markup from another dealer, and $f(z)$ the corresponding density, we let $h(z) = \frac{f(z)}{1-F(z)}$ denote the hazard rate of the inside market.
+\vspace{1em}
+
+Each won trade concedes a fixed amount $\epsilon$ to adverse selection. Trades are of size $s$. Holding inventory $x$ costs $c(x)$ per unit time. Enquiries arrive as a Poisson process with mean inter-arrival time $\tau$.
+\vspace{1em}
+
+A seller calls with probability $q$ (a buy opportunity for us) and a buyer with probability $1-q$. We play forever and want the steady state policy.
+\end{frame}
+
+\begin{frame}{Optimal markups and the inside hazard}
+The optimal markups can be expressed in relation to $K^{\uparrow}(x;s)$, a non-myopic \blue{indifference markup} pertaining to the optimal strategy. They must relate to the hazard rate of the inside market.
+\[
+\overbrace{\big(m^{\uparrow} - K^{\uparrow}(x;s)\big)}^{existing\ benefit}\;
+\overbrace{\underbrace{h(m^{\uparrow})}_{inside\ hazard}\,\Delta m}^{chance\ of\ losing\ it}
+\;=\;
+\overbrace{\Delta m}^{increase\ in\ profit} .
+\]
+The obvious increase in profit (RHS) when increasing the markup by $\Delta m$ exactly offsets the downside. The downside arises from the possibility of a competitor's ask falling right between $m$ and $m+\Delta m$, the probability of which is proportional to the hazard rate of the inside market.
+\end{frame}
+
+\begin{frame}{Indifference markups}
+The indifference markups $K$ relate to the indifference inventory cost $\nu(\cdot)$, also defined with respect to the optimal strategy:
+\begin{eqnarray}
+K^{\downarrow}(x;s) & := & \epsilon + \frac{\nu(x+s) - \nu(x)}{s} \\
+K^{\uparrow}(x;s) & := & \epsilon + \frac{\nu(x-s) - \nu(x)}{s}
+\end{eqnarray}
+when marking down to buy, and marking up to sell, respectively.\footnote{$K^{\uparrow}$ may well be negative for positive inventory: a loaded dealer will pay to get out.}
+\vspace{1em}
+
+The optimal dealer strategy is to mark up by
+\[
+m^{\uparrow}(x;s) = \frac{1}{h(m^{\uparrow})} + K^{\uparrow}(x;s)
+\]
+which leaves open the properties of $\nu(\cdot)$ buried in the $K$'s.
+\end{frame}
+
+\begin{frame}{Practical theoretical result \#1: Optimal markups}
+If the inside hazard is a constant $h$, corresponding to exponentially distributed inside markup with mean $w = 1/h$, which we interpret as a \blue{market width}, then the optimal policy is
+\begin{equation}
+m^{\uparrow}(x;s) = w + \epsilon + \frac{\nu(x-s)-\nu(x)}{s}
+\end{equation}
+over the fair market price. This reads straightforwardly:
+\begin{center}
+\blue{``markup = market width + adverse selection + marginal inventory cost''}
+\end{center}
+It is a cute formula, by no means obvious, that masks a certain amount of financial and mathematical nuance.\footnote{It arises as the solution of an infinite time trading game.}
+\end{frame}
+
+\begin{frame}{Inventory indifference price}
+The central concept here is again $\nu(x)$. It is the biggest markdown a \emph{fully rational trader} (i.e.\ using this theory) will accept if offered the chance to get out of her inventory $x$ immediately.
+\vspace{1em}
+
+In order to know the indifference markdown of the fully rational trader who is using this theory, you have to know how she is going to trade in the future (which also depends on $\nu(x)$ naturally, which is what we are trying to compute).
+\vspace{1em}
+
+Circular? Yes. Such is life.
+\end{frame}
+
+\begin{frame}{Skew and width from $\nu(x)$}
+Our magic formula works for both bid and ask. Combining them both we notice the following:
+\begin{eqnarray*}
+trader\ mid & = & market\ mid - \overbrace{\frac{\nu(x+s) - \nu(x-s)}{2s}}^{skew\ =:\ S(x)} \\
+trader\ ask - trader\ bid & = & 2(w+\epsilon) + 2\,\underbrace{\frac{\nu(x+s) - 2\nu(x) + \nu(x-s)}{2s}}_{convexity\ =:\ C(x)}
+\end{eqnarray*}
+So we have a new interpretation of $\nu(x)$. The first difference of $\nu(x)$ is skew and the second difference is width.
+\vspace{1em}
+
+It runs both ways. A dealer's quoting reveals the first two differences of her indifference cost, whether or not she has ever written it down.
+\end{frame}
+
+\begin{frame}{The consistency equation}
+The dealer weights direct carrying costs against the fact that holding more inventory makes the next trade opportunity more valuable to her.
+{\small\begin{eqnarray*}
+\overbrace{\frac{\tau c(x)}{s}}^{storage\ cost} & = & q \sup_{m^{\downarrow}}\Big\{\overbrace{\big(m^{\downarrow} - K^{\downarrow}(x;s)\big)}^{net\ gain}\;\overbrace{P^{\downarrow}(m^{\downarrow})}^{fill\ probability}\Big\} \\
+& & + (1-q)\sup_{m^{\uparrow}}\big\{\big(m^{\uparrow} - K^{\uparrow}(x;s)\big)\,P^{\uparrow}(m^{\uparrow})\big\} \\
+& & - \big[\text{the same two terms at } x = 0\big]
+\end{eqnarray*}}
+This is a Bellman equation with a value function $-\nu$ buried inside the break-even markups $K$.\footnote{In full average-reward form, $\rho = -c(x) + \frac{s}{\tau}H(x)$ on a finite inventory lattice; the centered form above is what you get after subtracting the equation at $x=0$.}
+\vspace{0.5em}
+
+This is why common sense holding cost arguments (mean holding time times carrying cost and so forth) overstate the cost of inventory. They ignore that a larger inventory makes the next enquiry \emph{more} valuable, since the potential to get out helps more.
+\end{frame}
+
+\begin{frame}{The consistency equation, exponential case}
+With constant hazard the sup is explicit, $G(K) = \sup_m (m-K)e^{-hm} = \tfrac{1}{h}e^{-1-hK}$, and the equation reads, for every interior inventory $x$,
+\begin{align}
+\frac{\tau\, c(x)}{s}
+&= \frac{e^{-1-h\epsilon}}{h}\,
+\Big[\, e^{-hC(x)}\Big(\,\blue{q\,e^{-hS(x)} + (1-q)\,e^{hS(x)}}\Big) \notag\\
+&\qquad\qquad -\; \big(\text{same at } x=0\big) \Big].
+\label{eq:bellman}
+\end{align}
+\vspace{0.5em}
+
+Skew and convexity are the unknowns. The imbalance $q$ sits inside the bracket, mixing two exponentials.
+\vspace{1em}
+
+Stare at the blue part for a while. That is the whole talk.
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{First symmetry: the mid can move}
+
+\begin{frame}{Result \#2: The mid can move}
+Everything so far had a fixed fair price. Suppose instead the fair price $F_t$ is a martingale with $d\langle F\rangle_t = \sigma^2 dt$, independent of enquiries and fills, and we quote relative to it.
+\vspace{1em}
+
+Cash profit then decomposes pathwise into the fixed-price model's margin flow plus
+\begin{equation}
+M_T = \int_0^T x_{t-}\, dF_t .
+\end{equation}
+The term $M_T$ has zero conditional expectation given any state and action. So it alters no Bellman comparison, selects the same policy, and $M_T/T \to 0$: the long run gain is unchanged.\footnote{Boundedness of $x$ alone would not suffice for an arbitrary martingale; the quadratic variation rate is what controls $M_T$.}
+\vspace{1em}
+
+\blue{The fixed fair price is a frame, not a restriction.}
+\end{frame}
+
+\begin{frame}{Result \#2 continued: where the quadratic cost comes from}
+A risk-averse dealer is not indifferent to the variance of $M_T$, which by the It\^o isometry is $\sigma^2\,\mathbb{E}[x^2]$ per unit time.
+\vspace{1em}
+
+Under a long-run mean--variance criterion with coefficient $\lambda$, the entire price risk of the moving frame is the quadratic inventory charge
+\begin{equation}
+c(x) = \frac{\lambda \sigma^2}{2}\, x^2 .
+\end{equation}
+\vspace{0.5em}
+
+So the carrying cost of the canonical form arises as an identity, not an assumption. Direct costs are the managerial lever; this one you don't get to choose.
+\vspace{1em}
+
+Fill-correlated price moves and state-dependent adverse selection are outside the model. I'll come back to that.
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{Second symmetry: inquiry imbalance}
+
+\begin{frame}{Result \#3: Inquiry imbalance}
+Market imbalance impacts optimal skew and width, obviously.
+\begin{enumerate}
+\item Suppose the probability that a client inquiry is a client selling inquiry is $q$.
+\item We re-compute the optimal long term strategy, and compare it to the case $q = \tfrac12$.
+\end{enumerate}
+\vspace{1em}
+
+The surprising result is that the optimal trading adjustments are very simple formulas that don't depend on $\nu(x)$.
+\end{frame}
+
+\begin{frame}{One line of algebra}
+For any $S$,
+\begin{equation}
+q\,e^{-hS} + (1-q)\,e^{hS}
+\;=\; 2\sqrt{q(1-q)}\;\cosh\!\big(h(S - \delta)\big),
+\qquad
+\delta = \frac{1}{2h}\,\log\frac{q}{1-q} .
+\label{eq:identity}
+\end{equation}
+\vspace{0.5em}
+
+An imbalanced mixture of exponentials is a balanced one in disguise: \blue{translated} by $\delta$, and \blue{rescaled} by $D(q) = 2\sqrt{q(1-q)} \le 1$.
+\vspace{1em}
+
+Write $M(q) = 1/D(q) \ge 1$. In markup units the rescaling is $\gamma = \tfrac{1}{h}\log M(q) \ge 0$.
+\vspace{1em}
+
+You can check this in your head: expand the cosh, match the two exponentials, solve for $\delta$.
+\end{frame}
+
+\begin{frame}{Substitute}
+Put (\ref{eq:identity}) into (\ref{eq:bellman}) and write $S_\delta(x) = S(x) - \delta$:
+{\small\[
+\frac{\tau\,c(x)}{s} = \frac{e^{-1-h\epsilon}}{h}\,\blue{e^{-h\gamma}}
+\Big[ e^{-hC(x)}\cosh\big(hS_\delta(x)\big) - e^{-hC(0)}\cosh\big(hS_\delta(0)\big) \Big].
+\]}
+This is the \emph{balanced} consistency equation in the pair $(C, S_\delta)$, except that the factor $e^{-h\gamma}$ has appeared on the right. Move it to the left:
+{\small\[
+\frac{\tau\,\blue{M(q)}\,c(x)}{s} = \frac{e^{-1-h\epsilon}}{h}
+\Big[ e^{-hC(x)}\cosh\big(hS_\delta(x)\big) - e^{-hC(0)}\cosh\big(hS_\delta(0)\big) \Big].
+\]}
+\vspace{0.5em}
+
+The balanced problem at carrying cost $M(q)\,c$. Nothing else changed.
+\end{frame}
+
+\begin{frame}{Theorem}
+Under the standing assumptions,\footnote{Finite inventory lattice; $\nu(0)=0$; every available quote interior, in both problems. No uniqueness assumed.}
+$(\rho_q, \nu_q)$ solves the steady state problem with arrival imbalance $q$ and carrying cost $c$ \blue{if and only if}
+\[
+\bar\nu(x) = \nu_q(x) - \delta x
+\]
+solves the perfectly balanced problem with carrying cost $M(q)\,c$ and average reward $M(q)\,\rho_q$, where
+\begin{equation}
+M(q) = \frac{1}{2\sqrt{q(1-q)}} \;\ge\; 1 .
+\end{equation}
+Consequently $S_q(x) = \bar S(x) + \delta$ and $C_q(x) = \bar C(x)$, and the quotes map as
+\[
+m^{\downarrow}_q(x) = \bar m^{\downarrow}(x) + \delta, \qquad
+m^{\uparrow}_q(x) = \bar m^{\uparrow}(x) - \delta .
+\]
+The midpoint is translated by $-\delta$. \blue{The width equals the balanced-at-$M(q)c$ width, exactly.}
+\end{frame}
+
+\begin{frame}{Proof in one breath}
+Tilt $\bar\nu = \nu_q - \delta x$. Then the strikes translate: $K^{\downarrow}_q = \bar K^{\downarrow} + \delta$ and $K^{\uparrow}_q = \bar K^{\uparrow} - \delta$.
+\vspace{1em}
+
+On the exponential branch $G(K + \delta) = e^{-h\delta}G(K)$, and $e^{h\delta} = \sqrt{q/(1-q)}$, so
+{\small\[
+q\,G(\bar K^{\downarrow} + \delta) = \sqrt{q(1-q)}\,G(\bar K^{\downarrow}), \qquad
+(1-q)\,G(\bar K^{\uparrow} - \delta) = \sqrt{q(1-q)}\,G(\bar K^{\uparrow}).
+\]}
+Each directional term of the Hamiltonian picks up the same factor, so $H_q = D(q)\,H_{1/2}$ at every state, boundary rows included.
+\vspace{1em}
+
+Multiply the average-reward equation $\rho_q = -c + \frac{s}{\tau}H_q$ by $M(q)$ and you are looking at the balanced equation at cost $M(q)c$. Every step reverses.
+\vspace{1em}
+
+The cosh identity is what this looks like on two-sided states.
+\end{frame}
+
+\begin{frame}{Corollary: imbalance is a time change of the inventory clock}
+Under the quote map, both fill rates scale by the single factor $D(q)$:
+\[
+q\,e^{-h m^{\downarrow}_q} = \sqrt{q(1-q)}\; e^{-h \bar m^{\downarrow}}, \qquad
+(1-q)\,e^{-h m^{\uparrow}_q} = \sqrt{q(1-q)}\; e^{-h \bar m^{\uparrow}} .
+\]
+In generator form $\mathcal L_{q,c} = D(q)\,\mathcal L_{1/2,\,M(q)c}$: the imbalanced inventory process has the \blue{same embedded jump chain}, and the same stationary inventory distribution, as the balanced-at-$M(q)c$ process, with its clock run at rate $D(q) \le 1$.
+\vspace{1em}
+
+Any positive calendar-time carrying cost is therefore amplified by $M(q)$ per effective inventory transition. \blue{Imbalance taxes inventory.} It cannot create carry from nothing: $M(q)\cdot 0 = 0$.
+\end{frame}
+
+\begin{frame}{Erratum}
+In 2019 I stated this result as: skew by $\delta$, \emph{and} widen by $\gamma$, \emph{and} multiply the carry by $M(q)$.
+\vspace{1em}
+
+The widening and the multiplier are the same factor $e^{h\gamma}$ seen from two sides. Writing $D(q)\,e^{-hm} = e^{-h(m+\gamma)}$ you can push the slowdown into the overhead instead of the carry, but you get to do it once.
+\vspace{1em}
+
+The imbalanced dealer's physical width equals the balanced-at-$M(q)c$ dealer's to machine precision. It exceeds the balanced-at-$c$ dealer's only by the convexity response to the multiplied carry, an order of magnitude below $\gamma$ in the configurations I have checked.
+\vspace{1em}
+
+Found in August, by making the claims machine-checkable. Corrected manuscript with SIAM.
+\end{frame}
+
+\begin{frame}{Consequence: a flat book still skews}
+Assume $c(-x) = c(x)$ and a symmetric lattice. The balanced solution is even, so $\bar S(0) = 0$ and
+\begin{equation}
+S_q(0) \;=\; \delta \;=\; \frac{w}{2}\,\log\frac{q}{1-q} \;\approx\; 2w\Big(q - \tfrac12\Big).
+\end{equation}
+When customers are predominantly sellers the market maker marks her midpoint down by $\delta$ before holding any inventory at all. No parameter beyond the observable market width.
+\begin{center}\small
+\begin{tabular}{@{}ccc@{}}
+\toprule
+sellers $q$ & $\log\frac{q}{1-q}$ & $\delta / w$ \\
+\midrule
+0.55 & 0.201 & 0.100 \\
+0.60 & 0.405 & 0.203 \\
+0.65 & 0.619 & 0.310 \\
+0.70 & 0.847 & 0.424 \\
+0.80 & 1.386 & 0.693 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Skew is a flow phenomenon first and an inventory phenomenon second.\footnote{Butz and Oomen document electronic FX dealers skewing on flow at flat inventory. Bergault and Gu\'eant observe it numerically. This is the closed form.}
+\end{frame}
+
+\begin{frame}{Consequence: skew is first order, width second order}
+Expanding about $q = \tfrac12$,
+{\small\[
+\delta \approx 2w\Big(q-\tfrac12\Big), \qquad
+\gamma \approx 2w\Big(q-\tfrac12\Big)^{2}, \qquad
+M(q) \approx 1 + 2\Big(q-\tfrac12\Big)^{2} .
+\]}
+A mild imbalance moves the midpoint linearly and the width only quadratically, and the width response flows entirely through the multiplied carry: exactly,
+\[
+W_q(x) - W_{1/2,c}(x) \;=\; 2\big[\,\bar C_{M(q)c}(x) - \bar C_{c}(x)\,\big].
+\]
+In the small-skew regime $\Delta W(0) \approx 2C_0(q-\tfrac12)^2$, proportional to the \emph{discretionary} width, not the market width.
+\vspace{1em}
+
+Which is why practitioners skew before they widen.
+\end{frame}
+
+\begin{frame}{Consequence: where constant width, linear skew sits}
+Slope and convexity are not independent. Directly from their definitions,
+\begin{equation}
+S(x+s) - S(x) = C(x) + C(x+s),
+\end{equation}
+so a constant width forces an \emph{affine} skew. No single indifference cost generates constant width with nonlinear skew.
+\vspace{1em}
+
+Requiring constant convexity, consistency, and an even carrying cost pins the whole thing down:
+\[
+\nu(x) = \frac{C_0}{s}\,x^2 + \blue{\delta\,x} + \text{const}, \qquad c(x) \propto \cosh\!\Big(\frac{2hC_0 x}{s}\Big) - 1 .
+\]
+The quadratic term prices inventory risk. The linear term prices the flow. Skew is linear \emph{with an intercept}.
+\vspace{1em}
+
+Avellaneda--Stoikov is exact in one corner: balanced flow and a cosh-shaped cost. Under imbalance, keep the linear response computed at cost $M(q)c$ and add $\delta$. Outside the corner, solve for $\nu(x)$.
+\end{frame}
+
+\begin{frame}{The adjustment is simple; the solution is not}
+The theorem neither requires nor provides a closed form. In general $\nu$ must be computed numerically, and everything about its shape depends on $c$.
+\vspace{1em}
+
+What the symmetry provides is the correction: whatever the balanced solution at cost $M(q)c$ is, the imbalanced one is that same object tilted by $\delta x$.
+\vspace{1em}
+
+\blue{One balanced solver covers every level of imbalance}, one solve per multiplier.
+\vspace{1em}
+
+The algebra is old. It is a birth--death symmetrization, and the geometric mean of the rates is familiar from the spectral theory of birth and death processes and the transient analysis of the simple queue. What is new is the economics: after a skew translation, imbalance is a uniform slowing of the inventory clock.
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{Play it}
+
+\begin{frame}{Mind the gap}
+A game isomorphic to the dealer's problem, at \blue{inventory.microprediction.org/game.html}
+\begin{enumerate}
+\item Enquiries fall from the sky and land at the best competing quote.
+\item You hold a bar with a gap in it. The gap is your bid and offer.
+\item What lands in the gap went to a competitor. What lands on the bar you won, at a margin equal to the distance from fair value to the bar's edge, less $\epsilon$.
+\item Won buys stack on your back. A buy and a sell cancel. Carry is back pain.
+\end{enumerate}
+\vspace{0.5em}
+Three levels, two symmetries:
+\begin{description}
+\item[Easy] balanced flow, fixed price.
+\item[Medium] imbalanced flow, fixed price. Easy at carry $M(q)a$, shifted by $\delta$.
+\item[Hard] imbalanced flow, moving price. Medium in a moving frame; the mark-to-market is noise.
+\end{description}
+A regret meter scores you against the policy-iteration optimum.
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{Uses}
+
+\begin{frame}{Fill ratios}
+At the optimum, profitability factors cleanly. The optimal response sits the distance $w$ beyond its strike, so the continuation-adjusted surplus on a won trade is $s\,w$ at every level of inventory.
+\vspace{1em}
+
+All variation in the value of an enquiry is variation in the fill ratio, which under constant hazard is $e^{-m/w}$: log-linear in the markup with slope $-1/w$. That is how $w$ is estimated from a quote archive.
+\vspace{1em}
+
+A dealer facing zero adverse selection and zero marginal inventory cost should, if she quotes optimally, win $e^{-1} \approx 37\%$ of her enquiries. Persistent departures from that ratio measure her effective strike.
+\end{frame}
+
+\begin{frame}{Testing it, and reading a dealer's book}
+Request-for-quote archives record direction, quotes, and fills. Direction counts estimate $q$, the win curve estimates $w$, and the theorem then predicts the zero-inventory skew $\delta$ with no free parameter.
+\vspace{1em}
+
+Within an instrument, mids should shift at first order in the imbalance and widths at second, the width response proportional to the discretionary width.
+\vspace{1em}
+
+The identities run both ways. A counterparty's quoting reveals her inventory cost function, and a shift in her zero-inventory skew reveals her view of the flow.
+\vspace{1em}
+
+I make no empirical claims. If you have RFQ data, I would like to talk.
+\end{frame}
+
+\begin{frame}{Assessing decisions after the fact}
+Illiquidity implies short time series, and short time series make back-testing unreliable. The model instead prices individual decisions. We assume a trader markup of $m$ and a model markup of $m^*$.
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+ & Model trades & Model misses \\
+\hline
+Trader trades & $s(m - m^*)$ & $\blue{s(m-m^*) + sw}$ \\
+Trader misses & $\blue{-sw}$ & $0$ \\
+\hline
+\end{tabular}
+\end{center}
+\vspace{0.5em}
+Every cell is computable when the cover price is observed, as on platforms that disclose it to the winner. The running total separates flow-reading (the $\delta$ term) from inventory management. Profit and loss, by contrast, mixes both with luck.
+\end{frame}
+
+\begin{frame}{Learning faster with the symmetry}
+Reinforcement learning approaches to market making need not assume an exponential win curve. The symmetry helps them anyway, reinterpreted as an approximate heuristic.
+\vspace{1em}
+
+Experience gathered at one imbalance transfers to every other through the correction $(\delta, M(q))$, so a learner can pool episodes across flow regimes instead of learning each regime separately.
+\vspace{1em}
+
+The inverse problem works the same way: quotes observed under any regime, de-tilted by $\delta$, all estimate the same balanced-frame $\nu$.
+\end{frame}
+
+%--------------------------------------------------------------------
+\section{Summary}
+
+\begin{frame}{What it needs, and what it leaves out}
+\begin{enumerate}
+\item Exponentiality is needed only locally. The competitor's distribution enters through one object, $\log G(K)$, and exactness needs it affine over the strikes actually visited. Slowly varying hazard gives an error of first order in its relative variation.
+\item Interiority can fail. At extreme inventory the quote floor clips, first at a one-sided boundary state in the convex families tested. The certificates assert membership of the admissible region rather than assume it.
+\item Clustered arrivals and a fluctuating $q$ are left out. The symmetry is exact in the stationary core. Markov-modulated imbalance is the natural sequel; the geometric mean becomes a Perron root.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Summary of theoretical work}
+\begin{enumerate}
+\item Clarity around how \blue{width} and \blue{skew} relate to inventory cost: first and second differences of $\nu$.
+\item A moving fair price is a frame. Its risk is the quadratic carry.
+\end{enumerate}
+In the special case of exponentially distributed competitor markups:
+\begin{enumerate}\setcounter{enumi}{2}
+\item Imbalance is a skew of $\tfrac{w}{2}\log\tfrac{q}{1-q}$ plus a carry multiplier $1/(2\sqrt{q(1-q)})$. Nothing else.
+\item A flat book still skews. Skew is first order in imbalance, width second.
+\item Constant width, linear skew is exact in one corner, and the symmetry supplies its missing column.
+\end{enumerate}
+\vspace{1em}
+Paper, demos, certificates and the game: inventory.microprediction.org. arXiv 2608.07690.
+\end{frame}
+
+\band{{\Large\bfseries Questions?}}
+
+\end{document}
