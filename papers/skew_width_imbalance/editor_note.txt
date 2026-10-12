@@ -3,7 +3,7 @@ Between Order Imbalance, Skew and Width in Over-The-Counter Trading
 
 Dear Editors,
 
-In follow-up work we found that Theorem 1 of our submission double-counted
+In follow-up work I found that Theorem 1 of my submission double-counted
 a single factor. The balanced-overhead representation (overhead shifted by
 gamma) and the fixed-overhead carrying-cost representation (cost multiplied
 by M(q)) are equivalent frames, not simultaneous physical adjustments.
@@ -30,8 +30,13 @@ independent raw-quote searches corroborating, and uses interval-Newton
 calculations to prove existence, local uniqueness, and interiority in the
 stated certificate boxes and over a stated interval of imbalance values.
 
-We preferred to send the corrected manuscript now rather than have
-referees spend time on statements we know to be wrong, and we apologize
+The corrected manuscript runs to thirteen pages, one over the Short
+Communication guideline, because the scope conditions and the quote map
+are now stated explicitly. If the limit binds I will trim the Uses
+section.
+
+I preferred to send the corrected manuscript now rather than have
+referees spend time on statements I know to be wrong, and I apologize
 for the inconvenience.
 
 Sincerely,
