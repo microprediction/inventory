@@ -119,6 +119,6 @@ const FOUR = (() => {
     return { tilt, overd, pard, w2g, scale, overgain };
   }
 
-  return { setup, step, deviations };
+  return { setup, step, deviations, makeProblem, piStep };
 })();
 if (typeof module !== "undefined") module.exports = FOUR;
