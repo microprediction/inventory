@@ -27,11 +27,23 @@
   <p class="subtitle">Live, in-browser computations backing the papers on this site.</p>
 
   <ul class="demo-list">
+    <li><a href="./game.html">Mind the gap &mdash; the dealer's game</a>
+      <div class="claim">Enquiries fall from the sky and land at the best competing quote; you
+      hold a bar whose gap is your bid and offer. Three levels, two symmetries: the hard level
+      (moving price) is the medium one (imbalanced flow) in a moving frame, and the medium level
+      is the easy one (balanced flow) after a skew of &delta; and a slower inventory clock. A
+      regret meter scores you against the policy-iteration optimum.</div></li>
     <li><a href="./symmetry.html">The imbalance symmetry</a>
       <div class="claim">The imbalanced and balanced market making problems are solved
       numerically and independently; after the skew shift &delta; and the carry multiplier
       M(q), one lands on the other to within 10<sup>&minus;13</sup>. The dots on the line are
       the theorem.</div></li>
+    <li><a href="./twins.html">Twin dealers &mdash; the commutative square, live</a>
+      <div class="claim">The imbalanced dealer and her balanced twin at cost M(q)c share one
+      inventory path, trade for trade, on two clocks: quotes a constant &delta; apart with
+      identical widths, the imbalanced clock slower by exactly 2&radic;(q(1&minus;q)), and
+      carry per transition equal. One-sided flow is a skew plus a time change &mdash;
+      nothing else.</div></li>
     <li><a href="./simulation.html">Optimal and sub-optimal market makers</a>
       <div class="claim">Three dealers face the same enquiry stream and the same competing
       quotes: the optimal policy, constant-width linear-skew with no flow term, and no skew at
