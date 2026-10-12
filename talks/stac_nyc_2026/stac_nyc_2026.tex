@@ -263,21 +263,25 @@ The balanced problem at carrying cost $M(q)\,c$. Nothing else changed.
 \end{frame}
 
 \begin{frame}{Theorem}
-Under the standing assumptions,\footnote{Finite inventory lattice; $\nu(0)=0$; every available quote interior, in both problems. No uniqueness assumed.}
+On a finite inventory lattice, with every available quote interior in both problems, and with no uniqueness assumed:
+\vspace{0.5em}
+
 $(\rho_q, \nu_q)$ solves the steady state problem with arrival imbalance $q$ and carrying cost $c$ \blue{if and only if}
 \[
 \bar\nu(x) = \nu_q(x) - \delta x
 \]
-solves the perfectly balanced problem with carrying cost $M(q)\,c$ and average reward $M(q)\,\rho_q$, where
-\begin{equation}
-M(q) = \frac{1}{2\sqrt{q(1-q)}} \;\ge\; 1 .
-\end{equation}
+solves the perfectly balanced problem with carrying cost $M(q)\,c$ and average reward $M(q)\,\rho_q$, where $M(q) = 1/(2\sqrt{q(1-q)}) \ge 1$.
+\vspace{0.5em}
+
 Consequently $S_q(x) = \bar S(x) + \delta$ and $C_q(x) = \bar C(x)$, and the quotes map as
 \[
 m^{\downarrow}_q(x) = \bar m^{\downarrow}(x) + \delta, \qquad
 m^{\uparrow}_q(x) = \bar m^{\uparrow}(x) - \delta .
 \]
 The midpoint is translated by $-\delta$. \blue{The width equals the balanced-at-$M(q)c$ width, exactly.}
+\vspace{0.5em}
+
+The map is a bijection of the two normalised solution sets. It remains valid at $c \equiv 0$, where $M(q)\cdot 0 = 0$.
 \end{frame}
 
 \begin{frame}{Proof in one breath}
