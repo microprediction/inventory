@@ -11,6 +11,18 @@ Consequently the submitted statement that physical quotes widen directly by
 gamma, together with several dependent corollaries, was incorrect. The
 underlying Hamiltonian scaling remains valid.
 
+The manuscript shows as In Review with an associate editor assigned. I
+would be grateful if the corrected manuscript could replace the submitted
+file and be forwarded to the associate editor and any referees. The
+abstract and novelty statement held in the submission system also refer
+to "a widening of her quotes"; the corrected abstract is on the first
+page of the attached PDF, and the corrected novelty statement reads:
+the imbalanced problem compresses onto the balanced one under two
+adjustments tied to the observable market width, a skew translation of
+(w/2) log(q/(1-q)) and a multiplication of the carrying cost by
+1/(2 sqrt(q(1-q))), with the physical width equal to that of the
+balanced policy at the multiplied cost.
+
 The attached corrected manuscript states the exact finite-lattice
 equivalence in the fixed-overhead frame, as a bijection of solution sets.
 After a skew translation, both directional fill rates are slowed by
