@@ -55,7 +55,7 @@ const GAME = (() => {
       level, q: opts.q ?? L.q, sigma: opts.sigma ?? L.sigma,
       a: opts.a ?? 0.002, eps: opts.eps ?? 0.25, N: opts.N ?? 6,
       tau: opts.tau ?? 1.0,        // mean inter-arrival, seconds
-      fall: opts.fall ?? 1.6,      // seconds from sky to bar
+      fall: opts.fall ?? 0.6,      // seconds from sky to bar: too quick to react to, as in the model you quote before the cover is revealed
       shiftSpeed: 1.5, widenSpeed: 1.0,
     };
     const rng = mulberry(opts.seed ?? (Math.random() * 2 ** 32) >>> 0);
