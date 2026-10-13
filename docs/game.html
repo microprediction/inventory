@@ -126,8 +126,8 @@
   Width in Over-The-Counter Trading</a>.</p>
 </main>
 
-<script src="./fourcorners_core.js"></script>
-<script src="./game_core.js"></script>
+<script src="./fourcorners_core.js?v=2"></script>
+<script src="./game_core.js?v=3"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -221,7 +221,7 @@
     c.fillStyle = bend > 0.6 ? '#e35d5d' : '#fbfbf8';
     c.beginPath(); c.arc(headX, headY, headR, 0, 7); c.fill();
     // caught balls sit on the tray until a buy and a sell cancel
-    for (const b of g.tray) {
+    for (const b of (g.tray || [])) {
       const x = px((b.side > 0 ? g.B : g.A) + b.off);
       c.fillStyle = b.side > 0 ? '#4ec98a' : '#e35d5d';
       c.beginPath(); c.arc(x, barY - 16, 8, 0, 7); c.fill();
