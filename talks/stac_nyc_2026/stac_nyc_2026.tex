@@ -161,7 +161,7 @@ The dealer weights direct carrying costs against the fact that holding more inve
 & & + (1-q)\sup_{m^{\uparrow}}\big\{\big(m^{\uparrow} - K^{\uparrow}(x;s)\big)\,P^{\uparrow}(m^{\uparrow})\big\} \\
 & & - \big[\text{the same two terms at } x = 0\big]
 \end{eqnarray*}}
-This is a Bellman equation with a value function $-\nu$ buried inside the break-even markups $K$.\footnote{In full average-reward form, $\rho = -c(x) + \frac{s}{\tau}H(x)$ on a finite inventory lattice; the centered form above is what you get after subtracting the equation at $x=0$.}
+This is a Bellman equation with a value function $-\nu$ buried inside the break-even markups $K$.
 \vspace{0.5em}
 
 This is why common sense holding cost arguments (mean holding time times carrying cost and so forth) overstate the cost of inventory. They ignore that a larger inventory makes the next enquiry \emph{more} valuable, since the potential to get out helps more.
@@ -179,6 +179,9 @@ With constant hazard the sup is explicit, $G(K) = \sup_m (m-K)e^{-hm} = \tfrac{1
 \vspace{0.5em}
 
 Skew and convexity are the unknowns. The imbalance $q$ appears inside the bracket, mixing two exponentials.
+\vspace{0.5em}
+
+In full average-reward form the equation is $\rho = -c(x) + \frac{s}{\tau}H(x)$ on a finite inventory lattice. Subtracting the equation at $x=0$ gives the centred form.
 \end{frame}
 
 %--------------------------------------------------------------------
@@ -233,10 +236,9 @@ For any $S$,
 \begin{equation}
 q\,e^{-hS} + (1-q)\,e^{hS}
 \;=\; 2\sqrt{q(1-q)}\;\cosh\!\big(h(S - \delta)\big),
-\qquad
-\delta = \frac{1}{2h}\,\log\frac{q}{1-q} .
 \label{eq:identity}
 \end{equation}
+where $\delta = \frac{1}{2h}\log\frac{q}{1-q}$.
 \vspace{0.5em}
 
 An imbalanced mixture of exponentials is a balanced one in disguise: \blue{translated} by $\delta$, and \blue{rescaled} by $D(q) = 2\sqrt{q(1-q)} \le 1$.
@@ -281,7 +283,7 @@ m^{\downarrow}_q(x) = \bar m^{\downarrow}(x) + \delta, \qquad
 m^{\uparrow}_q(x) = \bar m^{\uparrow}(x) - \delta .
 \]
 The midpoint is translated by $-\delta$. \blue{The width equals the balanced-at-$M(q)c$ width, exactly.}
-\vspace{0.5em}
+\vspace{0.2em}
 
 The map is a bijection of the two normalised solution sets. It remains valid at $c \equiv 0$, where $M(q)\cdot 0 = 0$.
 \end{frame}
@@ -301,7 +303,7 @@ Each directional term of the Hamiltonian picks up the same factor, so $H_q = D(q
 Multiply the average-reward equation $\rho_q = -c + \frac{s}{\tau}H_q$ by $M(q)$ and you are looking at the balanced equation at cost $M(q)c$. Every step reverses.
 \vspace{1em}
 
-The cosh identity is what this looks like on two-sided states.
+On two-sided states this is the cosh identity.
 \end{frame}
 
 \begin{frame}{Corollary: imbalance is a time change of the inventory clock}
@@ -348,7 +350,7 @@ sellers $q$ & $\log\frac{q}{1-q}$ & $\delta / w$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Skew is a flow phenomenon first and an inventory phenomenon second.\footnote{Butz and Oomen document electronic FX dealers skewing on flow at flat inventory. Bergault and Gu\'eant observe it numerically. This is the closed form.}
+Skew is a flow phenomenon first and an inventory phenomenon second.
 \end{frame}
 
 \begin{frame}{Consequence: skew is first order, width second order}
@@ -368,7 +370,7 @@ In the small-skew regime $\Delta W(0) \approx 2C_0(q-\tfrac12)^2$, proportional 
 This accords with the practitioner's instinct to skew into flow first and adjust width only when the market becomes seriously one-sided.
 \end{frame}
 
-\begin{frame}{Consequence: where constant width, linear skew sits}
+\begin{frame}{Consequence: constant width and linear skew}
 Slope and convexity are not independent. Directly from their definitions,
 \begin{equation}
 S(x+s) - S(x) = C(x) + C(x+s),
@@ -399,7 +401,7 @@ The symmetry provides the correction. Whatever the balanced solution at cost $M(
 \blue{One balanced solver covers every level of imbalance}, one solve per multiplier.
 \vspace{1em}
 
-The algebra is old. It is a birth--death symmetrization, and the geometric mean of the rates is familiar from the spectral theory of birth and death processes and the transient analysis of the simple queue. What is new is the economics: after a skew translation, imbalance is a uniform slowing of the inventory clock.
+The algebra is old. It is a birth--death symmetrization, and the geometric mean of the rates is familiar from the spectral theory of birth and death processes and the transient analysis of the simple queue. The economics is new: after a skew translation, imbalance is a uniform slowing of the inventory clock.
 \end{frame}
 
 %--------------------------------------------------------------------
@@ -427,7 +429,7 @@ A regret meter scores you against the policy-iteration optimum.
 \section{Uses}
 
 \begin{frame}{Fill ratios}
-At the optimum, profitability factors cleanly. The optimal response sits the distance $w$ beyond its strike, so the continuation-adjusted surplus on a won trade is $s\,w$ at every level of inventory.
+At the optimum, profitability factors cleanly. The optimal response is the distance $w$ beyond its strike, so the continuation-adjusted surplus on a won trade is $s\,w$ at every level of inventory.
 \vspace{1em}
 
 All variation in the value of an enquiry is variation in the fill ratio, which under constant hazard is $e^{-m/w}$: log-linear in the markup with slope $-1/w$. That is how $w$ is estimated from a quote archive.
@@ -443,7 +445,7 @@ Request-for-quote archives record direction, quotes, and fills. Direction counts
 Within an instrument, mids should shift at first order in the imbalance and widths at second, the width response proportional to the discretionary width.
 \vspace{1em}
 
-The identities run both ways. A counterparty's quoting reveals her inventory cost function, and a shift in her zero-inventory skew reveals her view of the flow.
+A counterparty's quoting reveals her inventory cost function, and a shift in her zero-inventory skew reveals her view of the flow.
 \vspace{1em}
 
 I make no empirical claims. If you have RFQ data, I would like to talk.
@@ -495,7 +497,7 @@ In the special case of exponentially distributed competitor markups:
 \begin{enumerate}\setcounter{enumi}{2}
 \item Imbalance is a skew of $\tfrac{w}{2}\log\tfrac{q}{1-q}$ plus a carry multiplier $1/(2\sqrt{q(1-q)})$.
 \item A flat book still skews. Skew is first order in imbalance, width second.
-\item Constant width, linear skew is exact in one corner, and the symmetry supplies its missing column.
+\item Constant width, linear skew is exact in one corner. Under imbalance the skew acquires the intercept $\delta$.
 \end{enumerate}
 \vspace{1em}
 Paper, demos, certificates and the game: inventory.microprediction.org. arXiv 2608.07690.
