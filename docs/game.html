@@ -87,7 +87,7 @@
     <div class="tile"><div class="lbl">fill ratio</div><div class="val" id="t_fill"></div>
       <div class="note">won / enquiries</div></div>
     <div class="tile" id="tile_price"><div class="lbl">mark-to-market</div><div class="val" id="t_price"></div>
-      <div class="note">&Sigma; x&middot;dF, zero mean: noise, not skill</div></div>
+      <div class="note">&Sigma; x&middot;dF, which has zero mean</div></div>
     <div class="tile" id="tile_twin"><div class="lbl">balanced twin, shifted by &delta;</div><div class="val" id="t_twin"></div>
       <div class="note" id="t_twin_note"></div></div>
   </div>
@@ -106,21 +106,20 @@
   </div>
 
   <h2>The two symmetries</h2>
-  <p><b>Medium is easy, after a change of coordinates.</b> On the medium level the optimal gap is the
-  easy level's optimal gap at carry <i>M</i>(<i>q</i>)&thinsp;<i>a</i>, shifted toward the sellers by
-  &delta; = (<i>w</i>/2) log(<i>q</i>/(1&minus;<i>q</i>)). Both policies are solved here independently;
-  the deviation readout under the board is the theorem. A flat book still skews: look at the dashed
-  gap before you have caught anything.</p>
-  <p><b>Hard is medium, in a moving frame.</b> On the hard level the fair value is a martingale and
-  the bar is in absolute price, so the market drifts away from your quotes. Quote relative to the
-  fair value and the game is the medium one again; the mark-to-market term &Sigma; <i>x</i>&middot;d<i>F</i>
-  has zero mean and changes no decision. A dealer who dislikes its variance pays
-  &lambda;&sigma;<sup>2</sup><i>x</i><sup>2</sup>/2 per unit time for it, which is the back pain:
-  the quadratic carrying cost is the price risk, not an assumption.</p>
+  <p>On the medium level the optimal gap is the easy level's optimal gap at carry
+  <i>M</i>(<i>q</i>)&thinsp;<i>a</i>, shifted toward the sellers by
+  &delta; = (<i>w</i>/2) log(<i>q</i>/(1&minus;<i>q</i>)). Both policies are solved independently and
+  the deviation tile reports the difference. A flat book still skews: the dashed gap is off centre
+  before anything has been caught.</p>
+  <p>On the hard level the fair value is a martingale and the bar is in absolute price, so the market
+  drifts away from the quotes. Quoting relative to the fair value recovers the medium level.</p>
+  <p>The mark-to-market term &Sigma; <i>x</i>&middot;d<i>F</i> has zero mean and changes no decision.
+  A dealer who dislikes its variance pays &lambda;&sigma;<sup>2</sup><i>x</i><sup>2</sup>/2 per unit
+  time for it, and that is the back pain: the quadratic carrying cost is the price risk.</p>
 
   <p class="footnote">Model: market width <i>w</i> = 1, adverse selection &epsilon; = 0.25, inventory
-  capped at &plusmn;6, mean inter-arrival one second. The default carry sits inside the theorem's
-  interior region on this lattice; the certificate configurations in the paper are its analogue. The benchmark policy is policy iteration from a
+  capped at &plusmn;6, mean inter-arrival one second. The default carry lies within the theorem's
+  interior region on this lattice. The benchmark policy is policy iteration from a
   flat cold start (<code>fourcorners_core.js</code>); the game logic is <code>game_core.js</code>.
   Companion to <a href="./papers.html">On a Simple Relationship Between Order Imbalance, Skew and
   Width in Over-The-Counter Trading</a>.</p>
@@ -158,10 +157,10 @@
       ? 'max quote deviation, every quote interior: the theorem, to solver precision'
       : 'floor binds at x = ' + g.floorAt + ': outside the theorem\'s interior region, so the map need not hold';
     $('lookfor').innerHTML = level === 'easy'
-      ? 'Look for: the dashed gap is symmetric when your book is flat and leans against your inventory as it grows. Narrow the gap to win more at thinner margins; widen to win less at fatter ones.'
+      ? 'The dashed gap is symmetric when your book is flat and leans against your inventory as it grows. Narrow the gap to win more at thinner margins; widen to win less at fatter ones.'
       : level === 'medium'
-      ? 'Look for: the dashed gap is <b>already shifted toward the sellers</b> while your book is flat, by &delta; = ' + g.delta.toFixed(3) + '. Carry multiplier M(q) = ' + g.M.toFixed(3) + '. The balanced twin at carry M(q)&thinsp;a is solved independently; shifted by &delta; it is this optimum (last tile). Crank the carry and the floor binds: a loaded dealer would pay to get out, and the theorem\'s interior assumption fails.'
-      : 'Look for: the market drifts away from your bar; keep the gap centred on the fair value line. The optimal gap tracks the line exactly. Your mark-to-market swings with inventory times price moves, so it tells you nothing about how well you quoted; the regret tile does.';
+      ? 'The dashed gap is already shifted toward the sellers while your book is flat, by &delta; = ' + g.delta.toFixed(3) + '. Carry multiplier M(q) = ' + g.M.toFixed(3) + '. The balanced twin at carry M(q)&thinsp;a is solved independently, and shifted by &delta; it is this optimum (last tile). Crank the carry and the floor binds: a loaded dealer would pay to get out, and the theorem\'s interior assumption fails.'
+      : 'The market drifts away from your bar; keep the gap centred on the fair value line. The optimal gap tracks the line exactly. Your mark-to-market swings with inventory times price moves, so it tells you nothing about how well you quoted; the regret tile does.';
   }
 
   function px(p) { return Wd / 2 + (p - g.F) * scale; }

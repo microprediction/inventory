@@ -74,10 +74,7 @@ Of relevance to corporate bonds, physical commodities, blocks of securities, and
 Dealers shade their quotes with the direction of the flow. A dealer who expects the next call to be a seller quotes differently from one who expects a buyer, \blue{and does so even when her book is flat.}
 \vspace{1em}
 
-Practitioners regard this as too obvious to remark upon.
-\vspace{1em}
-
-The optimal market making literature descending from Avellaneda and Stoikov holds width constant, skews linearly in inventory, and assumes buy and sell arrivals are symmetric. Asymmetric arrivals are handled numerically.
+Practitioners regard this as too obvious to remark upon. Butz and Oomen document it in electronic FX; Bergault and Gu\'eant see it in numerical solutions of a dealer model. I have not seen it derived in closed form.
 \vspace{1em}
 
 Flow shading is an exact feature of the optimal policy. It follows from a symmetry of the steady state problem.
@@ -386,7 +383,7 @@ Requiring constant convexity, consistency, and an even carrying cost pins the wh
 The quadratic term prices inventory risk. The linear term prices the flow. Skew is linear \emph{with an intercept}.
 \vspace{1em}
 
-Avellaneda--Stoikov is exact in one corner: balanced flow and a cosh-shaped cost. Under imbalance, keep the linear response computed at cost $M(q)c$ and add $\delta$.
+Constant width, linear skew is exact in one corner: balanced flow and a cosh-shaped cost. Under imbalance, keep the linear response computed at cost $M(q)c$ and add $\delta$.
 \vspace{0.5em}
 
 Obvious moral: solve for $\nu(x)$ rather than pretend $\nu(x) \propto x^2$ works.
