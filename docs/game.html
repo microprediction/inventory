@@ -100,7 +100,7 @@
     <b>where it lands</b><span>the best competing quote, an exponential distance of mean <i>w</i> from the fair value</span>
     <b>the gap</b><span>your bid and offer; an item landing in the gap went to a competitor</span>
     <b>a catch</b><span>a won enquiry, at a margin equal to the distance from fair value to the bar's edge, less &epsilon;</span>
-    <b>the stack</b><span>your inventory; a green and a red cancel</span>
+    <b>the tray</b><span>caught balls stay on the bar; a green and a red cancel each other off it, and what remains is your inventory</span>
     <b>back pain</b><span>the carrying cost <i>a x</i><sup>2</sup> per second, deducted continuously</span>
     <b>dashed gap</b><span>the policy-iteration optimum at your current inventory; autopilot plays it</span>
   </div>
@@ -111,8 +111,9 @@
   &delta; = (<i>w</i>/2) log(<i>q</i>/(1&minus;<i>q</i>)). Both policies are solved independently and
   the deviation tile reports the difference. A flat book still skews: the dashed gap is off centre
   before anything has been caught.</p>
-  <p>On the hard level the fair value is a martingale and the bar is in absolute price, so the market
-  drifts away from the quotes. Quoting relative to the fair value recovers the medium level.</p>
+  <p>On the hard level the fair value is a martingale, reflected at the edges of the board, and the bar
+  is in absolute price, so the market drifts away from the quotes. Quoting relative to the fair value
+  recovers the medium level.</p>
   <p>The mark-to-market term &Sigma; <i>x</i>&middot;d<i>F</i> has zero mean and changes no decision.
   A dealer who dislikes its variance pays &lambda;&sigma;<sup>2</sup><i>x</i><sup>2</sup>/2 per unit
   time for it, and that is the back pain: the quadratic carrying cost is the price risk.</p>
@@ -160,10 +161,10 @@
       ? 'The dashed gap is symmetric when your book is flat and leans against your inventory as it grows. Narrow the gap to win more at thinner margins; widen to win less at fatter ones.'
       : level === 'medium'
       ? 'The dashed gap is already shifted toward the sellers while your book is flat, by &delta; = ' + g.delta.toFixed(3) + '. Carry multiplier M(q) = ' + g.M.toFixed(3) + '. The balanced twin at carry M(q)&thinsp;a is solved independently, and shifted by &delta; it is this optimum (last tile). Crank the carry and the floor binds: a loaded dealer would pay to get out, and the theorem\'s interior assumption fails.'
-      : 'The market drifts away from your bar; keep the gap centred on the fair value line. The optimal gap tracks the line exactly. Your mark-to-market swings with inventory times price moves, so it tells you nothing about how well you quoted; the regret tile does.';
+      : 'The fair value line wanders and the enquiries wander with it; move the bar to keep the gap centred on the line. The optimal gap tracks the line exactly. Your mark-to-market swings with inventory times price moves, so it tells you nothing about how well you quoted; the regret tile does.';
   }
 
-  function px(p) { return Wd / 2 + (p - g.F) * scale; }
+  function px(p) { return Wd / 2 + p * scale; }   // screen is absolute price; the fair value moves on it
 
   function draw() {
     c.fillStyle = '#0f1e3a'; c.fillRect(0, 0, Wd, H);
@@ -173,11 +174,12 @@
       const x = Wd / 2 + k * scale;
       c.beginPath(); c.moveTo(x, barY + 14); c.lineTo(x, barY + 22); c.stroke();
     }
+    const fx = px(g.F);
     c.strokeStyle = '#e3a83a'; c.setLineDash([6, 6]);
-    c.beginPath(); c.moveTo(Wd / 2, skyY - 20); c.lineTo(Wd / 2, barY + 24); c.stroke();
+    c.beginPath(); c.moveTo(fx, skyY - 20); c.lineTo(fx, barY + 24); c.stroke();
     c.setLineDash([]);
     c.fillStyle = '#e3a83a'; c.font = '14px IBM Plex Sans, Arial, sans-serif'; c.textAlign = 'center';
-    c.fillText('fair value' + (g.cfg.sigma > 0 ? ' ' + g.F.toFixed(2) : ''), Wd / 2, skyY - 26);
+    c.fillText('fair value' + (g.cfg.sigma > 0 ? ' ' + g.F.toFixed(2) : ''), fx, skyY - 26);
     c.textAlign = 'left'; c.fillStyle = '#8a9ab8';
     c.fillText('sellers arrive here', 20, skyY - 26);
     c.textAlign = 'right'; c.fillText('buyers arrive here', Wd - 20, skyY - 26);
@@ -204,8 +206,8 @@
     c.fillText('bid', bx - 14, barY - 24); c.fillText('offer', ax + 18, barY - 24);
     // margins: the distance from fair value to each edge, less eps
     c.fillStyle = '#8a9ab8'; c.font = '12px IBM Plex Sans, Arial, sans-serif';
-    c.fillText('margin ' + (g.F - g.B - g.cfg.eps).toFixed(2), (bx + Wd / 2) / 2, barY - 44);
-    c.fillText('margin ' + (g.A - g.F - g.cfg.eps).toFixed(2), (ax + Wd / 2) / 2, barY - 44);
+    c.fillText('margin ' + (g.F - g.B - g.cfg.eps).toFixed(2), (bx + fx) / 2, barY - 44);
+    c.fillText('margin ' + (g.A - g.F - g.cfg.eps).toFixed(2), (ax + fx) / 2, barY - 44);
 
     // the dealer, bending under the stack
     const mx = (bx + ax) / 2, bend = Math.min(1, Math.abs(g.x) / g.cfg.N);
@@ -218,10 +220,11 @@
     c.beginPath(); c.moveTo(shX, shY); c.lineTo(bx, barY + 2); c.moveTo(shX, shY); c.lineTo(ax, barY + 2); c.stroke(); // arms to the bar
     c.fillStyle = bend > 0.6 ? '#e35d5d' : '#fbfbf8';
     c.beginPath(); c.arc(headX, headY, headR, 0, 7); c.fill();
-    // the stack on the back
-    for (let k = 0; k < Math.abs(g.x); k++) {
-      c.fillStyle = g.x > 0 ? '#4ec98a' : '#e35d5d';
-      c.fillRect(shX - 8 - dir * 16, shY - 12 - k * 11, 16, 9);
+    // caught balls sit on the tray until a buy and a sell cancel
+    for (const b of g.tray) {
+      const x = px((b.side > 0 ? g.B : g.A) + b.off);
+      c.fillStyle = b.side > 0 ? '#4ec98a' : '#e35d5d';
+      c.beginPath(); c.arc(x, barY - 16, 8, 0, 7); c.fill();
     }
     if (bend > 0.6) { c.fillStyle = '#e35d5d'; c.font = 'bold 13px IBM Plex Sans, Arial, sans-serif'; c.fillText('ouch', headX + dir * 26, headY - 8); }
 

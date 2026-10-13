@@ -81,7 +81,7 @@ const GAME = (() => {
       cfg, rng, pol, twin, M, delta, devTwin, interior, floorAt,
       t: 0, F: 0, x: 0,
       B: -(W + cfg.eps), A: W + cfg.eps,     // bid and offer, absolute price
-      items: [], nextSpawn: 0,
+      items: [], tray: [], nextSpawn: 0,   // tray: caught balls, by offset from the bar edge they sit on
       won: 0, lost: 0, margin: 0, carry: 0, pricePnl: 0,
       events: [],
     };
@@ -107,9 +107,12 @@ const GAME = (() => {
 
     // fair value moves (hard level); mark-to-market on the book
     if (cfg.sigma > 0) {
-      const dF = cfg.sigma * Math.sqrt(dt) * gauss(g);
-      g.pricePnl += g.x * dF;
-      g.F += dF;
+      const L = cfg.reflect ?? 2.5;              // the fair value reflects at +-L so it stays on the board
+      let F = g.F + cfg.sigma * Math.sqrt(dt) * gauss(g);
+      if (F > L) F = 2 * L - F;
+      if (F < -L) F = -2 * L - F;
+      g.pricePnl += g.x * (F - g.F);
+      g.F = F;
     }
 
     // controls
@@ -150,6 +153,9 @@ const GAME = (() => {
       }
       if (caught) {
         g.won += 1; g.margin += margin; g.x += it.side;
+        const k = g.tray.findIndex(b => b.side === -it.side);
+        if (k >= 0) g.tray.splice(k, 1);                       // a buy and a sell cancel
+        else g.tray.push({ side: it.side, off: it.side > 0 ? land - g.B : land - g.A });
       } else {
         g.lost += 1;
       }
