@@ -99,7 +99,7 @@
     <b>falling item</b><span>an enquiry: green is a seller (a buy opportunity for you), red a buyer</span>
     <b>where it lands</b><span>the best competing quote, an exponential distance of mean <i>w</i> from the fair value</span>
     <b>the gap</b><span>your bid and offer; an item landing in the gap went to a competitor</span>
-    <b>a catch</b><span>a won enquiry, at a margin equal to the distance from fair value to the bar's edge, less &epsilon;</span>
+    <b>a catch</b><span>a won enquiry, at a margin equal to the distance from fair value to the bar's edge, less &epsilon;. The quote that counts is the one you had out when the ball appeared; moving the bar while it falls changes nothing</span>
     <b>the tray</b><span>caught balls stay on the bar; a green and a red cancel each other off it, and what remains is your inventory</span>
     <b>back pain</b><span>the carrying cost <i>a x</i><sup>2</sup> per second, deducted continuously</span>
     <b>dashed gap</b><span>the policy-iteration optimum at your current inventory; autopilot plays it</span>
@@ -127,7 +127,7 @@
 </main>
 
 <script src="./fourcorners_core.js?v=2"></script>
-<script src="./game_core.js?v=4"></script>
+<script src="./game_core.js?v=5"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);

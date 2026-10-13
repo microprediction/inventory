@@ -1,5 +1,8 @@
 /* Mind the gap: a game isomorphic to the sealed-bid market making problem.
  *
+ * Each enquiry is judged against the quote in force when it arrives, so the
+ * player quotes before the cover is revealed, as the model's dealer does.
+ *
  * Enquiries fall from the sky. Each lands at the best competing quote: a
  * displacement z ~ Exp(mean w) from the fair value, on the sellers' side
  * (green, a buy opportunity) or the buyers' side (red, a sell opportunity).
@@ -134,7 +137,9 @@ const GAME = (() => {
     g.nextSpawn -= dt;
     while (g.nextSpawn <= 0) {
       const seller = g.rng() < cfg.q;
-      g.items.push({ side: seller ? 1 : -1, z: expo(g) * W, y: 0 });
+      // the quote in force when the enquiry arrives is the one that competes; the cover is
+      // revealed afterwards, so moving the bar while the ball falls changes nothing
+      g.items.push({ side: seller ? 1 : -1, z: expo(g) * W, y: 0, B: g.B, A: g.A, F: g.F });
       g.nextSpawn += expo(g) * cfg.tau;
     }
 
@@ -144,12 +149,12 @@ const GAME = (() => {
       it.y += dt / cfg.fall;
       if (it.y < 1) continue;
       g.items.splice(k, 1);
-      const land = g.F + (it.side > 0 ? -it.z : it.z);   // competitor's price
+      const land = it.F + (it.side > 0 ? -it.z : it.z);   // competitor's price, around the fair value at arrival
       let caught = false, margin = 0;
-      if (it.side > 0) {               // seller: we buy if our bid beats the competitor's
-        if (g.B > land && g.x < cfg.N) { caught = true; margin = g.F - g.B - cfg.eps; }
-      } else {                         // buyer: we sell if our offer undercuts
-        if (g.A < land && g.x > -cfg.N) { caught = true; margin = g.A - g.F - cfg.eps; }
+      if (it.side > 0) {               // seller: we buy if the bid we had out beats the competitor's
+        if (it.B > land && g.x < cfg.N) { caught = true; margin = it.F - it.B - cfg.eps; }
+      } else {                         // buyer: we sell if the offer we had out undercuts
+        if (it.A < land && g.x > -cfg.N) { caught = true; margin = it.A - it.F - cfg.eps; }
       }
       if (caught) {
         g.won += 1; g.margin += margin; g.x += it.side;
