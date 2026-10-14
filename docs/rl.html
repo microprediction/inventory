@@ -69,8 +69,7 @@
   <p>
     The <strong>win curve</strong> selector changes the generative model of the best competing
     quote. <em>Exponential</em> is the paper&rsquo;s model: constant hazard, symmetry exact.
-    <em>Logistic</em> is the shape Fermanian&ndash;Gu&eacute;ant&ndash;Pu fit to real RFQ data
-    &mdash; increasing hazard &mdash; plus competitors who crowd the flow-heavy side, so the
+    <em>Logistic</em> is an illustrative non-exponential curve with increasing hazard, plus competitors who crowd the flow-heavy side, so the
     symmetry becomes only approximately true. The &delta; the learners use is deliberately NOT
     recalibrated: it is the misspecified, exponential-model formula.
   </p>
@@ -85,7 +84,7 @@
       <label>win curve</label>
       <select id="winCurve">
         <option value="exponential" selected>exponential (paper's model, symmetry exact)</option>
-        <option value="logistic">logistic + crowding (realistic, symmetry approximate)</option>
+        <option value="logistic">logistic + crowding (symmetry approximate)</option>
       </select>
       <button id="runBtn">Run</button>
       <button id="resetBtn">Reset</button>

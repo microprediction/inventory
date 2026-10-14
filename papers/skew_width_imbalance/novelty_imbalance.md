@@ -18,7 +18,7 @@ standing knowledge; these are flagged explicitly in "Honest flags."
 ## R1 — The imbalance equivalence (δ-shift, γ-widening, carrying-cost multiplier M(p))
 
 **Claim being assessed.** Enquiry imbalance p ≠ 1/2 is *exactly* equivalent to the
-balanced problem with (i) skew translated by δ = log((1−p)/p)/(2h); (ii)
+balanced problem with (i) skew translated by δ = log(p/(1−p))/(2h); (ii)
 non-discretionary width widened by γ = [log(1/2) − (log p + log(1−p))/2]/h; (iii)
 carrying cost multiplied by M(p) = e^{hγ} = 1/(2√(p(1−p))). Corollary: a dealer with
 zero inventory optimally skews by δ — skew responds to flow imbalance independently
@@ -205,7 +205,7 @@ Pu 2017; Guéant–Manziuk 2019; Bergault–Guéant 2021) by several years. Seco
 whereas that line either assumes symmetric arrival intensities (Avellaneda–Stoikov
 2008; GLFT 2012) or accommodates asymmetric ones only numerically (Guéant 2017;
 Bergault et al. 2021), we prove that enquiry imbalance is *exactly* equivalent to a
-balanced problem with quotes skewed by log((1−p)/p)/2h, non-discretionary width
+balanced problem with quotes skewed by log(p/(1−p))/2h, non-discretionary width
 widened by γ, and carrying cost inflated by 1/(2√(p(1−p))) — in particular, a dealer
 with zero inventory optimally skews on flow alone, a practice documented empirically
 (Butz–Oomen 2019) but not previously derived. Third, the optimal policy is
