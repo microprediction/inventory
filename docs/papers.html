@@ -46,8 +46,9 @@
         <a href="./simulation.html">simulation</a>.
         <em>The imbalance equivalence: with sellers arriving at probability $q$, the steady-state
         market making problem compresses exactly onto the balanced one under a skew translation
-        $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$, a quote widening $\gamma$, and a carrying-cost
-        multiplier $1/(2\sqrt{q(1-q)})$. A flat book still skews; skew is first order in
+        $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ and a carrying-cost multiplier
+        $1/(2\sqrt{q(1-q)})$, with the width equal to the balanced dealer&rsquo;s at the
+        multiplied cost. A flat book still skews; skew is first order in
         imbalance while width is second; constant-width linear-skew is a corner case.</em>
       </li>
       <li>
@@ -72,7 +73,9 @@
         <a href="https://github.com/microprediction/inventory/blob/main/literature/trading_illiquid.pdf">deck</a>.
         <em>Extends the model to clustered arrivals and stochastically varying imbalance, and
         develops the indifference cost $\nu(x)$ whose slope is the quoted skew and whose
-        convexity is the discretionary width.</em>
+        convexity is the discretionary width.</em> In the deck, equation (13) on slide 38
+        should read $S^*_\delta(x) = 2(C_0/s)\,x$, and equation (14) inherits the same
+        coefficient.
       </li>
     </ul>
 

@@ -40,14 +40,15 @@
     <p>
       It turns out the answer is a <strong>symmetry</strong>. In the steady state, the market
       making problem with arrival imbalance $q$ compresses exactly onto the perfectly balanced
-      problem: the imbalance is absorbed by a translation of the skew, a widening of the quotes,
-      and a multiplication of the effective cost of carry &mdash; three constants involving
-      nothing but the imbalance and the observable market width $w$.
+      problem: the imbalance is absorbed by a translation of the skew and a multiplication of
+      the effective cost of carry, two constants involving nothing but the imbalance and the
+      observable market width $w$. The width of the quotes is the balanced dealer&rsquo;s width
+      at the multiplied cost.
     </p>
 
     <div class="diagram">
       <svg viewBox="0 0 760 216" role="img"
-           aria-label="The imbalance symmetry: the imbalanced market making problem maps onto the balanced one via three explicit corrections">
+           aria-label="The imbalance symmetry: the imbalanced market making problem maps onto the balanced one via two explicit corrections">
         <defs>
           <marker id="arrow" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
             <path d="M0,0 L6.5,3 L0,6 Z" fill="#4a3aff"/>
@@ -77,25 +78,22 @@
 
         <!-- corrections axis -->
         <line x1="120" y1="158" x2="640" y2="158" stroke="#e2e2e2" stroke-width="2"/>
-        <circle cx="180" cy="158" r="5" fill="#4a3aff"/>
-        <circle cx="380" cy="158" r="5" fill="#4a3aff"/>
-        <circle cx="580" cy="158" r="5" fill="#4a3aff"/>
-        <text x="180" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">skew shifts by &delta;</text>
-        <text x="180" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">first order in q &minus; &frac12;</text>
-        <text x="380" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">quotes widen by &gamma;</text>
-        <text x="380" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">second order</text>
-        <text x="580" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">carry &times; M(q)</text>
-        <text x="580" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">flow taxes inventory</text>
+        <circle cx="250" cy="158" r="5" fill="#4a3aff"/>
+        <circle cx="510" cy="158" r="5" fill="#4a3aff"/>
+        <text x="250" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">skew shifts by &delta;</text>
+        <text x="250" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">first order in q &minus; &frac12;</text>
+        <text x="510" y="182" text-anchor="middle" font-size="12" fill="#1f1d3d">carry &times; M(q)</text>
+        <text x="510" y="199" text-anchor="middle" font-size="10.5" fill="#9a9a9a">width responds at second order</text>
       </svg>
       <p class="caption">
-        Three explicit corrections: $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$, a widening
-        $\gamma$, and the carry multiplier $M(q) = 1/(2\sqrt{q(1-q)})$.
+        Two explicit corrections: $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ and the carry
+        multiplier $M(q) = 1/(2\sqrt{q(1-q)})$.
       </p>
     </div>
 
     <p>
       Three consequences follow. A dealer with a <em>flat book</em> should still skew, by
-      $\delta$ exactly. Skew responds to imbalance at first order while width responds only at
+      $\delta$ exactly when long and short positions cost the same to hold. Skew responds to imbalance at first order while width responds only at
       second &mdash; which is why practitioners skew before they widen. And the constant-width,
       linear-skew benchmark of Avellaneda&ndash;Stoikov reappears as a corner case, with the
       symmetry supplying its missing column: what to do about flow. For the derivation see
@@ -152,7 +150,7 @@
         <li>
           Cotton, P. (2026). <a href="./skew_width_imbalance.pdf"><em>On a Simple Relationship
           Between Order Imbalance, Skew and Width in Over-The-Counter Trading</em></a>.
-          Working paper. <em>The imbalance equivalence: skew shift &delta;, widening &gamma;,
+          Working paper. <em>The imbalance equivalence: skew shift &delta; and
           carry multiplier $1/(2\sqrt{q(1-q)})$. A flat book still skews.</em>
         </li>
         <li>
@@ -305,7 +303,7 @@
           Bergault, P., and Gu&eacute;ant, O. (2023). <em>Liquidity Dynamics in RFQ Markets and
           Impact on Pricing</em>. <a href="https://arxiv.org/abs/2309.04216">arXiv:2309.04216</a>.
           <em>Observes numerically that flow-aware market makers skew at zero inventory;
-          Corollary 1 of the core paper is the closed form.</em>
+          Corollary 2 of the core paper is the closed form.</em>
         </li>
         <li>
           Barzykin, A., Bergault, P., and Gu&eacute;ant, O. (2021&ndash;2024). The FX dealer
@@ -370,7 +368,7 @@
           Butz, M., and Oomen, R. (2019). &ldquo;Internalisation by electronic FX spot
           dealers.&rdquo; <em>Quantitative Finance</em> 19(1), 35&ndash;56.
           <a href="https://doi.org/10.1080/14697688.2018.1504167">doi</a>. <em>Documents dealers
-          skewing on flow at flat inventory: the practice Corollary 1 derives rather than
+          skewing on flow at flat inventory: the practice Corollary 2 derives rather than
           assumes.</em>
         </li>
         <li>
