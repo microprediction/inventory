@@ -127,7 +127,7 @@
   Maintained by <a href="https://github.com/microprediction">Peter Cotton</a>.
 </footer>
 
-<script src="./mm_core.js"></script>
+<script src="./mm_core.js?v=2"></script>
 <script>
 const W = 1.0, N = 14, I0 = N;
 const DEALERS = [
@@ -151,8 +151,8 @@ function buildSim() {
 
   const quote = {
     optimal: x => {
-      const i = x + I0, S = MM.slope(imb.nu, i), C = MM.convexity(imb.nu, i);
-      return [Math.max(W + C + S, 0), Math.max(W + C - S, 0)];
+      const { mDown, mUp } = MM.quotes(imb.nu, x + I0, { w: W });
+      return [mDown, mUp];
     },
     cwls: x => [Math.max(W + C0 + beta * x, 0), Math.max(W + C0 - beta * x, 0)],
     noskew: () => [W + C0, W + C0],

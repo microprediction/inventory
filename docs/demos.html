@@ -36,7 +36,7 @@
     <li><a href="./symmetry.html">The imbalance symmetry</a>
       <div class="claim">The imbalanced and balanced market making problems are solved
       numerically and independently; after the skew shift &delta; and the carry multiplier
-      M(q), one lands on the other to within 10<sup>&minus;13</sup>. The dots on the line are
+      M(q), one lands on the other to solver precision. The dots on the line are
       the theorem.</div></li>
     <li><a href="./twins.html">Twin dealers &mdash; the commutative square, live</a>
       <div class="claim">The imbalanced dealer and her balanced twin at cost M(q)c share one
@@ -57,9 +57,9 @@
     <li><a href="./rl.html">Learning faster with the symmetry</a>
       <div class="claim">Reinforcement learning and its inverse across cycling flow regimes.
       One Q-learner pools all experience into a single balanced-frame policy via the &delta;
-      shift and reaches in ten thousand enquiries what the per-regime baseline hasn't reached
-      in eighty thousand; the inverse estimator cuts error severalfold by de-tilting quotes
-      &mdash; until the second-order bias floor of the approximate symmetry appears.</div></li>
+      shift and earns well above a per-regime baseline. The &delta; shift alone ignores the
+      carry multiplier M(q), so de-tilted quotes help the inverse estimator at small samples
+      and then stall at that second-order bias.</div></li>
   </ul>
 
   <p class="muted">More demonstrations will appear here as the program's papers are written up.</p>

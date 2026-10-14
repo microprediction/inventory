@@ -3,16 +3,18 @@
  * dealer's inventory cost from observed quotes).
  *
  * Two generative models for the best competing quote:
- *   'exponential' — constant hazard; the paper's symmetry is EXACT (to first
- *                   order across regimes via the delta shift).
- *   'logistic'    — increasing hazard, the shape Fermanian–Guéant–Pu fit to
- *                   real RFQ win curves; the symmetry is only approximate.
+ *   'exponential' — constant hazard; the paper's symmetry holds exactly, but
+ *                   it maps regime q to the balanced problem at carry M(q)c,
+ *                   so regimes with different M(q) are different problems.
+ *   'logistic'    — an illustrative increasing-hazard curve; the symmetry is
+ *                   only approximate.
  *
  * Forward learners (identical tabular Q-learning throughout):
  *   'per'    — a separate table per flow regime (no symmetry).
  *   'sym'    — ONE table in the balanced frame, actions mapped through the
- *              skew shift delta(q); exact under 'exponential', slightly
- *              misspecified under 'logistic'.
+ *              skew shift delta(q) only. This is a heuristic even under
+ *              'exponential': it ignores the carry multiplier M(q), which
+ *              differs from 1 at second order in q - 1/2.
  *   'robust' — the sym table PLUS a small per-regime residual table that
  *              absorbs whatever the symmetry gets wrong. Under the exact
  *              model the residual stays near zero and costs little; under
@@ -21,6 +23,9 @@
  * Inverse estimators for the dealer's skew curve S(x):
  *   per-regime — only observations from the target regime.
  *   pooled     — de-tilt every regime's observations by delta(q).
+ * The estimand is the dealer's submitted quote skew (m_dn - m_up)/2 at each
+ * inventory, computed from her model-optimal quotes. Under 'exponential'
+ * it equals the value-function slope S(x) wherever no quote is floored.
  *   shrunk     — random-effects partial pooling: the between-regime
  *                dispersion of de-tilted means estimates the symmetry
  *                violation tau^2, and the shrinkage weight sets itself.
@@ -64,6 +69,13 @@ const RL = (() => {
         }
         return Math.max((lo + hi) / 2, 0.01);
       },
+      // invert the optimal-quote map: the strike K whose optimal quote is m.
+      // First-order condition (m - K) * hazard(m) = 1.
+      strikeOf(m, q) {
+        if (this.winCurve === 'exponential') return m - this.w;
+        const F = 1 - this.survQ(m, q);
+        return m - this.sscale / Math.max(F, 1e-12);
+      },
       G(K, q) {
         if (this.winCurve === 'exponential') return this.w * Math.exp(-1 - K / this.w);
         const m = this.mstar(K, q);
@@ -106,13 +118,11 @@ const RL = (() => {
       if (mode !== 'sym') { const row = (side === 'dn' ? resFor(qreg).dn : resFor(qreg).up)[xi]; for (let i = 0; i < nA; i++) out[i] += row[i]; }
       return out;
     }
-    function best(qreg, xi) {
-      let b = -Infinity;
-      for (const side of ['dn', 'up']) {
-        const row = qval(qreg, side, xi);
-        for (let i = 0; i < nA; i++) if (row[i] > b) b = row[i];
-      }
-      return b;
+    // Continuation value of inventory index xi before the next enquiry's
+    // direction is known: the dealer chooses the quote, not the side.
+    function cont(qnext, xi) {
+      const mx = side => { const row = qval(qnext, side, xi); let b = -Infinity; for (let i = 0; i < nA; i++) if (row[i] > b) b = row[i]; return b; };
+      return qnext * mx('dn') + (1 - qnext) * mx('up');
     }
 
     return {
@@ -135,7 +145,9 @@ const RL = (() => {
         const margin = win ? (useDelta ? actions[a] : m) : 0;
         const r = margin - env.cost(x1);
         this.pnl += (win ? m : 0) - env.cost(x1);
-        const td = r + gammaD * best(q, x1 + env.N) - row[a];
+        // env.enquiry() has already advanced the clock, so env.regime() is the
+        // regime of the next enquiry (it changes at block boundaries)
+        const td = r + gammaD * cont(env.regime(), x1 + env.N) - row[a];
         if (mode === 'per') {
           const T = resFor(q), c = ++((side === 'dn' ? T.cdn : T.cup)[xi][a]);
           (side === 'dn' ? T.dn : T.up)[xi][a] += (0.6 / (1 + 0.03 * c)) * td;
@@ -164,12 +176,11 @@ const RL = (() => {
       x: 0, pnl: 0,
       learn({ q, isSeller, Z }) {
         const sol = policy(q);
-        const i = Math.max(1, Math.min(2 * env.N - 1, this.x + env.N));
-        const S = MM.slope(sol.nu, i), C = MM.convexity(sol.nu, i);
-        const K = C + (isSeller ? S : -S);
-        const m = env.mstar(K, q);
         const atLimit = isSeller ? this.x >= env.N : this.x <= -env.N;
-        const win = !atLimit && m < Z;
+        const i = this.x + env.N, nu = sol.nu;
+        // one-sided strikes; at a limit the blocked side does not trade
+        const m = atLimit ? Infinity : env.mstar(isSeller ? nu[i + 1] - nu[i] : nu[i - 1] - nu[i], q);
+        const win = m < Z;
         if (win) this.x += isSeller ? 1 : -1;
         this.pnl += (win ? m : 0) - env.cost(this.x);
         return win;
@@ -183,9 +194,11 @@ const RL = (() => {
     const cache = {};
     const policy = q => cache[q] || (cache[q] = MM.solve({
       q, w: env.w, N: env.N, cost: x => env.cost(x), G: K => env.G(K, q) }));
+    // optimal submitted quotes and their skew, at interior inventory index i
+    const optQuotes = (sol, i, q) => [env.mstar(sol.nu[i + 1] - sol.nu[i], q), env.mstar(sol.nu[i - 1] - sol.nu[i], q)];
     const tSol = policy(targetQ);
     const trueS = [];
-    for (let i = 1; i < 2 * env.N; i++) trueS.push(MM.slope(tSol.nu, i));
+    for (let i = 1; i < 2 * env.N; i++) { const [a, b] = optQuotes(tSol, i, targetQ); trueS.push((a - b) / 2); }
 
     const nStates = 2 * env.N + 1;
     // per (regime, state): sum and count of de-tilted skew observations
@@ -200,15 +213,15 @@ const RL = (() => {
       const { q, isSeller, Z } = env.enquiry();
       const sol = policy(q);
       const i = Math.max(1, Math.min(2 * env.N - 1, x + env.N));
-      const S = MM.slope(sol.nu, i), C = MM.convexity(sol.nu, i);
-      const mDn = env.w + C + S + noise * gauss();
-      const mUp = env.w + C - S + noise * gauss();
-      const skewObs = (mDn - mUp) / 2;
+      // the dealer submits her model-optimal quotes and fills use those;
+      // the observer sees them with independent measurement noise
+      const [mDn, mUp] = optQuotes(sol, i, q);
+      const skewObs = ((mDn + noise * gauss()) - (mUp + noise * gauss())) / 2;
       const st = byReg[q];
       st.sum[i] += skewObs - delta(q, env.w); st.n[i]++;  // balanced frame
       const m = isSeller ? mDn : mUp;
       const atLimit = isSeller ? x >= env.N : x <= -env.N;
-      if (!atLimit && Math.max(0.01, m) < Z) x += isSeller ? 1 : -1;
+      if (!atLimit && m < Z) x += isSeller ? 1 : -1;
     }
 
     const dT = delta(targetQ, env.w);

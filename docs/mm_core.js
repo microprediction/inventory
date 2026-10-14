@@ -11,7 +11,46 @@
 
 const MM = (() => {
 
-  function solve({ q, w, eps = 0, tau = 1, s = 1, N = 10, cost, G: Gcustom }) {
+  // Solve directly; if Levenberg-Marquardt stalls from the default start,
+  // continue in the cost scale from a level that converges, warm-starting
+  // each step. The returned resid lets callers refuse to show a failed solve.
+  // Accept a solve only if it converged and its skew is increasing in
+  // inventory. At high carry the extrapolated boundary also admits spurious
+  // roots whose skew turns over at the grid edges; continuation from low
+  // cost stays on the increasing branch.
+  function admissible(r) {
+    if (!(r.resid < 1e-8)) return false;
+    for (let i = 1; i < r.nu.length - 2; i++)
+      if (slope(r.nu, i + 1) < slope(r.nu, i) - 1e-9) return false;
+    return true;
+  }
+
+  function solve(opts) {
+    const first = solveFrom(opts, null);
+    first.ok = admissible(first);
+    if (first.ok) return first;
+    let best = first, init = null, lo = 0;
+    for (let k = 1; k <= 40; k++) {
+      const t = k / 40;
+      const r = solveFrom({ ...opts, cost: x => t * opts.cost(x) }, init);
+      if (admissible(r)) { init = r.nu; lo = t; }
+      else if (init === null) continue;
+      else break;
+      if (t === 1) { r.ok = true; return r; }
+    }
+    if (init !== null && lo < 1) {
+      // refine the step near where the coarse ladder broke
+      for (let k = 1; k <= 200 && lo < 1; k++) {
+        const t = Math.min(1, lo + (1 - lo) / 8);
+        const r = solveFrom({ ...opts, cost: x => t * opts.cost(x) }, init);
+        if (admissible(r)) { init = r.nu; lo = t; if (t === 1) { r.ok = true; return r; } }
+        else break;
+      }
+    }
+    return best;
+  }
+
+  function solveFrom({ q, w, eps = 0, tau = 1, s = 1, N = 10, cost, G: Gcustom }, init) {
     const G = Gcustom || (K => w * Math.exp(-1 - K / w));
     const n = 2 * N + 1, i0 = N;
     const xs = Array.from({ length: n }, (_, i) => (i - N) * s);
@@ -37,7 +76,7 @@ const MM = (() => {
     const unpack = u => u.slice(0, i0).concat([0], u.slice(i0));
 
     const delta = 0.5 * w * Math.log(q / (1 - q));
-    let u = xs.filter(x => x !== 0).map(x => 0.05 * x * x + delta * x);
+    let u = init ? pack(init) : xs.filter(x => x !== 0).map(x => 0.05 * x * x + delta * x);
 
     const norm2 = v => v.reduce((a, b) => a + b * b, 0);
     let lambda = 1e-3;
@@ -110,11 +149,14 @@ const MM = (() => {
     };
   }
 
-  // optimal markups from nu: markdown (buy) and markup (sell) at index i
+  // optimal markups from nu: markdown (buy) and markup (sell) at index i.
+  // At the top of the grid there is no buy quote, at the bottom no sell
+  // quote: the blocked side returns Infinity, which never wins.
   function quotes(nu, i, { w, eps = 0, s = 1 }) {
-    const Kdn = eps + (nu[i + 1] - nu[i]) / s;
-    const Kup = eps + (nu[i - 1] - nu[i]) / s;
-    return { mDown: Math.max(w + Kdn, 0), mUp: Math.max(w + Kup, 0) };
+    const n = nu.length;
+    const mDown = i + 1 < n ? Math.max(w + eps + (nu[i + 1] - nu[i]) / s, 0) : Infinity;
+    const mUp = i - 1 >= 0 ? Math.max(w + eps + (nu[i - 1] - nu[i]) / s, 0) : Infinity;
+    return { mDown, mUp };
   }
 
   return { solve, slope, convexity, constants, quotes };

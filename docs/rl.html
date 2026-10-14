@@ -61,29 +61,32 @@
     <strong>baseline</strong> learns a separate policy per regime; each table sees a quarter of
     the data. The <strong>symmetry learner</strong> keeps one policy in the balanced frame and
     maps it through the skew shift &delta;(q) = (w/2)&thinsp;log(q/(1&minus;q)): every
-    regime&rsquo;s experience trains the same table. The <strong>robust learner</strong> adds a
+    regime&rsquo;s experience trains the same table. That is a heuristic even under the
+    paper&rsquo;s model: the exact symmetry sends regime q to the balanced problem at carrying
+    cost M(q)&thinsp;c, so regimes with different M(q) have different optimal policies. Across
+    these four regimes M(q) is at most 1.09. The <strong>robust learner</strong> adds a
     small per-regime residual table on top of the shared one, so it can absorb whatever the
     symmetry gets wrong. The <strong>oracle</strong> quotes the exact optimal policy for the
     true generative model.
   </p>
   <p>
     The <strong>win curve</strong> selector changes the generative model of the best competing
-    quote. <em>Exponential</em> is the paper&rsquo;s model: constant hazard, symmetry exact.
+    quote. <em>Exponential</em> is the paper&rsquo;s model: constant hazard, under which the
+    symmetry is exact once M(q) is accounted for.
     <em>Logistic</em> is an illustrative non-exponential curve with increasing hazard, plus competitors who crowd the flow-heavy side, so the
     symmetry becomes only approximately true. The &delta; the learners use is deliberately NOT
     recalibrated: it is the misspecified, exponential-model formula.
   </p>
-  <p class="lookfor">Look for: under the exponential model, the symmetry learner reaching in
-  ten thousand enquiries a level the baseline never reaches. Then switch to logistic &mdash;
-  and notice the symmetry learner barely degrades. Acting is self-correcting: the shared table
-  quietly re-centers around the misspecified &delta;. The place the deviation really bites is
-  the inverse problem below.</p>
+  <p class="lookfor">Under the exponential model both shared-table learners settle within about
+  a tenth of the oracle, well ahead of the per-regime baseline. Under the logistic model they
+  still beat the baseline by a wide margin, and the gap to the oracle widens to about a
+  seventh.</p>
 
   <div class="widget">
     <div class="controls">
       <label>win curve</label>
       <select id="winCurve">
-        <option value="exponential" selected>exponential (paper's model, symmetry exact)</option>
+        <option value="exponential" selected>exponential (paper's model)</option>
         <option value="logistic">logistic + crowding (symmetry approximate)</option>
       </select>
       <button id="runBtn">Run</button>
@@ -115,29 +118,30 @@
     </div>
     <div id="chartLearn"></div>
     <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy exploration,
-    same action grid, same random draws. Under misspecification the shared table re-centers
-    itself around the wrong &delta;, which is why hard weight-sharing is safer in the forward
-    direction than intuition suggests; the residual layer is insurance that costs a little
-    variance.</div>
+    same action grid, same random draws. Each update bootstraps from the expected value over
+    the next customer&rsquo;s direction, which the dealer does not choose. The residual layer
+    is insurance that costs a little variance.</div>
   </div>
 
   <h2>The inverse problem, where robustness earns its keep</h2>
   <p>
-    Now watch instead of act. A dealer quotes optimally across the same regimes; an observer
-    sees noisy quotes and wants her skew curve S(x) &mdash; by the paper&rsquo;s identities,
-    the slope of her inventory cost. Three estimators: <strong>per-regime</strong> uses only
-    the target regime&rsquo;s observations. <strong>Pooled</strong> de-tilts everything by
-    &delta;(q) and averages &mdash; unbeatable when the symmetry is exact, but it has no way to
-    re-center when it isn&rsquo;t: unlike the forward learner, an estimator cannot absorb its
-    own bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling, in
+    Now watch instead of act. A dealer quotes optimally across the same regimes, and an
+    observer sees her quotes with noise. The target is her quote skew at each inventory,
+    half the difference between her markdown and markup. Under the exponential model this is
+    the slope S(x) of her inventory cost wherever neither quote is at the zero floor. Three
+    estimators: <strong>per-regime</strong> uses only the target regime&rsquo;s observations.
+    <strong>Pooled</strong> de-tilts everything by &delta;(q) and averages. It is biased even
+    under the exponential model, because the regimes differ in M(q) and &delta; removes only
+    the first-order part. Unlike the forward learner, an estimator cannot absorb its own
+    bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling, in
     which the between-regime dispersion of the de-tilted means estimates the size of the
     symmetry violation and sets the pooling weight automatically &mdash; the same
     reliability-sets-the-dial mechanism as the Schur damping &gamma;*.
   </p>
-  <p class="lookfor">Look for: under the exponential model, pooled wins and shrunk tracks it.
-  Under the logistic model, pooled becomes the WORST estimator at large samples &mdash; its
-  bias never averages away &mdash; while shrunk quietly slides toward per-regime. The dial
-  sets itself; you never have to know which world you are in.</p>
+  <p class="lookfor">Under the exponential model pooled is best at small samples, then stalls
+  at its bias while per-regime keeps improving. Under the logistic model with these four
+  regimes the de-tilted skews happen to agree closely, and pooled stays competitive. Shrunk
+  sets its own pooling weight in both cases.</p>
 
   <div class="widget">
     <div class="widget-title">Inverse estimation error against observation count</div>
@@ -161,8 +165,8 @@
   Maintained by <a href="https://github.com/microprediction">Peter Cotton</a>.
 </footer>
 
-<script src="./mm_core.js"></script>
-<script src="./rl_core.js"></script>
+<script src="./mm_core.js?v=2"></script>
+<script src="./rl_core.js?v=2"></script>
 <script>
 function el(name, attrs, parent) {
   const e = document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -307,7 +311,7 @@ function runIrl() {
   const wc = currentModel();
   const ns = [500, 1000, 2000, 4000, 8000, 16000, 32000, 64000];
   const pooled = [], per = [], shr = [];
-  let at16k = null;
+  let at16k = null, at64k = null;
   for (const n of ns) {
     const envI = RL.makeEnv({ seed: 42, winCurve: wc });
     const r = RL.irlRun({ env: envI, MM, nObs: n, noise: 0.4, targetQ: 0.6 });
@@ -315,15 +319,16 @@ function runIrl() {
     if (isFinite(r.perRegimeRMSE)) per.push([n, r.perRegimeRMSE]);
     if (isFinite(r.shrunkRMSE)) shr.push([n, r.shrunkRMSE]);
     if (n === 16000) at16k = r;
+    if (n === 64000) at64k = r;
   }
   drawSeries('chartIrl', [
     { color: cssVar('--series-2'), points: per, dots: true },
     { color: cssVar('--series-1'), points: pooled, dots: true },
     { color: cssVar('--series-4'), points: shr, dots: true },
   ], { xlabel: 'observations (log scale)', ylabel: 'skew-curve RMSE', logx: true });
-  const msg = wc === 'exponential'
-    ? `Symmetry exact: pooling wins (${(at16k.perRegimeRMSE / at16k.pooledRMSE).toFixed(1)}&times; lower error than per-regime at 16k observations) and the shrinkage estimator tracks it without being told the symmetry holds.`
-    : `Symmetry approximate: hard pooling is now the WORST at large samples &mdash; its de-tilt bias never averages away &mdash; while the shrinkage estimator detects the violation from the data and slides to per-regime (${(at16k.pooledRMSE / at16k.shrunkRMSE).toFixed(1)}&times; lower error than pooling at 16k).`;
+  const f = v => v.toFixed(3);
+  const msg = `Skew-curve RMSE at 16,000 observations: pooled ${f(at16k.pooledRMSE)}, per-regime ${f(at16k.perRegimeRMSE)}, shrunk ${f(at16k.shrunkRMSE)}. ` +
+    `At 64,000: pooled ${f(at64k.pooledRMSE)}, per-regime ${f(at64k.perRegimeRMSE)}, shrunk ${f(at64k.shrunkRMSE)}.`;
   document.getElementById('irlReadout').innerHTML = msg;
 }
 

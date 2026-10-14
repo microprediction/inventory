@@ -88,9 +88,9 @@
 
   <div class="tiles">
     <div class="tile"><div class="lbl">Skew shift &delta;</div><div class="val" id="tDelta">&ndash;</div><div class="note">first order in q &minus; &frac12;</div></div>
-    <div class="tile"><div class="lbl">Widening &gamma;</div><div class="val" id="tGamma">&ndash;</div><div class="note">second order in q &minus; &frac12;</div></div>
-    <div class="tile"><div class="lbl">Carry multiplier M(q)</div><div class="val" id="tM">&ndash;</div><div class="note">imbalance taxes inventory</div></div>
-    <div class="tile"><div class="lbl">Max deviation, dots vs line</div><div class="val" id="tDev">&ndash;</div><div class="note">numerical solver agreement</div></div>
+    <div class="tile"><div class="lbl">Width change at x = 0</div><div class="val" id="tGamma">&ndash;</div><div class="note">second order in q &minus; &frac12;</div></div>
+    <div class="tile"><div class="lbl">Carry multiplier M(q)</div><div class="val" id="tM">&ndash;</div><div class="note">multiplies the carrying cost</div></div>
+    <div class="tile"><div class="lbl">Max deviation, dots vs line</div><div class="val" id="tDev">&ndash;</div><div class="note" id="tDevNote">numerical solver agreement</div></div>
   </div>
 
   <div class="widget">
@@ -109,13 +109,15 @@
     <div class="widget-title">Skew responds at first order, width at second (per unit of market width)</div>
     <div class="legend">
       <span class="key"><span class="swatch-line"></span> &delta;/w, the skew shift</span>
-      <span class="key"><span class="swatch-line" style="background: var(--series-2)"></span> &gamma;/w, the widening</span>
+      <span class="key"><span class="swatch-line" style="background: var(--series-2)"></span> width change at x = 0, per unit of w</span>
     </div>
     <div id="chartB"></div>
     <div class="tooltip" id="tipB"></div>
     <div class="readout">Near balance the skew shift is linear in the imbalance while the
-    widening is quadratic &mdash; why practitioners skew before they widen. The vertical
-    hairline marks the current slider value of q.</div>
+    width change is quadratic &mdash; why practitioners skew before they widen. The width
+    change is the imbalanced dealer's width at a flat book minus the balanced dealer's at
+    the same carrying cost; it comes entirely from the multiplied carry, so it depends on
+    the carry slider. The vertical hairline marks the current slider value of q.</div>
   </div>
 
   <p class="muted" style="font-size:0.9rem">Model and solver: exponential best-competitor with
@@ -128,7 +130,7 @@
   Maintained by <a href="https://github.com/microprediction">Peter Cotton</a>.
 </footer>
 
-<script src="./mm_core.js"></script>
+<script src="./mm_core.js?v=2"></script>
 <script>
 const W = 1.0, N = 10, I0 = N;
 
@@ -230,6 +232,8 @@ function render() {
   const { delta, gamma, M } = MM.constants(q, W);
   const imb = MM.solve({ q, w: W, N, cost });
   const bal = MM.solve({ q: 0.5, w: W, N, cost: x => M * cost(x) });
+  const base = MM.solve({ q: 0.5, w: W, N, cost });
+  const widthChange = 2 * (MM.convexity(imb.nu, N) - MM.convexity(base.nu, N));
 
   const line = [], dots = [];
   let dev = 0;
@@ -240,23 +244,34 @@ function render() {
     dev = Math.max(dev, Math.abs(sImb - sBal));
   }
   document.getElementById('tDelta').textContent = fmt(delta);
-  document.getElementById('tGamma').textContent = fmt(gamma);
+  document.getElementById('tGamma').textContent = fmt(widthChange);
   document.getElementById('tM').textContent = '×' + M.toFixed(3);
-  document.getElementById('tDev').textContent = dev.toExponential(1);
+  const ok = imb.ok && bal.ok;
+  document.getElementById('tDev').textContent = ok ? dev.toExponential(1) : 'n/a';
+  document.getElementById('tDevNote').textContent = ok ? 'numerical solver agreement'
+    : 'a solve did not converge; no comparison shown';
 
   drawChart('chartA', 'tipA', [
     { name: 'imbalanced, direct', color: cssVar('--series-1'), points: line, mode: 'line' },
     { name: 'balanced, corrected', color: cssVar('--series-2'), points: dots, mode: 'dots' },
   ], { xlabel: 'inventory x', ylabel: 'skew S(x)' });
 
+  clearTimeout(chartBTimer);
+  chartBTimer = setTimeout(() => drawWidthChart(q, cost, base), 200);
+}
+
+let chartBTimer = null;
+function drawWidthChart(q, cost, base) {
   const dPts = [], gPts = [];
-  for (let qq = 0.5; qq <= 0.951; qq += 0.005) {
-    const c = MM.constants(Math.min(qq, 0.9999), W);
-    dPts.push([qq, c.delta / W]); gPts.push([qq, c.gamma / W]);
+  for (let qq = 0.5; qq <= 0.9001; qq += 0.02) {
+    const c = MM.constants(qq, W);
+    dPts.push([qq, c.delta / W]);
+    const r = MM.solve({ q: qq, w: W, N, cost });
+    if (r.ok && base.ok) gPts.push([qq, 2 * (MM.convexity(r.nu, N) - MM.convexity(base.nu, N)) / W]);
   }
   drawChart('chartB', 'tipB', [
     { name: 'δ/w', color: cssVar('--series-1'), points: dPts, mode: 'line' },
-    { name: 'γ/w', color: cssVar('--series-2'), points: gPts, mode: 'line' },
+    { name: 'width change / w', color: cssVar('--series-2'), points: gPts, mode: 'line' },
   ], { xlabel: 'q', ylabel: 'per unit of width', vline: q });
 }
 

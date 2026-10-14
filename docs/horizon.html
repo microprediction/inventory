@@ -92,7 +92,7 @@
   <div class="tiles">
     <div class="tile"><div class="lbl">Steady-state shift &minus;&delta;</div><div class="val" id="tDelta">&ndash;</div><div class="note">the long-horizon limit</div></div>
     <div class="tile"><div class="lbl">Spectral gap</div><div class="val" id="tGap">&ndash;</div><div class="note">convergence rate of the term structure</div></div>
-    <div class="tile"><div class="lbl">Half-life of the transient</div><div class="val" id="tHalf">&ndash;</div><div class="note">ln 2 / gap, in model time</div></div>
+    <div class="tile"><div class="lbl">Half-time of the transient</div><div class="val" id="tHalf">&ndash;</div><div class="note" id="tHalfNote">model time for the mid gap to halve</div></div>
   </div>
 
   <div class="widget">
@@ -201,7 +201,22 @@ function render() {
 
   document.getElementById('tDelta').textContent = (-m.delta).toFixed(3);
   document.getElementById('tGap').textContent = m.gap.toFixed(3);
-  document.getElementById('tHalf').textContent = (Math.LN2 / m.gap).toFixed(2);
+  // Actual half-time of R(tau) = dm(tau) + delta on the standard marking.
+  // ln 2 / gap is only the asymptotic rate once the leading mode dominates.
+  const R = tau => m.termStructure(tau, 0, 'standard').dm + m.delta;
+  const R0 = Math.abs(R(1e-9));
+  let half = NaN;
+  if (R0 > 1e-12) {
+    let lo = 1e-9, hi = lo, step = 0.05 / m.gap;
+    while (Math.abs(R(hi)) > R0 / 2 && hi < 200 / m.gap) { lo = hi; hi += step; }
+    if (Math.abs(R(hi)) <= R0 / 2) {
+      for (let it = 0; it < 60; it++) { const mid = (lo + hi) / 2; if (Math.abs(R(mid)) > R0 / 2) lo = mid; else hi = mid; }
+      half = (lo + hi) / 2;
+    }
+  }
+  document.getElementById('tHalf').textContent = isFinite(half) ? half.toFixed(2) : 'n/a';
+  document.getElementById('tHalfNote').textContent =
+    `model time for the mid gap to halve; asymptotic ln 2 / gap = ${(Math.LN2 / m.gap).toFixed(2)}`;
 
   const tmax = Math.max(8, 5 * Math.LN2 / m.gap);
   const mids_s = [], mids_a = [], sprd_s = [], sprd_a = [];
