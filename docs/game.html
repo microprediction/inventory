@@ -111,9 +111,10 @@
   &delta; = (<i>w</i>/2) log(<i>q</i>/(1&minus;<i>q</i>)). Both policies are solved independently and
   the deviation tile reports the difference. A flat book still skews: the dashed gap is off centre
   before anything has been caught.</p>
-  <p>On the hard level the fair value is a martingale, reflected at the edges of the board, and the bar
+  <p>On the hard level the fair value is a martingale with independent Gaussian increments, and the bar
   is in absolute price, so the market drifts away from the quotes. Quoting relative to the fair value
-  recovers the medium level.</p>
+  recovers the medium level. The view scrolls when the fair value approaches its edge;
+  scrolling changes neither prices nor quotes.</p>
   <p>The mark-to-market term &Sigma; <i>x</i>&middot;d<i>F</i> has zero mean and changes no decision.
   A dealer who dislikes its variance pays &lambda;&sigma;<sup>2</sup><i>x</i><sup>2</sup>/2 per unit
   time for it, and that is the back pain: the quadratic carrying cost is the price risk.</p>
@@ -127,7 +128,7 @@
 </main>
 
 <script src="./fourcorners_core.js?v=2"></script>
-<script src="./game_core.js?v=6"></script>
+<script src="./game_core.js?v=7"></script>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
@@ -142,10 +143,12 @@
   document.querySelectorAll('.levels button').forEach(b => b.classList.toggle('on', b.dataset.level === level));
   const keys = {};
   const flashes = [];
+  let viewCenter = 0;
 
   function build() {
     const a = parseFloat($('a').value), q = parseFloat($('q').value);
     g = GAME.create({ level, q: level === 'easy' ? 0.5 : q, a });
+    viewCenter = 0;
     $('t_rho').textContent = g.pol.rho.toFixed(3);
     $('tile_price').style.display = level === 'hard' ? '' : 'none';
     $('tile_twin').style.display = level === 'easy' ? 'none' : '';
@@ -164,9 +167,11 @@
       : 'The fair value line wanders and the enquiries wander with it; move the bar to keep the gap centred on the line. The optimal gap tracks the line exactly. Your mark-to-market swings with inventory times price moves, so it tells you nothing about how well you quoted; the regret tile does.';
   }
 
-  function px(p) { return Wd / 2 + p * scale; }   // screen is absolute price; the fair value moves on it
+  function px(p) { return Wd / 2 + (p - viewCenter) * scale; }
 
   function draw() {
+    // Reframe the view, never the simulated price or the player's quotes.
+    if (Math.abs(g.F - viewCenter) > HALF / 2) viewCenter = g.F;
     c.fillStyle = '#0f1e3a'; c.fillRect(0, 0, Wd, H);
     // fair value line and price ticks
     c.strokeStyle = '#3b4d74'; c.lineWidth = 1;
@@ -230,7 +235,7 @@
 
     // falling items
     for (const it of g.items) {
-      const land = g.F + (it.side > 0 ? -it.z : it.z);
+      const land = it.F + (it.side > 0 ? -it.z : it.z);
       const x = px(land), y = skyY + it.y * (barY - 10 - skyY);
       c.fillStyle = it.side > 0 ? '#4ec98a' : '#e35d5d';
       c.beginPath(); c.arc(x, y, 8, 0, 7); c.fill();
@@ -243,7 +248,7 @@
       c.globalAlpha = 1 - age;
       c.fillStyle = f.caught ? '#4ec98a' : '#8a9ab8';
       c.font = 'bold 14px IBM Plex Sans, Arial, sans-serif'; c.textAlign = 'center';
-      c.fillText(f.caught ? '+' + f.margin.toFixed(2) : 'competitor', f.x, barY - 30 - age * 30);
+      c.fillText(f.caught ? '+' + f.margin.toFixed(2) : 'competitor', px(f.land), barY - 30 - age * 30);
       c.globalAlpha = 1;
     }
     // HUD on the board
@@ -276,7 +281,7 @@
         autopilot: auto,
       };
       const ev = GAME.step(g, dt, ctrl);
-      for (const e of ev) flashes.push({ t: performance.now(), x: px(e.land), caught: e.caught, margin: e.margin });
+      for (const e of ev) flashes.push({ t: performance.now(), land: e.land, caught: e.caught, margin: e.margin });
     }
     draw(); tiles();
     requestAnimationFrame(frame);

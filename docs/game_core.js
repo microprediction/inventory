@@ -110,10 +110,10 @@ const GAME = (() => {
 
     // fair value moves (hard level); mark-to-market on the book
     if (cfg.sigma > 0) {
-      const L = cfg.reflect ?? 2.5;              // the fair value reflects at +-L so it stays on the board
-      let F = g.F + cfg.sigma * Math.sqrt(dt) * gauss(g);
-      if (F > L) F = 2 * L - F;
-      if (F < -L) F = -2 * L - F;
+      // Independent centered increments preserve the moving-frame theorem.
+      // Keep the price unbounded; the renderer scrolls the viewport instead
+      // of reflecting the process (which would introduce predictable drift).
+      const F = g.F + cfg.sigma * Math.sqrt(dt) * gauss(g);
       g.pricePnl += g.x * (F - g.F);
       g.F = F;
     }
