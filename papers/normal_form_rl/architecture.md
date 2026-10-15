@@ -117,19 +117,25 @@ stay tractable.
 
 ## 5. The exponential solution as a Bellman control variate
 
-With $\nu_0$ the exponential-anchor differential value, train the critic on the
-shaped residual reward
+With $\nu_0$ the exponential-anchor inventory cost, the differential value is
+$h_0=-\nu_0$. Train the critic on the shaped residual reward
 
-$$r_t^{\text{res}} = r_t - \bar r_0 + \nu_0(x_{t+1}) - \nu_0(x_t).$$
+$$r_t^{\text{res}} = r_t - \bar r_0 + \nu_0(x_t) - \nu_0(x_{t+1}).$$
 
 The potential term telescopes over any horizon to a boundary term
-$\nu_0(x_T) - \nu_0(x_0)$, which vanishes in the long-run average for bounded
-inventory, so policy ranking is unchanged. Under the exponential model the residual
-Bellman target is approximately zero; under nearby models it is first order in the
-perturbation. The learner estimates $\Delta\nu = \nu - \nu_0 - \sum_j\theta_j\nu_j$
-rather than a full continuation value, which should sharply reduce TD variance in
-illiquid settings with sparse fills. The methodological kinship is with linearly
-solvable control: keep a tractable reference problem, learn a transformed value.
+$\nu_0(x_0) - \nu_0(x_T)$, which vanishes in the long-run average for bounded
+inventory, so policy ranking is unchanged. Under the anchor policy, the Bellman
+equation $\bar r_0=r_0+P_0h_0-h_0$ gives
+$E[r_t^{\text{res}}\mid x_t]=0$ exactly; individual samples still contain noise.
+The opposite potential sign would instead give conditional mean
+$2(r_0(x_t)-\bar r_0)$, generally nonzero. Under nearby models the anchor policy's
+conditional residual is first order in the perturbation. Off-policy actions need
+not have zero conditional residual even at the anchor. The learner estimates
+$\Delta\nu = \nu - \nu_0 - \sum_j\theta_j\nu_j$ rather than a full continuation
+value (the corresponding differential-value residual has the opposite sign).
+This removes the known anchor contribution; any reduction in sampled TD variance
+must be checked empirically. The methodological kinship is with linearly solvable
+control: keep a tractable reference problem, learn a transformed value.
 
 ## 6. Online estimation of the perturbation
 
