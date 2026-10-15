@@ -336,3 +336,12 @@ P10 gauge classification: our two papers are two-thirds of its work — likely n
 Start with P1 + P2 concurrently: P1 is the natural sequel the referees of the submitted
 paper will themselves suggest; P2 is small, sharp, and stakes the probability-side claim
 before someone else notices the dashed red edge on our own public map.
+
+## 2026-08-12: P1 correction hardening complete
+Rounds 7-8 of review applied (boundary-row proof via Hamiltonian scaling,
+neutral zero-carry, interiority remark with the spike counterexample,
+two-sided qualifications, nu reconciliation). Certificate ladder built:
+exact sympy algebra (12), interval-Newton proof of existence/uniqueness/
+interiority pointwise and over q in [0.55, 0.605] (6), Howard optimality +
+humpday roster + fuzz (14), claim battery (38). Package in
+~/Downloads/sifin_correction with README and requirements.

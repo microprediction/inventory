@@ -160,3 +160,24 @@ Fixes needed in the SIFIN revision:
 - Downstream: `notes/spread_as_endogenous_carry.tex` H7 ("one-sided flow widens
   quotes by M(p)") inherits the same correction; the multiplier's carry reading
   (Proposition, M as effective-carry inflation) is untouched.
+
+## 6. Rounds 7-8 and the certificate ladder (2026-08-12)
+
+Round 7 mandated the neutral zero-carry remark (the bounded-chain solver
+selects S(0) = delta at c = 0), finite-state scoping with the full
+average-reward equation, and interiority-valid certificates. Round 8
+mandated the boundary-row proof (now via the termwise Hamiltonian scaling
+H_q = D(q) H_bal), retracting the universal boundary-clips-first claim
+(interior-spike counterexample), two-sided qualifications for width
+statements, CWLS interior scoping, and the nu reconciliation.
+
+Findings of our own along the way: the interiority frontier (at eps = 0.15
+the flagship config sits just inside it; strong imbalance clips the
+boundary sell quote at every cost level including c -> 0); optimality
+itself selects the tilted branch at zero carry; the consistency system
+admits non-interior roots that policy iteration avoids.
+
+Certificates now form a ladder: exact symbolic algebra, interval-Newton
+proofs (pointwise and over a q-continuum), Howard-certified optimality
+with derivative-free searches and fuzzing, and the 38-check claim battery.
+See README_certificates.md.

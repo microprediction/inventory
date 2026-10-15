@@ -729,3 +729,17 @@ if __name__ == "__main__":
         "width response should be far below gamma here"
 
     print("all checks passed")
+
+
+# NF16 (added after the base-paper correction): the affine constant kappa
+# survives only two-sided closures. The one-sided boundary identity
+# requires q*kappa = (D/2)*kappa, which fails for kappa != 0, q != 1/2:
+# the corrected finite-state model's boundary rows single out B e^{-hK}.
+import numpy as np
+_q, _kap = 0.6, 0.7
+_D = 2 * np.sqrt(_q * (1 - _q))
+_gap = abs(_q * _kap - 0.5 * _D * _kap)
+_gap0 = abs(_q * 0.0 - 0.5 * _D * 0.0)
+assert _gap > 1e-2 and _gap0 == 0.0
+print(f"NF16 PASS: one-sided rows force kappa = 0 "
+      f"(q kappa - (D/2) kappa = {_gap:.4f} for kappa = 0.7; 0 for kappa = 0)")
