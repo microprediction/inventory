@@ -22,7 +22,7 @@ The object of study: joint dynamics of **inventory, price level, price volatilit
 
 ## 1. Layer one: the storage relation as a term-structure constraint
 
-Weymar's local storage relation is a statement about the *slope* of the expected-price curve:
+The proposed mean-coverage version of the storage relation specifies the *slope* of the expected-price curve:
 
 $$\partial_h \pi(t,h) = f\big(Y(t,h)\big).$$
 
@@ -30,7 +30,7 @@ Integrating against the boundary condition $\pi(t,\infty) = \ln A_t$ gives the p
 
 $$\boxed{\ \ln P_t \;=\; \ln A_t \;-\; \int_0^\infty f\big(Y(t,s)\big)\,ds\ }\tag{1}$$
 
-(real terms; convergence from $f(Y^e)=0$; Jensen corrections suppressed throughout — they belong in a careful pass). The spot price is a **boundary-value problem**: the storage curve supplies slopes, the anchor supplies the level, and the two are separately necessary. Weymar's demonstration that Working's level-only spread rule violates iterated expectations is, in the HJM analogy, exactly the **consistency (drift) condition**: once $f$ and the dynamics of $Y(t,\cdot)$ are fixed, the drift of every point on the price curve is determined. There are no free drifts left to fit.
+(real terms; assuming the integral converges — $f(Y^e)=0$ alone does not ensure this). The spot price is a **boundary-value problem**: the storage curve supplies slopes, the anchor supplies the level, and the two are separately necessary. Replacing an expected nonlinear storage value by $f$ of expected coverage is a Jensen approximation, not an exact stochastic closure. Section 3 identifies the resulting tower-consistency obstruction. Weymar's path-based perspective motivates the construction, but the proposed stochastic mean-coverage closure needs this additional consistency check before it can play the role of an HJM-style drift restriction.
 
 What does *not* carry over from HJM: a pinned martingale measure. Without traded futures the constraint set is (i) physical accounting (§2), (ii) tower-consistency of expectations, and (iii) optimality of the agents doing the storing (§3–4). A market price of inventory risk $\lambda_t$ remains free — state-dependent, and tied to the supply of speculative capital, which matters in §5.
 
@@ -48,9 +48,31 @@ where $g_q$ is expected consumption growth. So for the goods of interest the **s
 
 ## 3. The volatility constraint
 
-Itô on (1) using the decomposition in §2 (the shift term integrates by parts to reproduce the required drift):
+For continuous forecast revisions, put $v_t(s)=d\langle M(\cdot,s)\rangle_t/dt$. Assume $f$ is $C^2$, the drift and quadratic-variation integrals are integrable, and stochastic Fubini applies. Itô on (1), with $f(Y(t,\infty))=0$, gives
 
-$$d\ln P_t \;=\; f\big(Y(t,0)\big)\,dt \;+\; d\ln A_t \;-\; \int_0^\infty f'\big(Y(t,s)\big)\, dM_t(s)\, ds. \tag{3}$$
+$$d\ln P_t \;=\; \left[f\big(Y(t,0)\big)-\frac12\int_0^\infty f''\big(Y(t,s)\big)v_t(s)\,ds\right]dt \;+\; d\ln A_t \;-\; \int_0^\infty f'\big(Y(t,s)\big)\, dM_t(s)\, ds. \tag{3}$$
+
+The transport term supplies $f(Y(t,0))$; the second term inside the bracket is the Itô curvature correction. It is nonnegative for concave $f$ and need not be negligible. Omitting it is a zero-noise/affine approximation, not an exact application of Itô. Jumps would require additional jump corrections.
+
+**Exact tower consistency is more restrictive than the spot drift alone.** The mean-coverage slope relation and anchor imply the whole candidate curve
+
+$$\pi(t,h)=\ln A_t-\int_h^\infty f(Y(t,s))\,ds.$$
+
+If this is genuinely $E_t[\ln P_{t+h}]$, its Musiela drift must be $\partial_h\pi(t,h)$. Writing $\mu_A(t)$ for the drift of $\ln A_t$, Itô instead gives the drift
+
+$$\partial_h\pi(t,h)+\mu_A(t)-\frac12\int_h^\infty f''(Y(t,s))v_t(s)\,ds.$$
+
+Thus exact tower consistency at every horizon requires
+
+$$\mu_A(t)=\frac12\int_h^\infty f''(Y(t,s))v_t(s)\,ds\quad\text{for every }h.$$
+
+Differentiating in $h$ forces $f''(Y(t,h))v_t(h)=0$ (almost everywhere under the integral assumptions). A strictly concave $f$ on a range with nonzero forecast-revision variance therefore cannot satisfy this exact mean-coverage closure; one scalar anchor drift cannot repair all horizons. This is an obstruction to this closure, not to nonlinear storage models in general. An exact model can instead retain a separate conditional-moment curve such as $E_t[f(Y_{t+h})]$ and derive its dynamics, or explicitly quantify a small-noise approximation rather than identify it with $f(E_t[Y_{t+h}])$.
+
+**Bounded one-factor check.** Let $dZ_t=-Z_tdt+\sqrt{1-Z_t^2}\,dW_t$ on $[-1,1]$, actual coverage be $2+Z_t$, and $f(y)=3(y-2)-(y-2)^2$ on $[1,3]$ (increasing and strictly concave). Then $Y(t,h)=2+e^{-h}Z_t$ really is conditional mean coverage, and with constant anchor (1) gives $\ln P_t=\ln A-3Z_t+Z_t^2/2$. Its exact drift is
+
+$$f(2+Z_t)+\frac{1-Z_t^2}{2},$$
+
+not $f(2+Z_t)$: at $Z_t=0$ the missing drift is $1/2$. All coverage states are positive and all horizon integrals converge. The accompanying `verify_forecast_ito.py` checks the correction against the generator and exact conditional moments.
 
 Hence instantaneous price variance
 
