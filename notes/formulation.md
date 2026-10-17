@@ -40,11 +40,19 @@ $Y(t,h)$ is a curve-valued state. In Musiela-style coordinates its dynamics deco
 
 $$dY(t,h) \;=\; \partial_h Y(t,h)\,dt \;+\; dM_t(h),$$
 
-with $M_t(\cdot)$ a martingale field of forecast revisions, and — this is the key observability fact — the $h$-slope is (minus) the published deficit curve:
+with $M_t(\cdot)$ a martingale field of forecast revisions. Relating the $h$-slope to a published deficit forecast requires accounting for the consumption denominator. Write $d_u=q_u-\text{supply}_u$ for the actual deficit, so $dI_u=-d_u\,du$. If consumption is positive and of finite variation, $dq_u=g_uq_u\,du$, the quotient rule gives
 
-$$\partial_h Y(t,h) \;=\; -\,\frac{D(t,h)}{q_t} \;-\; Y(t,h)\,g_q(t,h),\tag{2}$$
+$$\partial_hY(t,h)=-\mathbb E_t\!\left[\frac{d_{t+h}}{q_{t+h}}+g_{t+h}Y_{t+h}\right],\tag{2}$$
 
-where $g_q$ is expected consumption growth. So for the goods of interest the **shape** of the coverage path is observed (up to forecast noise and bias) while its **level** $Y(t,0)$ is latent, and (1) makes the price a measurement of a functional of that level. This is the mirror image of Weymar's setting (he built the stock series and treated forecasts as data; we receive the flow forecasts and must infer the stock), and it is what makes the whole model a filtering problem (§6).
+under conditional-integrability and differentiation assumptions. In general $D(t,h)=\mathbb E_t[d_{t+h}]$ does not determine the first expectation, and the growth term does not factor into expected growth times expected coverage.
+
+For a consumption path $\widehat q_t(h)>0$ already known at time $t$, with known growth $\widehat g_t(h)=\partial_h\log\widehat q_t(h)$, (2) simplifies to
+
+$$\partial_hY(t,h)=-\frac{D(t,h)}{\widehat q_t(h)}-\widehat g_t(h)Y(t,h).$$
+
+The denominator is consumption **at horizon $h$**, not $q_t$; the latter is valid throughout the curve only when consumption is constant. For example, at $t=0$ take $I_u=e^{-u}$, $q_u=e^u$, and supply $e^u-e^{-u}\ge0$. Then $D(0,h)=e^{-h}$, $Y(0,h)=e^{-2h}$ and $\partial_hY=-2e^{-2h}$. Replacing the future denominator by $q_0=1$ would instead give $-e^{-h}-e^{-2h}$: at $h=\log2$, $-3/4$ instead of $-1/2$. The stdlib script `verify_coverage_accounting.py` checks this example and the constant-consumption special case.
+
+If consumption has a diffusion component, Itô corrections must also be retained. With consumption drift $b_q$, variance rate $v_q$, and inventory–consumption covariance rate $c_{Iq}$, the drift of $I/q$ is $-d/q-Ib_q/q^2+Iv_q/q^3-c_{Iq}/q^2$; its conditional expectation supplies the horizon slope. Thus published deficit forecasts are **measurements entering the coverage dynamics**, not direct observations of its slope without a consumption/joint-moment model. Even in the known-consumption case, unknown initial coverage enters the growth term, so the slope need not be independent of the latent level. Formula (1) then supplies a separate price observation for the filtering problem (§6).
 
 ## 3. The volatility constraint
 
@@ -91,11 +99,11 @@ The true stabilisers are then boundary phenomena only: the stockout floor $Y \ge
 
 ## 6. The filtering formulation
 
-State: $\big(Y(t,0),\ \theta_t,\ A_t,\ \text{trend state},\ \text{dealer moments}\big)$ where $\theta_t$ is a finite-dimensional parameterisation of the coverage-path shape (whose $h$-slope is pinned by the published deficit curve via (2)). Observations:
+State: $\big(Y(t,0),\ \theta_t,\ A_t,\ \text{trend state},\ \text{dealer moments}\big)$ where $\theta_t$ is a finite-dimensional parameterisation of the coverage-path shape. The deficit forecasts constrain this shape through (2), together with the consumption path or a model of the required joint moments. Observations:
 
 1. assessed mid price — measurement of the level through (1);
 2. assessed bid/offer width (and any observable skew) — measurement through (4)–(6);
-3. the deficit forecast curve itself — direct but biased/noisy measurement of $\partial_h Y$;
+3. the deficit forecast curve itself — biased/noisy flow measurements entering (2), not by themselves direct measurements of $\partial_h Y$;
 4. occasional stock revelations (surveys, disclosures, exchange stocks where they exist) — sparse direct measurements of $Y(t,0)$.
 
 The filter is necessarily nonlinear ($f$ is nonlinear exactly where it matters) — particle or unscented. Identifiability inherits Weymar's warning: $(A^e, Y^e)$ trade off through the intercept of (1), so priors from storage-cost arithmetic must pin the corner (his own discipline: bracket parameters from first principles before estimating). The finite-dimensional-realisation question from the HJM literature (Björk–Christensen) has a precise analogue: **for which pairs (storage curve, forecast process) is a finite-dimensional coverage family invariant** — i.e. when is the filter exactly finite-dimensional? Working's "current inventory is a sufficient statistic" special case is precisely the one-dimensional realisation.
