@@ -89,14 +89,20 @@ Verdict: NOVEL as applied; underlying mathematics classical and must be cited.
 
 ## 4. Perturbation hierarchy
 
-Verdict: PARTIAL — scalar-parameter perturbation around solvable market-making
-models is established; functional (curve-valued) deformation of the win curve
-appears novel.
+Verdict: PARTIAL — functional Hamiltonian-shape perturbation is established.
+Assess the specific exponential anchor, log-win-curve envelope transfer and
+multi-order pinned hierarchy separately; functional deformation alone is not
+the novelty boundary.
 
 - Bergault, Evangelista, Guéant, Vieira, "Closed-form Approximations in
   Multi-asset Market Making," AMF 28(2), 101–142, 2021 (arXiv:1810.04383):
-  perturbation in inventory-risk and penalty parameters, exponential
-  intensities. The flagship of the approximation school; must cite.
+  [primary text, §§2.1, 3–4](https://arxiv.org/html/1810.04383v5#S4):
+  general, potentially side-dependent intensities; a quadratic Hamiltonian
+  proxy; then a functional perturbation $H=\check H+\epsilon h$ and a linear
+  first-order correction to the value function, represented by Feynman–Kac.
+  This is not restricted to risk/penalty parameters or exponential intensities.
+  Compare anchors, parameterization and hierarchy rather than dismissing this
+  as scalar-parameter-only prior art.
 - Lorig-style expansions in algorithmic trading (Barger & Lorig IJTAF 2019;
   Donnelly & Lorig AMF 2020; SIAM J. Fin. Math. doi 10.1137/21m1394473;
   arXiv:1310.1756): scalar/small-parameter expansions, not curve deformations.
