@@ -381,25 +381,54 @@ if __name__ == "__main__":
     for x, j in idx.items():
         nu1[x + N] = u1[j]
 
+    # Exact quadratic coefficient along nu_0 + eta nu_1.  If K(eta) =
+    # K_0 + eta a, then G_eta(K(eta)) / G_0(K_0) has eta^2 coefficient
+    # (h a + psi(K_0))^2 / 2 - psi'(K_0) a.  The residual used here is
+    # cost - H(x) + H(0), so -[eta^2] residual is J_2(x) - J_2(0).
+    # One-sided residual/eta^2 has an O(eta), not O(eta^2), bias; the
+    # former (4 r(eta/2) - r(eta))/3 extrapolation did not remove it.
+    def quadratic_hamiltonian(i):
+        Kdn, Kup = strikes(nu0, i)
+        adn = (nu1[i + 1] - nu1[i]) / S_LOT
+        aup = (nu1[i - 1] - nu1[i]) / S_LOT
+
+        def term(K, a):
+            psi_prime = H0 * (np.log(1.0 + H0 * K) + 1.0)
+            return G0(K) * (0.5 * (H0 * a + psi_weibull(K)) ** 2
+                            - psi_prime * a)
+
+        return q * term(Kdn, adn) + (1 - q) * term(Kup, aup)
+
+    J20 = quadratic_hamiltonian(I0)
+    rhs2_exact = np.array(
+        [quadratic_hamiltonian(I0 + x) - J20
+         for x in XS if x != 0 and abs(x) != N] + [0.0, 0.0])
+    u2 = np.linalg.solve(L0, rhs2_exact)
+    nu2 = np.zeros(2 * N + 1)
+    for x, j in idx.items():
+        nu2[x + N] = u2[j]
+
+    # Independent centered residual check cancels the cubic term.  Its
+    # coefficient error should decrease by four when the step is halved.
+    prev_coeff = None
+    for step in (0.02, 0.01, 0.005):
+        rp = residuals_full(make_G(step), q, cost, nu0 + step * nu1)
+        rm = residuals_full(make_G(-step), q, cost, nu0 - step * nu1)
+        centered_rhs = -(rp + rm) / (2 * step ** 2)
+        coeff_err = np.max(np.abs(centered_rhs - L0 @ u2))
+        if prev_coeff is not None:
+            assert 3.5 < prev_coeff / coeff_err < 4.5, \
+                "quadratic forcing disagrees with centered residuals"
+        prev_coeff = coeff_err
+    assert coeff_err < 1e-5, "quadratic forcing coefficient is inaccurate"
+
     print("4. hierarchy    : L_0 nu_1 = -R_psi against nonlinear solves")
     prev1 = prev2 = None
-    etas = (0.04, 0.02, 0.01)
-    nu2 = None
+    etas = (0.04, 0.02, 0.01, 0.005, 0.0025)
     for eta in etas:
         Ge = make_G(eta)
         nu_eta = solve_imbalanced(Ge, q, cost, nu0 + eta * nu1)
         e1 = np.max(np.abs(nu_eta - nu0 - eta * nu1))
-        if nu2 is None:
-            # nu_2 from L_0 nu_2 = -(1/eta^2) F(nu_0 + eta nu_1, eta),
-            # Richardson-extrapolated in eta
-            def rhs2(et):
-                Fv = residuals_full(make_G(et), q, cost, nu0 + et * nu1)
-                return -Fv / et ** 2
-            r_a, r_b = rhs2(1e-3), rhs2(5e-4)
-            u2 = np.linalg.solve(L0, (4 * r_b - r_a) / 3.0)
-            nu2 = np.zeros(2 * N + 1)
-            for x, j in idx.items():
-                nu2[x + N] = u2[j]
         e2 = np.max(np.abs(nu_eta - nu0 - eta * nu1 - eta ** 2 * nu2))
         line = f"   eta={eta:>5}: |err_1| {e1:.3e}, |err_2| {e2:.3e}"
         if prev1 is not None:
