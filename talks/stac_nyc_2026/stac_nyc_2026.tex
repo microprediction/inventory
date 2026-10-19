@@ -471,10 +471,14 @@ Every cell is computable when the cover price is observed, as on platforms that 
 Reinforcement learning approaches to market making need not assume an exponential win curve. The symmetry helps them anyway, reinterpreted as an approximate heuristic.
 \vspace{1em}
 
-Experience gathered at one imbalance transfers to every other through the correction $(\delta, M(q))$, so a learner can pool episodes across flow regimes instead of learning each regime separately.
+The symmetry maps regime $q$ at cost $c$ to balance at cost $M(q)c$. A shared learner must retain that cost coordinate; a $\delta$-only table is a heuristic even under exponential competition.
 \vspace{1em}
 
-The inverse problem works the same way: quotes observed under any regime, de-tilted by $\delta$, all estimate the same balanced-frame $\nu$.
+The inverse problem works the same way:
+\[
+\nu_{q,c}(x)-\delta(q)x = \nu_{1/2,M(q)c}(x).
+\]
+De-tilted quotes estimate the same balanced-frame $\nu$ only at matched effective costs. Otherwise condition on $M(q)c$ or use partial pooling with an explicit heterogeneity bias.
 \end{frame}
 
 %--------------------------------------------------------------------
