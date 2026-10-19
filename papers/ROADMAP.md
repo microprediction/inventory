@@ -236,18 +236,28 @@ held-out families. **Venue.** Applied Mathematical Finance, or an ML-for-finance
 workshop for speed. Depends on P3 (the normal form supplies the coordinates).
 
 ### P9. Efficient inverse reinforcement learning: reading ν from quotes across regimes
-**Claim.** Inferring a dealer's objective from behavior — inverse RL — is generically
-ill-posed and data-hungry; here it is neither. The identities make inversion direct
-(skew = slope, discretionary width = convexity of ν), and the symmetry makes it
-efficient: quotes observed under ANY flow regime q, de-tilted by δ(q), all estimate the
-same balanced-frame ν, so K regimes cut estimation error by √K and the sample complexity
-of identifying a dealer's inventory cost is independent of which regimes you happened to
-observe her in. Deviations from the pooled fit isolate what the symmetry cannot explain:
-private information.
-**Attack.** Estimator: per-quote de-tilting then pooled regression for S(x), C(x);
-compare to per-regime estimation at equal observation budget. Theory is elementary
-(averaging); the content is the framing plus the identifiability corollary.
-**Risk.** Low. Companion demo on the site (see `docs/` RL demo).
+**Claim.** With known competition and adverse-selection parameters, interior optimal
+quotes reveal adjacent differences of ν; observations spanning a connected inventory
+ladder recover that potential up to its normalization. This identifies the quoting
+potential, not an arbitrary primitive objective without further model restrictions.
+The exponential symmetry gives
+ν_{q,c}(x) − δ(q)x = ν_{1/2,M(q)c}(x), with the same normalization and admissible
+boundary model. De-tilted observations therefore share a potential only when their
+**effective costs M(q)c match**, not merely because the win curve is exponential.
+At fixed physical cost, different M(q) generally imply different balanced potentials.
+
+**Attack.** Condition a balanced-frame regression on M(q)c (or specified parameters
+of that cost), pool within matched effective-cost groups, or use partial pooling
+with an explicit heterogeneity bias. Under a common estimand and independent,
+equal-variance noise, K equally sampled regimes reduce standard error by √K relative
+to one regime's observations; this is not a universal sample-complexity guarantee.
+Unexplained differences can also reflect competition, constraints, cost or model
+misspecification, and do not identify private information by themselves.
+**Risk.** The quote-to-potential inversion is direct under those assumptions; objective
+identification and transfer across unmatched costs remain substantive problems. The
+companion RL demo correctly labels its delta-only pooling as biased even in exponential
+mode. `verify_inverse_pooling.js` checks both the matched-cost identity and an interior
+counterexample to the old common-potential claim using capped-chain policy iteration.
 **Venue.** Pairs with P7 in one paper, or standalone short communication.
 
 ### P8. Skew, width and the log-odds of flow: an identification test
