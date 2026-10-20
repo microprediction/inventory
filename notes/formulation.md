@@ -98,7 +98,16 @@ State: $\big(Y(t,0),\ \theta_t,\ A_t,\ \text{trend state},\ \text{dealer moments
 3. the deficit forecast curve itself — direct but biased/noisy measurement of $\partial_h Y$;
 4. occasional stock revelations (surveys, disclosures, exchange stocks where they exist) — sparse direct measurements of $Y(t,0)$.
 
-The filter is necessarily nonlinear ($f$ is nonlinear exactly where it matters) — particle or unscented. Identifiability inherits Weymar's warning: $(A^e, Y^e)$ trade off through the intercept of (1), so priors from storage-cost arithmetic must pin the corner (his own discipline: bracket parameters from first principles before estimating). The finite-dimensional-realisation question from the HJM literature (Björk–Christensen) has a precise analogue: **for which pairs (storage curve, forecast process) is a finite-dimensional coverage family invariant** — i.e. when is the filter exactly finite-dimensional? Working's "current inventory is a sufficient statistic" special case is precisely the one-dimensional realisation.
+Nonlinear price and quote measurements suggest a particle or unscented approximation. Identifiability inherits Weymar's warning: $(A^e, Y^e)$ trade off through the intercept of (1), so priors from storage-cost arithmetic must pin the corner (his own discipline: bracket parameters from first principles before estimating).
+
+There are two separate finite-dimensional-realisation questions:
+
+1. **Curve/state realisation:** is a finite-dimensional coverage-curve family invariant under the proposed dynamics, with a closed finite-dimensional state evolution? This is the analogue of the HJM invariant-family question. Mere containment of conditional-mean curves in such a family does not establish that closed evolution.
+2. **Filter realisation:** do the conditional laws of the latent state stay in a fixed finite-dimensional family closed under prediction and the specified observation updates? This depends on the observation law and prior as well as the state dynamics. A scalar Markov state, or a one-parameter family of conditional-mean forecast curves, does not by itself give such a filter.
+
+For example, a hidden state can decay deterministically while noisy nonlinear observations generate posterior families of unbounded dimension, even though all its conditional-mean forecast curves have one parameter. [A worked counterexample](filter_realization.md) proves this distinction and includes an exact-arithmetic check. In a scalar continuous-time setting, [Brigo, *A finite dimensional filter with exponential conditional density*, §2](https://www.ma.imperial.ac.uk/~dbrigo/pdgfdf.pdf) likewise formulates filter realisation as closure of the conditional-density family under the state **and observation** equations.
+
+Working's current-inventory sufficiency, if imposed on the economic state dynamics, is a state-reduction hypothesis; when inventory is unobserved, a separate posterior-closure argument is still required. An unscented or fixed-family projection filter should be labelled an approximation unless that closure is established.
 
 ## 7. Falsifiable implications
 
