@@ -7,20 +7,33 @@ and verified absences backing these are in `skew_width_imbalance/revision_notes.
 ## Tier 1 — direct descendants, provable now
 
 ### P1. Finite-horizon imbalanced market making in closed form
-**Claim.** The transient (finite-horizon) version of the equivalence: with asymmetric
-intensities, the GLFT linear ODE system symmetrizes under the diagonal conjugation
-D = diag((q/(1−q))^{x/2}); the spectrum rescales by the geometric mean of the rates, and
-the finite-horizon solution is the balanced solution under the same three corrections.
-The steady-state theorem becomes a corollary.
-**Attack.** GLFT (2012) reduce the HJB to v′ = A v with A an asymmetric birth–death
-matrix. Conjugate, diagonalize, transform back. Watch the two exactness hazards: the
-terminal condition (inventory penalty must transform consistently under the tilt) and
-the max(·,0) quote floor (excluded region, as in the current paper).
-**Risk.** RETIRED — verified 2026-08-10 (`finite_horizon_imbalance/verify_finite_horizon.py`):
-the conjugation is exact to machine precision, boundary rows included, and the tilted
-terminal condition means precisely "mark the terminal book at fair value shifted by
-delta". The skew shift is the SAME (w/2) log-odds constant at every time and inventory.
-What remains is writing, not proving.
+**Claim.** With common-decay exponential fill intensities, the GLFT linear ODE
+system is diagonally similar to a symmetric Jacobi system whose off-diagonal activity
+is the geometric mean of the two side activities. For r = sqrt(A^b/A^a), the
+conjugation is D = diag(r^x); it gives an exact real spectral representation, not a
+uniform rescaling of the entire spectrum. The terminal condition is load-bearing:
+ordinary terminal marking at S_T becomes an exponential terminal tilt in the
+symmetric system. Relative to the ordinary balanced dealer, the quote-price midpoint
+displacement therefore depends on the horizon, is zero at maturity, and tends to
+−delta at long horizons, where delta = log(r)/k. The steady-state theorem is the
+long-horizon limit. A constant displacement −delta at every horizon holds instead
+when the imbalanced dealer marks terminal inventory at S_T − delta.
+**Attack.** Drafted in
+[`finite_horizon_imbalance/finite_horizon_imbalance.tex`](finite_horizon_imbalance/finite_horizon_imbalance.tex).
+Conjugate, diagonalize, and transform back, retaining the tilted terminal vector.
+Compare separately with the ordinary balanced terminal condition and with the
+flow-adjusted marking problem. The exact reduction requires a common exponential
+decay k and fails where a nonnegative quote-depth constraint binds; a two-sided
+midpoint is defined only at interior inventory states.
+**Risk.** The conjugation is established, but the stronger all-horizon shift for
+ordinary terminal marking is false. The current
+[`verify_finite_horizon.py`](finite_horizon_imbalance/verify_finite_horizon.py)
+checks both facts, boundary rows included: for Q=2, alpha=0.1, eta^b=2,
+eta^a=0.5, k=1 and tau=1, the midpoint displacement at inventory zero is
+−0.308610, not the steady-state constant −log(2) ≈ −0.693147. It also checks
+the term-structure formula and the all-horizon identity under flow-adjusted
+terminal marking. Numerical checks support the draft's analytic proof; they do
+not establish an all-horizon identity for the ordinary terminal condition.
 **Venue.** Mathematics and Financial Economics (GLFT's home) or SIFIN full-length.
 
 ### P2. Closed-form order book first-passage laws via symmetrization
