@@ -71,8 +71,10 @@
       <path d="M0,0 L8,4 L0,8 z" fill="#888"/></marker></defs>
   </svg>
 
-  <p>Both problems below are solved numerically and <em>independently</em>; the square
-  commutes to solver precision (first tile). The two dealers then trade side by side,
+  <p>Both capped inventory problems below are solved numerically and
+  <em>independently</em> by policy iteration. The live coupling starts only after every
+  available quote is strictly positive and the transformed quotes and actual jump
+  generators agree term by term. The two dealers then trade side by side,
   <em>coupled</em>: they share one embedded jump chain &mdash; the same inventory path,
   trade for trade &mdash; while the imbalanced dealer's calendar clock runs slower by
   exactly D(q) = 2&radic;(q(1&minus;q)). Her quotes sit a constant &delta; nearer the
@@ -81,22 +83,22 @@
   slowed clock seen from the cost side. That is what one-sided flow
   does after the skew is granted.</p>
 
-  <p class="lookfor">Two mids a fixed distance apart with identical spreads;
+  <p class="lookfor" id="scope_note">Two mids a fixed distance apart with identical spreads;
   the trades-per-time ratio settling on D(q); the carry-per-transition ratio pinned at
   one; and the two occupancy histograms, one per clock, drawing the same shape.</p>
 
   <div class="controls">
-    <label>q <input type="range" id="q" min="0.5" max="0.85" step="0.01" value="0.65">
+    <label>q <input type="range" id="q" min="0.5" max="0.75" step="0.01" value="0.65">
       <span id="qv"></span></label>
-    <label>cost scale <input type="range" id="a" min="-3" max="-1" step="0.1" value="-2">
+    <label>cost scale <input type="range" id="a" min="-4" max="-2" step="0.1" value="-3">
       <span id="av"></span></label>
     <label>speed <input type="range" id="spd" min="1" max="60" step="1" value="12"></label>
     <button id="pause">Pause</button> <button id="reset">Reset</button>
   </div>
 
   <div class="tiles">
-    <div class="tile"><div class="lbl">square commutes</div><div class="val" id="t_comm"></div>
-      <div class="note">max |&nu;<sub>q</sub> &minus; (&nu;&#772; + &delta;x)|, independent solves</div></div>
+    <div class="tile"><div class="lbl">quote map commutes</div><div class="val" id="t_comm"></div>
+      <div class="note">maximum transformed-quote error, including cap states</div></div>
     <div class="tile"><div class="lbl">width difference</div><div class="val" id="t_w"></div>
       <div class="note">sup over inventories; the theorem says 0</div></div>
     <div class="tile"><div class="lbl">mid displacement</div><div class="val" id="t_mid"></div>
@@ -118,11 +120,14 @@
   the balanced chain's law (the embedded chains coincide), and one exponential draw sets
   both sojourns, the imbalanced one stretched by 1/D(q). Quotes are the two solved
   policies evaluated on the shared inventory. Everything on this page is computed in the
-  browser from <code>mm_core.js</code> and <code>twins_core.js</code>; the claim-by-claim
-  battery behind it is <code>verify_all_claims.py</code> in the repository.</p>
+  browser from <code>fourcorners_core.js</code> and <code>twins_core.js</code>. If a quote
+  floor binds, the page suppresses the exact coupling rather than extending
+  exp(&minus;m) above one. The focused browser-core regression is
+  <code>docs/verify_twins.js</code>; the paper's wider claim-by-claim battery is
+  <code>verify_all_claims.py</code>.</p>
 </main>
 
-<script src="./mm_core.js"></script>
+<script src="./fourcorners_core.js"></script>
 <script src="./twins_core.js"></script>
 <script>
 (() => {
@@ -134,8 +139,8 @@
     $('qv').textContent = q.toFixed(2); $('av').textContent = a.toExponential(1);
     $('p_q').textContent = q.toFixed(2);
     S = TWINS.setup({ q, a });
-    sim = TWINS.makeSim(S);
-    $('t_comm').textContent = S.devNu.toExponential(1);
+    sim = S.exact ? TWINS.makeSim(S) : null;
+    $('t_comm').textContent = S.devQuote.toExponential(1);
     $('t_w').textContent = S.devW.toExponential(1);
     $('t_delta').textContent = S.delta.toFixed(3);
     $('t_D').textContent = S.D.toFixed(3);
@@ -143,6 +148,23 @@
     for (let i = 1; i < S.n - 1; i++)
       mid = Math.max(mid, Math.abs((S.Qi.mu[i] - S.Qi.md[i]) / 2 - (S.Qb.mu[i] - S.Qb.md[i]) / 2 + S.delta));
     $('t_mid').textContent = '-' + S.delta.toFixed(3) + ' ± ' + mid.toExponential(0);
+    $('t_clock').textContent = sim ? 'starting…' : '—';
+    $('t_carry').textContent = sim ? 'starting…' : '—';
+    $('scope_note').textContent = sim
+      ? 'Exact interior coupling verified: every available quote is positive and the two independently optimized generators scale term by term.'
+      : `Exact coupling suppressed: ${S.reason}. The zero-markup boundary changes the control problem; adjust q or the cost scale.`;
+    if (!sim) {
+      drawUnavailable($('cv_imb'));
+      drawUnavailable($('cv_bal'));
+    }
+  }
+
+  function drawUnavailable(cv) {
+    const c = cv.getContext('2d');
+    c.clearRect(0, 0, cv.width, cv.height);
+    c.fillStyle = '#888'; c.font = '14px sans-serif';
+    c.fillText('Exact coupling unavailable at these controls.', 24, 42);
+    c.fillText('Adjust q or the cost scale to restore strict interiority.', 24, 66);
   }
 
   function drawPane(cv, Qs, occ, clockT, isImb) {
@@ -179,7 +201,7 @@
   }
 
   function frame() {
-    if (!paused) {
+    if (!paused && sim) {
       const steps = parseInt($('spd').value, 10);
       for (let k = 0; k < steps; k++) sim.step();
       drawPane($('cv_imb'), S.Qi, sim.occImb, sim.tImb, true);
@@ -194,7 +216,7 @@
 
   $('q').oninput = rebuild; $('a').oninput = rebuild;
   $('pause').onclick = () => { paused = !paused; $('pause').textContent = paused ? 'Run' : 'Pause'; };
-  $('reset').onclick = () => { sim = TWINS.makeSim(S); };
+  $('reset').onclick = () => { sim = S.exact ? TWINS.makeSim(S) : null; };
   rebuild(); frame();
 })();
 </script>
