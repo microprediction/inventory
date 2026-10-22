@@ -35,7 +35,7 @@ What the closest strands actually contain:
   both sides, same A and k. No flow imbalance anywhere. Quotes: reservation price
   (value-function based) ± half-spread; approximate constant-width linear-skew
   solution. Nothing resembling δ, γ, or M(p).
-- **Guéant–Lehalle–Fernandez-Tapia (arXiv May 2011; MAFE 2012), full text read.**
+- **Guéant–Lehalle–Fernandez-Tapia (arXiv May 2011; MAFE 2013), full text read.**
   Intensities are *identical* on bid and ask: λ^b(δ) = λ^a(δ) = A e^{−kδ} (verified
   in the ar5iv full text). Exact quotes are δ^b* = (1/k)ln(v_q/v_{q+1}) +
   (1/γ)ln(1+γ/k), and the asymptotic closed forms have constant spread and skew
@@ -203,7 +203,7 @@ first-order condition, markup = inverse hazard of the win curve + indifference-
 adjusted strike, that predates the RFQ optimal-quoting literature (Fermanian–Guéant–
 Pu 2017; Guéant–Manziuk 2019; Bergault–Guéant 2021) by several years. Second,
 whereas that line either assumes symmetric arrival intensities (Avellaneda–Stoikov
-2008; GLFT 2012) or accommodates asymmetric ones only numerically (Guéant 2017;
+2008; GLFT 2013) or accommodates asymmetric ones only numerically (Guéant 2017;
 Bergault et al. 2021), we prove that enquiry imbalance is *exactly* equivalent to a
 balanced problem with quotes skewed by log(p/(1−p))/2h, non-discretionary width
 widened by γ, and carrying cost inflated by 1/(2√(p(1−p))) — in particular, a dealer
@@ -229,7 +229,7 @@ new.
    doi:10.1016/0304-405X(81)90020-9
 4. Avellaneda, M., & Stoikov, S. (2008). High-frequency trading in a limit order
    book. *Quantitative Finance*, 8(3), 217–224. doi:10.1080/14697680701381228
-5. Guéant, O., Lehalle, C.-A., & Fernandez-Tapia, J. (2012). Dealing with the
+5. Guéant, O., Lehalle, C.-A., & Fernandez-Tapia, J. (2013). Dealing with the
    inventory risk: A solution to the market making problem. *Mathematics and
    Financial Economics*, 7(4), 477–507 (arXiv:1105.3115, first posted 16 May 2011).
    doi:10.1007/s11579-012-0087-0
