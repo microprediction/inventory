@@ -69,20 +69,23 @@
     $M(q) = 1/(2\sqrt{q(1-q)})$ and tilt the indifference cost by
     $\delta = \tfrac{w}{2}\log\tfrac{q}{1-q}$ per unit. (The widening $\gamma$ is the same
     factor as $M(q)$ read in the overhead frame, not a further correction.) Below, both
-    problems are solved numerically and <em>independently</em>.
+    capped finite-lattice problems are solved numerically and <em>independently</em> by
+    policy iteration. The exact comparison is shown only after every available quote is
+    strictly positive and the two actual jump generators agree term by term.
   </p>
-  <p class="lookfor">The dots landing on the line. That coincidence is the theorem,
-  and the &ldquo;max deviation&rdquo; readout is its size &mdash; solver precision, not
-  approximation.</p>
+  <p class="lookfor" id="scopeNote">The dots landing on the line. In the verified
+  interior region that coincidence is the theorem, and the &ldquo;max quote-map
+  error&rdquo; readout is solver precision, not approximation. If a zero-markup floor
+  binds, the comparison is suppressed because the constrained problem has changed.</p>
 
   <div class="widget">
     <div class="controls">
       <label>imbalance q</label>
-      <input type="range" id="q" min="0.50" max="0.90" step="0.01" value="0.65">
+      <input type="range" id="q" min="0.50" max="0.75" step="0.01" value="0.65">
       <span class="val" id="qv">0.65</span>
       <label>carry c&#8322;</label>
-      <input type="range" id="c2" min="-2.7" max="-1.3" step="0.05" value="-2">
-      <span class="val" id="c2v">0.010</span>
+      <input type="range" id="c2" min="-4" max="-2" step="0.05" value="-3">
+      <span class="val" id="c2v">0.001</span>
     </div>
   </div>
 
@@ -90,19 +93,20 @@
     <div class="tile"><div class="lbl">Skew shift &delta;</div><div class="val" id="tDelta">&ndash;</div><div class="note">first order in q &minus; &frac12;</div></div>
     <div class="tile"><div class="lbl">Width change at x = 0</div><div class="val" id="tGamma">&ndash;</div><div class="note">second order in q &minus; &frac12;</div></div>
     <div class="tile"><div class="lbl">Carry multiplier M(q)</div><div class="val" id="tM">&ndash;</div><div class="note">multiplies the carrying cost</div></div>
-    <div class="tile"><div class="lbl">Max deviation, dots vs line</div><div class="val" id="tDev">&ndash;</div><div class="note" id="tDevNote">numerical solver agreement</div></div>
+    <div class="tile"><div class="lbl">Max quote-map error</div><div class="val" id="tDev">&ndash;</div><div class="note" id="tDevNote">all available directions checked</div></div>
   </div>
 
   <div class="widget">
     <div class="widget-title">Skew S(x) against inventory</div>
     <div class="legend">
       <span class="key"><span class="swatch-line"></span> imbalanced problem, solved directly</span>
-      <span class="key"><span class="swatch-dot"></span> balanced solve at cost M(q)&thinsp;c, shifted by &delta;</span>
+      <span class="key" id="legendBal"><span class="swatch-dot"></span> balanced solve at cost M(q)&thinsp;c, shifted by &delta;</span>
     </div>
     <div id="chartA"></div>
     <div class="tooltip" id="tipA"></div>
-    <div class="readout">The skew no longer vanishes at zero inventory: <b>S(0) = &delta;</b>.
-    A dealer with a flat book still shades her quotes toward the flow.</div>
+    <div class="readout">When the strict-interiority check passes, the skew no longer
+    vanishes at zero inventory: <b>S(0) = &delta;</b>. A dealer with a flat book still
+    shades her quotes toward the flow.</div>
   </div>
 
   <div class="widget">
@@ -117,12 +121,18 @@
     width change is quadratic &mdash; why practitioners skew before they widen. The width
     change is the imbalanced dealer's width at a flat book minus the balanced dealer's at
     the same carrying cost; it comes entirely from the multiplied carry, so it depends on
-    the carry slider. The vertical hairline marks the current slider value of q.</div>
+    the carry slider. The width curve includes only q values for which all three capped
+    policies used in that comparison are strictly interior; it stops when a quote floor
+    binds. The vertical hairline marks the current slider value of q.</div>
   </div>
 
-  <p class="muted" style="font-size:0.9rem">Model and solver: exponential best-competitor with
-  width w = 1, grid x = &minus;10&hellip;10, Levenberg&ndash;Marquardt on the steady-state
-  consistency equation (<a href="./mm_core.js">mm_core.js</a>).</p>
+  <p class="muted" style="font-size:0.9rem">Model and solver: capped exponential
+  best-competitor with width w = 1, adverse-selection cost &epsilon; = 0.15 and grid
+  x = &minus;6&hellip;6. Independent finite-state policy iterations use the actual
+  one-sided cap rows and the zero-markup floor
+  (<a href="./fourcorners_core.js">fourcorners_core.js</a>,
+  <a href="./symmetry_core.js">symmetry_core.js</a>). The focused regression is
+  <code>docs/verify_symmetry.js</code>.</p>
 </main>
 
 <footer>
@@ -130,9 +140,10 @@
   Maintained by <a href="https://github.com/microprediction">Peter Cotton</a>.
 </footer>
 
-<script src="./mm_core.js?v=2"></script>
+<script src="./fourcorners_core.js"></script>
+<script src="./symmetry_core.js"></script>
 <script>
-const W = 1.0, N = 10, I0 = N;
+const W = 1.0, N = 6, EPS = 0.15;
 
 function fmt(v, d = 3) { return (v >= 0 ? '+' : '') + v.toFixed(d); }
 
@@ -228,46 +239,38 @@ function render() {
   document.getElementById('qv').textContent = q.toFixed(2);
   document.getElementById('c2v').textContent = c2.toFixed(3);
 
-  const cost = x => c2 * x * x;
-  const { delta, gamma, M } = MM.constants(q, W);
-  const imb = MM.solve({ q, w: W, N, cost });
-  const bal = MM.solve({ q: 0.5, w: W, N, cost: x => M * cost(x) });
-  const base = MM.solve({ q: 0.5, w: W, N, cost });
-  const widthChange = 2 * (MM.convexity(imb.nu, N) - MM.convexity(base.nu, N));
+  const S = SYMMETRY.setup({ q, a: c2, w: W, N, eps: EPS });
+  document.getElementById('tDelta').textContent = fmt(S.delta);
+  document.getElementById('tGamma').textContent = S.widthOk ? fmt(S.widthChange) : 'n/a';
+  document.getElementById('tM').textContent = '×' + S.M.toFixed(3);
+  document.getElementById('tDev').textContent = S.exact ? S.devQuote.toExponential(1) : 'n/a';
+  document.getElementById('tDevNote').textContent = S.exact
+    ? 'strictly interior; generators agree'
+    : S.reason;
+  document.getElementById('scopeNote').textContent = S.exact
+    ? 'Exact interior comparison verified: every available quote is positive and the independently optimized quote and generator maps agree term by term.'
+    : `The theorem comparison is suppressed: ${S.reason}. The zero-markup boundary changes the constrained control problem; reduce q or the carry scale.`;
 
-  const line = [], dots = [];
-  let dev = 0;
-  for (let i = 1; i < 2 * N; i++) {
-    const x = imb.xs[i];
-    const sImb = MM.slope(imb.nu, i), sBal = MM.slope(bal.nu, i) + delta;
-    line.push([x, sImb]); dots.push([x, sBal]);
-    dev = Math.max(dev, Math.abs(sImb - sBal));
-  }
-  document.getElementById('tDelta').textContent = fmt(delta);
-  document.getElementById('tGamma').textContent = fmt(widthChange);
-  document.getElementById('tM').textContent = '×' + M.toFixed(3);
-  const ok = imb.ok && bal.ok;
-  document.getElementById('tDev').textContent = ok ? dev.toExponential(1) : 'n/a';
-  document.getElementById('tDevNote').textContent = ok ? 'numerical solver agreement'
-    : 'a solve did not converge; no comparison shown';
-
-  drawChart('chartA', 'tipA', [
-    { name: 'imbalanced, direct', color: cssVar('--series-1'), points: line, mode: 'line' },
-    { name: 'balanced, corrected', color: cssVar('--series-2'), points: dots, mode: 'dots' },
-  ], { xlabel: 'inventory x', ylabel: 'skew S(x)' });
+  const series = [
+    { name: 'imbalanced, direct', color: cssVar('--series-1'), points: S.pointsImb, mode: 'line' },
+  ];
+  document.getElementById('legendBal').style.display = S.exact ? 'inline-flex' : 'none';
+  if (S.exact) series.push(
+    { name: 'balanced, corrected', color: cssVar('--series-2'), points: S.pointsBal, mode: 'dots' });
+  drawChart('chartA', 'tipA', series,
+    { xlabel: 'inventory x', ylabel: 'skew S(x)' });
 
   clearTimeout(chartBTimer);
-  chartBTimer = setTimeout(() => drawWidthChart(q, cost, base), 200);
+  chartBTimer = setTimeout(() => drawWidthChart(q, c2), 200);
 }
 
 let chartBTimer = null;
-function drawWidthChart(q, cost, base) {
+function drawWidthChart(q, a) {
   const dPts = [], gPts = [];
-  for (let qq = 0.5; qq <= 0.9001; qq += 0.02) {
-    const c = MM.constants(qq, W);
-    dPts.push([qq, c.delta / W]);
-    const r = MM.solve({ q: qq, w: W, N, cost });
-    if (r.ok && base.ok) gPts.push([qq, 2 * (MM.convexity(r.nu, N) - MM.convexity(base.nu, N)) / W]);
+  for (let qq = 0.5; qq <= 0.7501; qq += 0.0125) {
+    const S = SYMMETRY.setup({ q: qq, a, w: W, N, eps: EPS });
+    dPts.push([qq, S.delta / W]);
+    if (S.widthOk) gPts.push([qq, S.widthChange / W]);
   }
   drawChart('chartB', 'tipB', [
     { name: 'δ/w', color: cssVar('--series-1'), points: dPts, mode: 'line' },
@@ -282,3 +285,4 @@ render();
 </script>
 </body>
 </html>
+
