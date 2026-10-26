@@ -2,6 +2,8 @@
  *
  * Each enquiry is judged against the quote in force when it arrives, so the
  * player quotes before the cover is revealed, as the model's dealer does.
+ * Its economic outcome settles immediately; the falling ball is only an
+ * immutable animation of that already-settled enquiry.
  *
  * Enquiries fall from the sky. Each lands at the best competing quote: a
  * displacement z ~ Exp(mean w) from the fair value, on the sellers' side
@@ -58,7 +60,7 @@ const GAME = (() => {
       level, q: opts.q ?? L.q, sigma: opts.sigma ?? L.sigma,
       a: opts.a ?? 0.002, eps: opts.eps ?? 0.25, N: opts.N ?? 6,
       tau: opts.tau ?? 1.0,        // mean inter-arrival, seconds
-      fall: opts.fall ?? 0.45,      // seconds from sky to bar: too quick to react to, as in the model you quote before the cover is revealed
+      fall: opts.fall ?? 0.45,      // visual playback only; economic settlement is immediate
       shiftSpeed: 1.5, widenSpeed: 1.0,
     };
     const rng = mulberry(opts.seed ?? (Math.random() * 2 ** 32) >>> 0);
@@ -84,7 +86,7 @@ const GAME = (() => {
       cfg, rng, pol, twin, M, delta, devTwin, interior, floorAt,
       t: 0, F: 0, x: 0,
       B: -(W + cfg.eps), A: W + cfg.eps,     // bid and offer, absolute price
-      items: [], tray: [], nextSpawn: 0,   // tray: caught balls, by offset from the bar edge they sit on
+      items: [], tray: [], nextSpawn: 0,   // items: immutable animation records; tray: landed catches
       won: 0, lost: 0, margin: 0, carry: 0, pricePnl: 0,
       events: [],
     };
@@ -133,38 +135,48 @@ const GAME = (() => {
     g.carry += cfg.a * g.x * g.x * dt;
     g.t += dt;
 
-    // arrivals
+    // arrivals. Draw the cover and settle the economic state immediately.
+    // The immutable item remains only so the renderer can play the fall.
     g.nextSpawn -= dt;
     while (g.nextSpawn <= 0) {
       const seller = g.rng() < cfg.q;
-      // the quote in force when the enquiry arrives is the one that competes; the cover is
-      // revealed afterwards, so moving the bar while the ball falls changes nothing
-      g.items.push({ side: seller ? 1 : -1, z: expo(g) * W, y: 0, B: g.B, A: g.A, F: g.F });
+      const side = seller ? 1 : -1;
+      const z = expo(g) * W;
+      const B = g.B, A = g.A, F = g.F;
+      const land = F + (side > 0 ? -z : z);
+      let caught = false, margin = 0;
+      if (side > 0) {               // seller: buy if the submitted bid beats the competitor
+        if (B > land && g.x < cfg.N) { caught = true; margin = F - B - cfg.eps; }
+      } else {                      // buyer: sell if the submitted offer undercuts the competitor
+        if (A < land && g.x > -cfg.N) { caught = true; margin = A - F - cfg.eps; }
+      }
+      if (caught) {
+        g.won += 1; g.margin += margin; g.x += side;
+      } else {
+        g.lost += 1;
+      }
+      g.items.push({ side, z, y: 0, B, A, F, land, caught, margin });
+      // With several arrivals in one frame, autopilot must react to each
+      // settled fill before the next enquiry is evaluated.
+      if (ctrl.autopilot) {
+        const o = optimalGap(g);
+        g.B = o.B; g.A = o.A;
+      }
       g.nextSpawn += expo(g) * cfg.tau;
     }
 
-    // falling and landing
+    // Visual playback and landing. No economic variable changes here.
     for (let k = g.items.length - 1; k >= 0; k--) {
       const it = g.items[k];
       it.y += dt / cfg.fall;
       if (it.y < 1) continue;
       g.items.splice(k, 1);
-      const land = it.F + (it.side > 0 ? -it.z : it.z);   // competitor's price, around the fair value at arrival
-      let caught = false, margin = 0;
-      if (it.side > 0) {               // seller: we buy if the bid we had out beats the competitor's
-        if (it.B > land && g.x < cfg.N) { caught = true; margin = it.F - it.B - cfg.eps; }
-      } else {                         // buyer: we sell if the offer we had out undercuts
-        if (it.A < land && g.x > -cfg.N) { caught = true; margin = it.A - it.F - cfg.eps; }
-      }
-      if (caught) {
-        g.won += 1; g.margin += margin; g.x += it.side;
+      if (it.caught) {
         const k = g.tray.findIndex(b => b.side === -it.side);
         if (k >= 0) g.tray.splice(k, 1);                       // a buy and a sell cancel
-        else g.tray.push({ side: it.side, off: it.side > 0 ? land - g.B : land - g.A });
-      } else {
-        g.lost += 1;
+        else g.tray.push({ side: it.side, off: it.side > 0 ? it.land - g.B : it.land - g.A });
       }
-      g.events.push({ caught, side: it.side, land, margin });
+      g.events.push({ caught: it.caught, side: it.side, land: it.land, margin: it.margin });
     }
     return g.events;
   }
@@ -186,3 +198,4 @@ const GAME = (() => {
   return { LEVELS, policy, create, step, stats, optimalGap };
 })();
 if (typeof module !== "undefined") module.exports = GAME;
+
