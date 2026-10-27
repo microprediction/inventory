@@ -67,7 +67,7 @@
     these four regimes M(q) is at most 1.09. The <strong>robust learner</strong> adds a
     small per-regime residual table on top of the shared one, so it can absorb whatever the
     symmetry gets wrong. The <strong>oracle</strong> quotes the exact optimal policy for the
-    true generative model.
+    true generative model on the capped inventory chain.
   </p>
   <p>
     The <strong>win curve</strong> selector changes the generative model of the best competing
@@ -166,7 +166,7 @@
 </footer>
 
 <script src="./mm_core.js?v=2"></script>
-<script src="./rl_core.js?v=2"></script>
+<script src="./rl_core.js?v=3"></script>
 <script>
 function el(name, attrs, parent) {
   const e = document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -339,3 +339,4 @@ setTimeout(runIrl, 60);
 </script>
 </body>
 </html>
+
