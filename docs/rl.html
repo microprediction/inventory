@@ -66,8 +66,11 @@
     cost M(q)&thinsp;c, so regimes with different M(q) have different optimal policies. Across
     these four regimes M(q) is at most 1.09. The <strong>robust learner</strong> adds a
     small per-regime residual table on top of the shared one, so it can absorb whatever the
-    symmetry gets wrong. The <strong>oracle</strong> quotes the exact optimal policy for the
-    true generative model on the capped inventory chain.
+    symmetry gets wrong. The <strong>stationary oracle</strong> quotes the exact
+    average-reward optimum for each fixed regime on the capped inventory chain. Like the
+    learners, it has no within-block clock state, so it does not anticipate the deterministic
+    regime switches; it is a regimewise stationary benchmark, not the optimum of the full
+    periodic process.
   </p>
   <p>
     The <strong>win curve</strong> selector changes the generative model of the best competing
@@ -78,8 +81,8 @@
     recalibrated: it is the misspecified, exponential-model formula.
   </p>
   <p class="lookfor">Under the exponential model both shared-table learners settle within about
-  a tenth of the oracle, well ahead of the per-regime baseline. Under the logistic model they
-  still beat the baseline by a wide margin, and the gap to the oracle widens to about a
+  a tenth of the stationary oracle, well ahead of the per-regime baseline. Under the logistic
+  model they still beat the baseline by a wide margin, and the gap to the oracle widens to about a
   seventh.</p>
 
   <div class="widget">
@@ -105,7 +108,7 @@
     <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-1)"></span>Symmetry</div><div class="val" id="tSym">&ndash;</div><div class="note">one shared table</div></div>
     <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-4)"></span>Robust</div><div class="val" id="tRob">&ndash;</div><div class="note">shared + residuals</div></div>
     <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-2)"></span>Per-regime</div><div class="val" id="tBase">&ndash;</div><div class="note">no symmetry</div></div>
-    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">exact optimum</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">stationary optimum per regime</div></div>
   </div>
 
   <div class="widget">
@@ -114,7 +117,7 @@
       <span class="key"><span class="sw" style="background:var(--series-1)"></span> symmetry (one table, all regimes)</span>
       <span class="key"><span class="sw" style="background:var(--series-4)"></span> robust (shared + per-regime residual)</span>
       <span class="key"><span class="sw" style="background:var(--series-2)"></span> per-regime baseline</span>
-      <span class="key"><span class="sw" style="background:var(--series-3)"></span> oracle</span>
+      <span class="key"><span class="sw" style="background:var(--series-3)"></span> stationary oracle</span>
     </div>
     <div id="chartLearn"></div>
     <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy exploration,
@@ -339,3 +342,4 @@ setTimeout(runIrl, 60);
 </script>
 </body>
 </html>
+
