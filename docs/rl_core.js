@@ -234,6 +234,9 @@ const RL = (() => {
   }
 
   function makeOracle({ env }) {
+    // Exact average-reward optimum for each fixed regime.  This benchmark is
+    // phase-blind, like the learners: it does not anticipate the deterministic
+    // block switch and therefore is not the optimum of the full periodic MDP.
     const cache = {};
     const policy = q => cache[q] || (cache[q] = solveCapped(env, q));
     return {
@@ -327,3 +330,4 @@ const RL = (() => {
 })();
 
 if (typeof module !== 'undefined') module.exports = RL;
+
