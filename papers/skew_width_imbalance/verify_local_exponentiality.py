@@ -10,10 +10,12 @@ where G(K) = sup_m (m-K)(1-F(m)) is the value of the next enquiry as a
 function of its strike, Kdn = eps + C + S and Kup = eps + C - S in terms of
 the slope S and convexity C of the indifference cost nu.
 
-Check 1 (certificate for the exact theorem): with exponential F, take the
-even solution nu_bal of the balanced problem with cost M(q) c and tilt it,
-nu_bal + delta x. This must satisfy the imbalanced system to machine
-precision, so the imbalanced problem has an exact solution with S(0) = delta.
+Check 1 (algebra regression under this script's artificial closure): with
+exponential F, take the even solution nu_bal of the balanced problem with cost
+M(q) c and tilt it,
+nu_bal + delta x. This satisfies the surrogate closed system to machine
+precision. It is not a certificate for the paper's one-sided boundary rows;
+see README_certificates.md for those certificates and their scope.
 
 Check 2 (the remark): with a slowly varying hazard h(m) = h0 (1 + beta m)
 the same construction, using the hazard local to the quotes actually made,
@@ -97,7 +99,7 @@ if __name__ == "__main__":
     M = 1.0 / (2 * np.sqrt(q * (1 - q)))
     cost = lambda x: 0.01 * x ** 2
 
-    # --- Check 1: exponential win curve, machine-precision certificate ----
+    # --- Check 1: exponential algebra under the artificial closure --------
     w = 1.0
     G_exp = lambda K: w * np.exp(-1.0 - K / w)
     delta = 0.5 * w * log_odds
@@ -107,7 +109,7 @@ if __name__ == "__main__":
     print(f"exponential: tilted balanced solve plugged into imbalanced "
           f"system,\n   max residual = {res:.2e} (theorem exact; "
           f"S(0) = delta = {delta:+.6f} by construction)")
-    assert res < 1e-10, "exact certificate fails"
+    assert res < 1e-10, "exponential artificial-closure regression fails"
 
     # --- Check 2: slowly varying hazard h(m) = h0 (1 + beta m) ------------
     errs = {}
