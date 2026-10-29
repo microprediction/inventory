@@ -141,10 +141,12 @@
     symmetry violation and sets the pooling weight automatically &mdash; the same
     reliability-sets-the-dial mechanism as the Schur damping &gamma;*.
   </p>
-  <p class="lookfor">Under the exponential model pooled is best at small samples, then stalls
-  at its bias while per-regime keeps improving. Under the logistic model with these four
-  regimes the de-tilted skews happen to agree closely, and pooled stays competitive. Shrunk
-  sets its own pooling weight in both cases.</p>
+  <p class="lookfor">This single seeded illustration evaluates every sample size on the same
+  five inventories, x = &minus;2,&hellip;,2. Under the exponential model the residual pooling
+  bias is small enough that pooled remains best over the displayed range, although per-regime
+  keeps improving. Under the logistic model the de-tilted skews disagree more: per-regime and
+  shrunk catch pooled between 16,000 and 32,000 observations and then improve past it.
+  Shrunk sets its own pooling weight in both cases.</p>
 
   <div class="widget">
     <div class="widget-title">Inverse estimation error against observation count</div>
@@ -169,7 +171,7 @@
 </footer>
 
 <script src="./mm_core.js?v=2"></script>
-<script src="./rl_core.js?v=3"></script>
+<script src="./rl_core.js?v=4"></script>
 <script>
 function el(name, attrs, parent) {
   const e = document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -312,7 +314,7 @@ window.addEventListener('resize', () => { redrawForward(); });
 /* ---- inverse problem ---- */
 function runIrl() {
   const wc = currentModel();
-  const ns = [500, 1000, 2000, 4000, 8000, 16000, 32000, 64000];
+  const ns = [1000, 2000, 4000, 8000, 16000, 32000, 64000];
   const pooled = [], per = [], shr = [];
   let at16k = null, at64k = null;
   for (const n of ns) {
