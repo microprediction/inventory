@@ -314,16 +314,23 @@ const RL = (() => {
       const shrunk = lam * per + (1 - lam) * pooled;
       return { pooled, per, shrunk, i };
     };
+    // Compare sample sizes on one fixed estimand.  Using every cell with at
+    // least three target observations makes the RMSE domain grow with nObs.
+    const radius = Math.min(2, env.N - 1);
+    const evalStates = Array.from({ length: 2 * radius + 1 }, (_, j) => env.N - radius + j);
     let se = { pooled: 0, per: 0, shrunk: 0 }, nn = 0;
-    for (let i = 1; i < 2 * env.N; i++) {
+    for (const i of evalStates) {
       const e = errAt(i);
       if (!e) continue;
       const t = trueS[i - 1];
       se.pooled += (e.pooled - t) ** 2; se.per += (e.per - t) ** 2; se.shrunk += (e.shrunk - t) ** 2;
       nn++;
     }
-    const rmse = v => nn ? Math.sqrt(v / nn) : NaN;
-    return { pooledRMSE: rmse(se.pooled), perRegimeRMSE: rmse(se.per), shrunkRMSE: rmse(se.shrunk) };
+    const rmse = v => nn === evalStates.length ? Math.sqrt(v / nn) : NaN;
+    return {
+      pooledRMSE: rmse(se.pooled), perRegimeRMSE: rmse(se.per),
+      shrunkRMSE: rmse(se.shrunk), evaluatedStates: nn
+    };
   }
 
   return { makeEnv, makeActions, makeLearner, makeOracle, irlRun, delta, solveCapped };
