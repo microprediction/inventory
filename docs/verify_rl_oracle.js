@@ -44,6 +44,22 @@ for (const winCurve of ['exponential', 'logistic']) {
 }
 assert.ok(floorCases > 0, 'default sweep must exercise the quote floor');
 
+// The inverse chart must compare sample sizes on a fixed five-state estimand.
+// The former implementation silently expanded its RMSE domain as tail cells
+// accumulated three target-regime observations.
+for (const winCurve of ['exponential', 'logistic']) {
+  for (const nObs of [1000, 64000]) {
+    const r = RL.irlRun({
+      env: RL.makeEnv({ seed: 42, winCurve }),
+      nObs, noise: 0.4, targetQ: 0.6,
+    });
+    assert.equal(r.evaluatedStates, 5,
+      `${winCurve} n=${nObs}: inverse RMSE support changed`);
+    assert.ok(Number.isFinite(r.pooledRMSE),
+      `${winCurve} n=${nObs}: inverse RMSE missing`);
+  }
+}
+
 // Reproduce the defect in the former exponential oracle: MM.solve closes the
 // endpoints by equal third differences instead of using one-sided cap rows.
 let worstOldQuote = 0, worstOldRegret = 0;
@@ -68,3 +84,4 @@ console.log(`PASS capped RL oracle: 8 exponential/logistic regimes; `
   + `fixed-point ${worstFixed.toExponential(2)}, gain ${worstGain.toExponential(2)}, `
   + `${floorCases} floor quotes; former oracle max quote error ${worstOldQuote.toFixed(12)}, `
   + `regret ${worstOldRegret.toExponential(6)}`);
+
