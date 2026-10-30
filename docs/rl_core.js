@@ -256,6 +256,31 @@ const RL = (() => {
 
   /* ---- inverse problem ---- */
 
+  // Plug-in random-effects predictor for one target regime.  The grand mean
+  // excludes the target, so the two inputs to the final linear blend are
+  // independent conditional on the hyperparameters.  tau^2 is the
+  // DerSimonian-Laird moment estimate, which handles unequal cell counts.
+  function shrinkEstimate(groups, targetQ, sig2) {
+    const target = groups.find(g => g.q === targetQ);
+    if (!target) return null;
+    if (!(sig2 > 0)) return { value: target.mean, lambda: 1, tau2: 0 };
+    const fixedWeights = groups.map(g => g.n / sig2);
+    const sw = fixedWeights.reduce((a, b) => a + b, 0);
+    const fixed = groups.reduce((a, g, j) => a + fixedWeights[j] * g.mean, 0) / sw;
+    const Q = groups.reduce((a, g, j) => a + fixedWeights[j] * (g.mean - fixed) ** 2, 0);
+    const C = sw - fixedWeights.reduce((a, w) => a + w * w, 0) / sw;
+    const tau2 = groups.length > 1 && C > 0
+      ? Math.max(0, (Q - (groups.length - 1)) / C) : 0;
+    const others = groups.filter(g => g.q !== targetQ);
+    if (!others.length) return { value: target.mean, lambda: 1, tau2 };
+    const randomWeights = others.map(g => 1 / (tau2 + sig2 / g.n));
+    const srw = randomWeights.reduce((a, b) => a + b, 0);
+    const grand = others.reduce((a, g, j) => a + randomWeights[j] * g.mean, 0) / srw;
+    const grandVar = 1 / srw, targetVar = sig2 / target.n;
+    const lambda = (tau2 + grandVar) / (tau2 + grandVar + targetVar);
+    return { value: lambda * target.mean + (1 - lambda) * grand, lambda, tau2 };
+  }
+
   function irlRun({ env, nObs, noise = 0.4, targetQ }) {
     const cache = {};
     const policy = q => cache[q] || (cache[q] = solveCapped(env, q));
@@ -295,23 +320,20 @@ const RL = (() => {
     const errAt = i => {
       const tgt = byReg[targetQ];
       // pooled mean over all regimes (balanced frame)
-      let S1 = 0, n1 = 0, means = [], ns = [];
+      let S1 = 0, n1 = 0, groups = [];
       for (const q of env.regimes) {
         const st = byReg[q];
-        if (st.n[i] > 0) { means.push(st.sum[i] / st.n[i]); ns.push(st.n[i]); S1 += st.sum[i]; n1 += st.n[i]; }
+        if (st.n[i] > 0) {
+          const mean = st.sum[i] / st.n[i];
+          groups.push({ q, mean, n: st.n[i] });
+          S1 += st.sum[i]; n1 += st.n[i];
+        }
       }
       if (!n1 || tgt.n[i] < 3) return null;
       const pooled = S1 / n1 + dT;
       const per = tgt.sum[i] / tgt.n[i] + dT;
-      // random-effects: between-regime dispersion beyond sampling noise
-      const grand = S1 / n1;
-      let btw = 0;
-      for (let j2 = 0; j2 < means.length; j2++) btw += (means[j2] - grand) ** 2;
-      btw = means.length > 1 ? btw / (means.length - 1) : 0;
-      const meanSampVar = means.length ? ns.reduce((a, n2) => a + sig2 / n2, 0) / ns.length : 0;
-      const tau2 = Math.max(0, btw - meanSampVar);
-      const lam = tau2 / (tau2 + sig2 / tgt.n[i]);   // weight on per-regime
-      const shrunk = lam * per + (1 - lam) * pooled;
+      const eb = shrinkEstimate(groups, targetQ, sig2);
+      const shrunk = eb.value + dT;
       return { pooled, per, shrunk, i };
     };
     // Compare sample sizes on one fixed estimand.  Using every cell with at
@@ -333,8 +355,9 @@ const RL = (() => {
     };
   }
 
-  return { makeEnv, makeActions, makeLearner, makeOracle, irlRun, delta, solveCapped };
+  return { makeEnv, makeActions, makeLearner, makeOracle, irlRun, delta, solveCapped, shrinkEstimate };
 })();
 
 if (typeof module !== 'undefined') module.exports = RL;
+
 
