@@ -44,6 +44,19 @@ for (const winCurve of ['exponential', 'logistic']) {
 }
 assert.ok(floorCases > 0, 'default sweep must exercise the quote floor');
 
+// Unequal-count random effects: fixed-effect mean = 10/310, Q = 300/31,
+// C = 6600/31, hence tau^2 = 69/2200.  Leaving the target out gives grand
+// mean zero with variance 91/6600 and the exact BLUP weight below.
+const eb = RL.shrinkEstimate([
+  { q: 0.4, mean: 0, n: 100 },
+  { q: 0.5, mean: 0, n: 100 },
+  { q: 0.6, mean: 1, n: 10 },
+  { q: 0.7, mean: 0, n: 100 },
+], 0.6, 1);
+assert.ok(Math.abs(eb.tau2 - 0.031363636363636364) < 1e-14);
+assert.ok(Math.abs(eb.lambda - 0.31106471816283926) < 1e-14);
+assert.ok(Math.abs(eb.value - eb.lambda) < 1e-14);
+
 // The inverse chart must compare sample sizes on a fixed five-state estimand.
 // The former implementation silently expanded its RMSE domain as tail cells
 // accumulated three target-regime observations.
@@ -84,4 +97,5 @@ console.log(`PASS capped RL oracle: 8 exponential/logistic regimes; `
   + `fixed-point ${worstFixed.toExponential(2)}, gain ${worstGain.toExponential(2)}, `
   + `${floorCases} floor quotes; former oracle max quote error ${worstOldQuote.toFixed(12)}, `
   + `regret ${worstOldRegret.toExponential(6)}`);
+
 
