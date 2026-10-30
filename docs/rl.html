@@ -136,10 +136,11 @@
     <strong>Pooled</strong> de-tilts everything by &delta;(q) and averages. It is biased even
     under the exponential model, because the regimes differ in M(q) and &delta; removes only
     the first-order part. Unlike the forward learner, an estimator cannot absorb its own
-    bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling, in
-    which the between-regime dispersion of the de-tilted means estimates the size of the
-    symmetry violation and sets the pooling weight automatically &mdash; the same
-    reliability-sets-the-dial mechanism as the Schur damping &gamma;*.
+    bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling. A
+    count-aware moment estimate of the between-regime dispersion measures the symmetry
+    violation. The target regime is left out of the grand-mean estimate, and uncertainty in
+    that mean enters the pooling weight &mdash; the same reliability-sets-the-dial mechanism
+    as the Schur damping &gamma;*.
   </p>
   <p class="lookfor">This single seeded illustration evaluates every sample size on the same
   five inventories, x = &minus;2,&hellip;,2. Under the exponential model the residual pooling
@@ -171,7 +172,7 @@
 </footer>
 
 <script src="./mm_core.js?v=2"></script>
-<script src="./rl_core.js?v=4"></script>
+<script src="./rl_core.js?v=5"></script>
 <script>
 function el(name, attrs, parent) {
   const e = document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -344,4 +345,5 @@ setTimeout(runIrl, 60);
 </script>
 </body>
 </html>
+
 
