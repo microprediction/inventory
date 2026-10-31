@@ -66,8 +66,11 @@
     cost M(q)&thinsp;c, so regimes with different M(q) have different optimal policies. Across
     these four regimes M(q) is at most 1.09. The <strong>robust learner</strong> adds a
     small per-regime residual table on top of the shared one, so it can absorb whatever the
-    symmetry gets wrong. The <strong>oracle</strong> quotes the exact optimal policy for the
-    true generative model.
+    symmetry gets wrong. The <strong>stationary oracle</strong> quotes the exact
+    average-reward optimum for each fixed regime on the capped inventory chain. Like the
+    learners, it has no within-block clock state, so it does not anticipate the deterministic
+    regime switches; it is a regimewise stationary benchmark, not the optimum of the full
+    periodic process.
   </p>
   <p>
     The <strong>win curve</strong> selector changes the generative model of the best competing
@@ -77,10 +80,12 @@
     symmetry becomes only approximately true. The &delta; the learners use is deliberately NOT
     recalibrated: it is the misspecified, exponential-model formula.
   </p>
-  <p class="lookfor">Under the exponential model both shared-table learners settle within about
-  a tenth of the oracle, well ahead of the per-regime baseline. Under the logistic model they
-  still beat the baseline by a wide margin, and the gap to the oracle widens to about a
-  seventh.</p>
+  <p class="lookfor">In a 50-seed audit at 64,000 enquiries, both shared-table
+  learners beat the per-regime baseline in every run. Their mean gaps to the
+  stationary oracle were about 0.03 under the exponential model and 0.06 under
+  the logistic model; the corresponding 10th&ndash;90th percentile ranges were
+  about 0.02&ndash;0.04 and 0.04&ndash;0.09. These are finite-horizon stochastic
+  results, not asymptotic guarantees.</p>
 
   <div class="widget">
     <div class="controls">
@@ -105,7 +110,7 @@
     <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-1)"></span>Symmetry</div><div class="val" id="tSym">&ndash;</div><div class="note">one shared table</div></div>
     <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-4)"></span>Robust</div><div class="val" id="tRob">&ndash;</div><div class="note">shared + residuals</div></div>
     <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-2)"></span>Per-regime</div><div class="val" id="tBase">&ndash;</div><div class="note">no symmetry</div></div>
-    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">exact optimum</div></div>
+    <div class="tile"><div class="lbl"><span class="sw" style="background:var(--series-3)"></span>Oracle</div><div class="val" id="tOra">&ndash;</div><div class="note">stationary optimum per regime</div></div>
   </div>
 
   <div class="widget">
@@ -114,13 +119,16 @@
       <span class="key"><span class="sw" style="background:var(--series-1)"></span> symmetry (one table, all regimes)</span>
       <span class="key"><span class="sw" style="background:var(--series-4)"></span> robust (shared + per-regime residual)</span>
       <span class="key"><span class="sw" style="background:var(--series-2)"></span> per-regime baseline</span>
-      <span class="key"><span class="sw" style="background:var(--series-3)"></span> oracle</span>
+      <span class="key"><span class="sw" style="background:var(--series-3)"></span> stationary oracle</span>
     </div>
     <div id="chartLearn"></div>
-    <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy exploration,
-    same action grid, same random draws. Each update bootstraps from the expected value over
+    <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy schedule,
+    same action grid, and the same customer enquiries. Each update bootstraps from the expected value over
     the next customer&rsquo;s direction, which the dealer does not choose. The residual layer
-    is insurance that costs a little variance.</div>
+    is insurance that costs a little variance. Exact stationary evaluation shows that restricting
+    the oracle to the 15-action grid costs only about 0.0005 per enquiry under the exponential
+    model and 0.0025 under the logistic model, so the larger displayed gaps are not primarily
+    grid-discretization error.</div>
   </div>
 
   <h2>The inverse problem, where robustness earns its keep</h2>
@@ -133,15 +141,18 @@
     <strong>Pooled</strong> de-tilts everything by &delta;(q) and averages. It is biased even
     under the exponential model, because the regimes differ in M(q) and &delta; removes only
     the first-order part. Unlike the forward learner, an estimator cannot absorb its own
-    bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling, in
-    which the between-regime dispersion of the de-tilted means estimates the size of the
-    symmetry violation and sets the pooling weight automatically &mdash; the same
-    reliability-sets-the-dial mechanism as the Schur damping &gamma;*.
+    bias. <strong>Shrunk</strong> is the robust design: random-effects partial pooling. A
+    count-aware moment estimate of the between-regime dispersion measures the symmetry
+    violation. The target regime is left out of the grand-mean estimate, and uncertainty in
+    that mean enters the pooling weight &mdash; the same reliability-sets-the-dial mechanism
+    as the Schur damping &gamma;*.
   </p>
-  <p class="lookfor">Under the exponential model pooled is best at small samples, then stalls
-  at its bias while per-regime keeps improving. Under the logistic model with these four
-  regimes the de-tilted skews happen to agree closely, and pooled stays competitive. Shrunk
-  sets its own pooling weight in both cases.</p>
+  <p class="lookfor">This single seeded illustration evaluates every sample size on the same
+  five inventories, x = &minus;2,&hellip;,2. Under the exponential model the residual pooling
+  bias is small enough that pooled remains best over the displayed range, although per-regime
+  keeps improving. Under the logistic model the de-tilted skews disagree more: per-regime and
+  shrunk catch pooled between 16,000 and 32,000 observations and then improve past it.
+  Shrunk sets its own pooling weight in both cases.</p>
 
   <div class="widget">
     <div class="widget-title">Inverse estimation error against observation count</div>
@@ -155,7 +166,8 @@
   </div>
 
   <p class="muted" style="font-size:0.9rem">Environment and solver:
-  <a href="./mm_core.js">mm_core.js</a>, <a href="./rl_core.js">rl_core.js</a>. Roadmap
+  <a href="./mm_core.js">mm_core.js</a>, <a href="./rl_core.js">rl_core.js</a>;
+  <a href="./audit_rl_forward.js">forward audit</a>. Roadmap
   entries P3, P7 and P9 in
   <a href="https://github.com/microprediction/inventory/blob/main/papers/ROADMAP.md">papers/ROADMAP.md</a>.</p>
 </main>
@@ -166,7 +178,7 @@
 </footer>
 
 <script src="./mm_core.js?v=2"></script>
-<script src="./rl_core.js?v=2"></script>
+<script src="./rl_core.js?v=5"></script>
 <script>
 function el(name, attrs, parent) {
   const e = document.createElementNS('http://www.w3.org/2000/svg', name);
@@ -309,7 +321,7 @@ window.addEventListener('resize', () => { redrawForward(); });
 /* ---- inverse problem ---- */
 function runIrl() {
   const wc = currentModel();
-  const ns = [500, 1000, 2000, 4000, 8000, 16000, 32000, 64000];
+  const ns = [1000, 2000, 4000, 8000, 16000, 32000, 64000];
   const pooled = [], per = [], shr = [];
   let at16k = null, at64k = null;
   for (const n of ns) {
@@ -339,3 +351,6 @@ setTimeout(runIrl, 60);
 </script>
 </body>
 </html>
+
+
+

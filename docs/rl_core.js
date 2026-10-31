@@ -167,19 +167,85 @@ const RL = (() => {
     };
   }
 
-  // exact optimal dealer for the env's actual win curve (custom G into MM.solve)
-  function makeOracle({ env, MM }) {
+  // Exact average-reward optimum on the actual capped inventory chain.  The
+  // public demo's generic MM.solve uses artificial third-difference endpoint
+  // equations; those are useful for interior algebra but are not the Bellman
+  // equations at a hard inventory cap.
+  function solveCapped(env, q) {
+    const n = 2 * env.N + 1, i0 = env.N, floor = 0.01;
+    const md = Array.from({ length: n }, (_, i) => i < n - 1 ? env.mstar(0, q) : NaN);
+    const mu = Array.from({ length: n }, (_, i) => i > 0 ? env.mstar(0, q) : NaN);
+
+    function gauss(A, b) {
+      const m = b.length, M = A.map((row, i) => row.concat([b[i]]));
+      for (let c = 0; c < m; c++) {
+        let p = c;
+        for (let r = c + 1; r < m; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+        [M[c], M[p]] = [M[p], M[c]];
+        for (let r = 0; r < m; r++) {
+          if (r === c) continue;
+          const f = M[r][c] / M[c][c];
+          for (let k = c; k <= m; k++) M[r][k] -= f * M[c][k];
+        }
+      }
+      return M.map((row, i) => row[m] / row[i]);
+    }
+
+    function evaluate() {
+      const A = [], b = [];
+      for (let i = 0; i < n; i++) {
+        const up = i < n - 1 ? q * env.survQ(md[i], q) : 0;
+        const dn = i > 0 ? (1 - q) * env.survQ(mu[i], q) : 0;
+        const row = new Array(n + 1).fill(0);
+        row[i] = up + dn;
+        if (i < n - 1) row[i + 1] -= up;
+        if (i > 0) row[i - 1] -= dn;
+        row[n] = 1;
+        A.push(row);
+        b.push((i < n - 1 ? up * md[i] : 0)
+             + (i > 0 ? dn * mu[i] : 0) - env.cost(i - i0));
+      }
+      const pin = new Array(n + 1).fill(0); pin[i0] = 1;
+      A.push(pin); b.push(0);
+      const z = gauss(A, b);
+      return { h: z.slice(0, n), gain: z[n] };
+    }
+
+    let last;
+    for (let iter = 0; iter < 200; iter++) {
+      last = evaluate();
+      let dev = 0;
+      for (let i = 0; i < n; i++) {
+        if (i < n - 1) {
+          const m = Math.max(floor, env.mstar(last.h[i] - last.h[i + 1], q));
+          dev = Math.max(dev, Math.abs(m - md[i])); md[i] = m;
+        }
+        if (i > 0) {
+          const m = Math.max(floor, env.mstar(last.h[i] - last.h[i - 1], q));
+          dev = Math.max(dev, Math.abs(m - mu[i])); mu[i] = m;
+        }
+      }
+      if (dev < 1e-13) {
+        last = evaluate();
+        return { md, mu, h: last.h, gain: last.gain, iterations: iter + 1 };
+      }
+    }
+    throw new Error(`capped policy iteration failed at q=${q}`);
+  }
+
+  function makeOracle({ env }) {
+    // Exact average-reward optimum for each fixed regime.  This benchmark is
+    // phase-blind, like the learners: it does not anticipate the deterministic
+    // block switch and therefore is not the optimum of the full periodic MDP.
     const cache = {};
-    const policy = q => cache[q] || (cache[q] = MM.solve({
-      q, w: env.w, N: env.N, cost: x => env.cost(x), G: K => env.G(K, q) }));
+    const policy = q => cache[q] || (cache[q] = solveCapped(env, q));
     return {
       x: 0, pnl: 0,
       learn({ q, isSeller, Z }) {
         const sol = policy(q);
         const atLimit = isSeller ? this.x >= env.N : this.x <= -env.N;
-        const i = this.x + env.N, nu = sol.nu;
-        // one-sided strikes; at a limit the blocked side does not trade
-        const m = atLimit ? Infinity : env.mstar(isSeller ? nu[i + 1] - nu[i] : nu[i - 1] - nu[i], q);
+        const i = this.x + env.N;
+        const m = atLimit ? Infinity : (isSeller ? sol.md[i] : sol.mu[i]);
         const win = m < Z;
         if (win) this.x += isSeller ? 1 : -1;
         this.pnl += (win ? m : 0) - env.cost(this.x);
@@ -190,15 +256,39 @@ const RL = (() => {
 
   /* ---- inverse problem ---- */
 
-  function irlRun({ env, MM, nObs, noise = 0.4, targetQ }) {
+  // Plug-in random-effects predictor for one target regime.  The grand mean
+  // excludes the target, so the two inputs to the final linear blend are
+  // independent conditional on the hyperparameters.  tau^2 is the
+  // DerSimonian-Laird moment estimate, which handles unequal cell counts.
+  function shrinkEstimate(groups, targetQ, sig2) {
+    const target = groups.find(g => g.q === targetQ);
+    if (!target) return null;
+    if (!(sig2 > 0)) return { value: target.mean, lambda: 1, tau2: 0 };
+    const fixedWeights = groups.map(g => g.n / sig2);
+    const sw = fixedWeights.reduce((a, b) => a + b, 0);
+    const fixed = groups.reduce((a, g, j) => a + fixedWeights[j] * g.mean, 0) / sw;
+    const Q = groups.reduce((a, g, j) => a + fixedWeights[j] * (g.mean - fixed) ** 2, 0);
+    const C = sw - fixedWeights.reduce((a, w) => a + w * w, 0) / sw;
+    const tau2 = groups.length > 1 && C > 0
+      ? Math.max(0, (Q - (groups.length - 1)) / C) : 0;
+    const others = groups.filter(g => g.q !== targetQ);
+    if (!others.length) return { value: target.mean, lambda: 1, tau2 };
+    const randomWeights = others.map(g => 1 / (tau2 + sig2 / g.n));
+    const srw = randomWeights.reduce((a, b) => a + b, 0);
+    const grand = others.reduce((a, g, j) => a + randomWeights[j] * g.mean, 0) / srw;
+    const grandVar = 1 / srw, targetVar = sig2 / target.n;
+    const lambda = (tau2 + grandVar) / (tau2 + grandVar + targetVar);
+    return { value: lambda * target.mean + (1 - lambda) * grand, lambda, tau2 };
+  }
+
+  function irlRun({ env, nObs, noise = 0.4, targetQ }) {
     const cache = {};
-    const policy = q => cache[q] || (cache[q] = MM.solve({
-      q, w: env.w, N: env.N, cost: x => env.cost(x), G: K => env.G(K, q) }));
+    const policy = q => cache[q] || (cache[q] = solveCapped(env, q));
     // optimal submitted quotes and their skew, at interior inventory index i
-    const optQuotes = (sol, i, q) => [env.mstar(sol.nu[i + 1] - sol.nu[i], q), env.mstar(sol.nu[i - 1] - sol.nu[i], q)];
+    const optQuotes = (sol, i) => [sol.md[i], sol.mu[i]];
     const tSol = policy(targetQ);
     const trueS = [];
-    for (let i = 1; i < 2 * env.N; i++) { const [a, b] = optQuotes(tSol, i, targetQ); trueS.push((a - b) / 2); }
+    for (let i = 1; i < 2 * env.N; i++) { const [a, b] = optQuotes(tSol, i); trueS.push((a - b) / 2); }
 
     const nStates = 2 * env.N + 1;
     // per (regime, state): sum and count of de-tilted skew observations
@@ -215,7 +305,7 @@ const RL = (() => {
       const i = Math.max(1, Math.min(2 * env.N - 1, x + env.N));
       // the dealer submits her model-optimal quotes and fills use those;
       // the observer sees them with independent measurement noise
-      const [mDn, mUp] = optQuotes(sol, i, q);
+      const [mDn, mUp] = optQuotes(sol, i);
       const skewObs = ((mDn + noise * gauss()) - (mUp + noise * gauss())) / 2;
       const st = byReg[q];
       st.sum[i] += skewObs - delta(q, env.w); st.n[i]++;  // balanced frame
@@ -230,38 +320,44 @@ const RL = (() => {
     const errAt = i => {
       const tgt = byReg[targetQ];
       // pooled mean over all regimes (balanced frame)
-      let S1 = 0, n1 = 0, means = [], ns = [];
+      let S1 = 0, n1 = 0, groups = [];
       for (const q of env.regimes) {
         const st = byReg[q];
-        if (st.n[i] > 0) { means.push(st.sum[i] / st.n[i]); ns.push(st.n[i]); S1 += st.sum[i]; n1 += st.n[i]; }
+        if (st.n[i] > 0) {
+          const mean = st.sum[i] / st.n[i];
+          groups.push({ q, mean, n: st.n[i] });
+          S1 += st.sum[i]; n1 += st.n[i];
+        }
       }
       if (!n1 || tgt.n[i] < 3) return null;
       const pooled = S1 / n1 + dT;
       const per = tgt.sum[i] / tgt.n[i] + dT;
-      // random-effects: between-regime dispersion beyond sampling noise
-      const grand = S1 / n1;
-      let btw = 0;
-      for (let j2 = 0; j2 < means.length; j2++) btw += (means[j2] - grand) ** 2;
-      btw = means.length > 1 ? btw / (means.length - 1) : 0;
-      const meanSampVar = means.length ? ns.reduce((a, n2) => a + sig2 / n2, 0) / ns.length : 0;
-      const tau2 = Math.max(0, btw - meanSampVar);
-      const lam = tau2 / (tau2 + sig2 / tgt.n[i]);   // weight on per-regime
-      const shrunk = lam * per + (1 - lam) * pooled;
+      const eb = shrinkEstimate(groups, targetQ, sig2);
+      const shrunk = eb.value + dT;
       return { pooled, per, shrunk, i };
     };
+    // Compare sample sizes on one fixed estimand.  Using every cell with at
+    // least three target observations makes the RMSE domain grow with nObs.
+    const radius = Math.min(2, env.N - 1);
+    const evalStates = Array.from({ length: 2 * radius + 1 }, (_, j) => env.N - radius + j);
     let se = { pooled: 0, per: 0, shrunk: 0 }, nn = 0;
-    for (let i = 1; i < 2 * env.N; i++) {
+    for (const i of evalStates) {
       const e = errAt(i);
       if (!e) continue;
       const t = trueS[i - 1];
       se.pooled += (e.pooled - t) ** 2; se.per += (e.per - t) ** 2; se.shrunk += (e.shrunk - t) ** 2;
       nn++;
     }
-    const rmse = v => nn ? Math.sqrt(v / nn) : NaN;
-    return { pooledRMSE: rmse(se.pooled), perRegimeRMSE: rmse(se.per), shrunkRMSE: rmse(se.shrunk) };
+    const rmse = v => nn === evalStates.length ? Math.sqrt(v / nn) : NaN;
+    return {
+      pooledRMSE: rmse(se.pooled), perRegimeRMSE: rmse(se.per),
+      shrunkRMSE: rmse(se.shrunk), evaluatedStates: nn
+    };
   }
 
-  return { makeEnv, makeActions, makeLearner, makeOracle, irlRun, delta };
+  return { makeEnv, makeActions, makeLearner, makeOracle, irlRun, delta, solveCapped, shrinkEstimate };
 })();
 
 if (typeof module !== 'undefined') module.exports = RL;
+
+
