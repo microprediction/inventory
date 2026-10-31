@@ -80,10 +80,12 @@
     symmetry becomes only approximately true. The &delta; the learners use is deliberately NOT
     recalibrated: it is the misspecified, exponential-model formula.
   </p>
-  <p class="lookfor">Under the exponential model both shared-table learners settle within about
-  a tenth of the stationary oracle, well ahead of the per-regime baseline. Under the logistic
-  model they still beat the baseline by a wide margin, and the gap to the oracle widens to about a
-  seventh.</p>
+  <p class="lookfor">In a 50-seed audit at 64,000 enquiries, both shared-table
+  learners beat the per-regime baseline in every run. Their mean gaps to the
+  stationary oracle were about 0.03 under the exponential model and 0.06 under
+  the logistic model; the corresponding 10th&ndash;90th percentile ranges were
+  about 0.02&ndash;0.04 and 0.04&ndash;0.09. These are finite-horizon stochastic
+  results, not asymptotic guarantees.</p>
 
   <div class="widget">
     <div class="controls">
@@ -120,10 +122,13 @@
       <span class="key"><span class="sw" style="background:var(--series-3)"></span> stationary oracle</span>
     </div>
     <div id="chartLearn"></div>
-    <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy exploration,
-    same action grid, same random draws. Each update bootstraps from the expected value over
+    <div class="readout">Identical Q-learning throughout: same &epsilon;-greedy schedule,
+    same action grid, and the same customer enquiries. Each update bootstraps from the expected value over
     the next customer&rsquo;s direction, which the dealer does not choose. The residual layer
-    is insurance that costs a little variance.</div>
+    is insurance that costs a little variance. Exact stationary evaluation shows that restricting
+    the oracle to the 15-action grid costs only about 0.0005 per enquiry under the exponential
+    model and 0.0025 under the logistic model, so the larger displayed gaps are not primarily
+    grid-discretization error.</div>
   </div>
 
   <h2>The inverse problem, where robustness earns its keep</h2>
@@ -161,7 +166,8 @@
   </div>
 
   <p class="muted" style="font-size:0.9rem">Environment and solver:
-  <a href="./mm_core.js">mm_core.js</a>, <a href="./rl_core.js">rl_core.js</a>. Roadmap
+  <a href="./mm_core.js">mm_core.js</a>, <a href="./rl_core.js">rl_core.js</a>;
+  <a href="./audit_rl_forward.js">forward audit</a>. Roadmap
   entries P3, P7 and P9 in
   <a href="https://github.com/microprediction/inventory/blob/main/papers/ROADMAP.md">papers/ROADMAP.md</a>.</p>
 </main>
@@ -345,5 +351,6 @@ setTimeout(runIrl, 60);
 </script>
 </body>
 </html>
+
 
 
